@@ -4,6 +4,7 @@
   "description": "Crowd Pulse Data Layer API for NodeJS",
   "main": "index.js",
   "scripts": {
+    "start": "node index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Francesco Pontillo <francescopontillo@gmail.com>",

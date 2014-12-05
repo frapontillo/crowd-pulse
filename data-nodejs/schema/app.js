@@ -26,7 +26,7 @@ AppSchema.statics.getSchemaName = function() {
   return 'App';
 };
 
-AppSchema.statics.findByName = function (cb) {
+AppSchema.statics.findByName = function () {
   return this.model(AppSchema.statics.getSchemaName()).find({ name: this.name }).exec();
 };
 

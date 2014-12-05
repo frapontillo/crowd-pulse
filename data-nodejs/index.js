@@ -19,6 +19,18 @@ var AppStore = require('./store/app')(mongoose);
 
 mongoose.connect('mongodb://localhost/test');
 
-AppStore.findByName('test')
-  .then(console.log)
-  .fulfill(mongoose.disconnect);
+var onOpen = function() {
+  AppStore.findOne({ name: 'test' }).exec()
+    .then(function (result) {
+      return result || AppStore.create({
+        name: 'test',
+        secret: 'yolo'
+      });
+    })
+    .then(function (a) {
+      console.log(a);
+      return a;
+    });
+};
+
+mongoose.connection.once('open', onOpen);
