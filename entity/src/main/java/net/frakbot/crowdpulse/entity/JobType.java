@@ -14,28 +14,11 @@
  *    limitations under the License.
  */
 
-package net.frakbot.socialsentinel.entity;
+package net.frakbot.crowdpulse.entity;
 
 /**
  * @author Francesco Pontillo
  */
-public class JobExecutionPolicy {
-    private String location;
-    private Long instances;
-
-    public String getLocation() {
-        return location;
-    }
-
-    public void setLocation(String location) {
-        this.location = location;
-    }
-
-    public Long getInstances() {
-        return instances;
-    }
-
-    public void setInstances(Long instances) {
-        this.instances = instances;
-    }
+public abstract class JobType {
+    public abstract String getName();
 }

@@ -14,11 +14,37 @@
  *    limitations under the License.
  */
 
-package net.frakbot.socialsentinel.entity;
+package net.frakbot.crowdpulse.entity;
 
 /**
  * @author Francesco Pontillo
  */
-public abstract class JobType {
-    public abstract String getName();
+public class App {
+    private long id;
+    private String name;
+    private String secret;
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getSecret() {
+        return secret;
+    }
+
+    public void setSecret(String secret) {
+        this.secret = secret;
+    }
 }

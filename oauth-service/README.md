@@ -1,4 +1,4 @@
-social-sentinel-oauth-service
-=============================
+crowd-pulse-oauth-service
+=========================
 
-Social Sentinel OAuth 2.0 Web Service.
+Crowd Pulse OAuth 2.0 Web Service

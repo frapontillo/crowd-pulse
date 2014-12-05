@@ -14,24 +14,19 @@
  *    limitations under the License.
  */
 
-package net.frakbot.socialsentinel.entity;
+package net.frakbot.crowdpulse.entity;
 
-import java.util.Date;
+import java.util.HashMap;
 
 /**
- * Holds project-level information:
- *  - name of the project
- *  - list of steps to perform sequentially
- *  - creation user and date
- *
  * @author Francesco Pontillo
  */
-public class Project {
+public class Job {
     private long id;
     private String name;
-    private Step[] steps;
-    private User creationUser;
-    private Date creationDate;
+    private JobType jobType;
+    JobExecutionPolicy executionPolicy;
+    private HashMap<String, Object> jobConfig;
 
     public long getId() {
         return id;
@@ -49,28 +44,27 @@ public class Project {
         this.name = name;
     }
 
-    public Step[] getSteps() {
-        return steps;
+    public JobType getJobType() {
+        return jobType;
     }
 
-    public void setSteps(Step[] steps) {
-        this.steps = steps;
+    public void setJobType(JobType jobType) {
+        this.jobType = jobType;
     }
 
-    public User getCreationUser() {
-        return creationUser;
+    public JobExecutionPolicy getExecutionPolicy() {
+        return executionPolicy;
     }
 
-    public void setCreationUser(User creationUser) {
-        this.creationUser = creationUser;
+    public void setExecutionPolicy(JobExecutionPolicy executionPolicy) {
+        this.executionPolicy = executionPolicy;
     }
 
-    public Date getCreationDate() {
-        return creationDate;
+    public HashMap<String, Object> getJobConfig() {
+        return jobConfig;
     }
 
-    public void setCreationDate(Date creationDate) {
-        this.creationDate = creationDate;
+    public void setJobConfig(HashMap<String, Object> jobConfig) {
+        this.jobConfig = jobConfig;
     }
 }
-

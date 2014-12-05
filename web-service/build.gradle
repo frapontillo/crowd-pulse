@@ -21,10 +21,10 @@ sourceCompatibility = 1.7
 targetCompatibility = 1.7
 
 version = '1.0'
-mainClassName = 'net.frakbot.socialsentinel.ws.Main'
+mainClassName = 'net.frakbot.crowdpulse.ws.Main'
 
 run {
-    main = 'net.frakbot.socialsentinel.ws.Main'
+    main = 'net.frakbot.crowdpulse.ws.Main'
     standardInput = System.in
 }
 

@@ -14,17 +14,16 @@
  *    limitations under the License.
  */
 
-package net.frakbot.socialsentinel.entity;
+package net.frakbot.crowdpulse.entity;
 
 /**
- * @author Francesco Pontillo
+ * @author Francesco
  */
-public class Step {
+public class User {
     private long id;
-    private String name;
-    Integer notifyEvery;
-    boolean waitPrevStep;
-    private Job[] jobs;
+    private String username;
+    private String email;
+    private String secret;
 
     public long getId() {
         return id;
@@ -34,35 +33,27 @@ public class Step {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
+    public String getUsername() {
+        return username;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
-    public Integer getNotifyEvery() {
-        return notifyEvery;
+    public String getEmail() {
+        return email;
     }
 
-    public void setNotifyEvery(Integer notifyEvery) {
-        this.notifyEvery = notifyEvery;
+    public void setEmail(String email) {
+        this.email = email;
     }
 
-    public boolean isWaitPrevStep() {
-        return waitPrevStep;
+    public String getSecret() {
+        return secret;
     }
 
-    public void setWaitPrevStep(boolean waitPrevStep) {
-        this.waitPrevStep = waitPrevStep;
-    }
-
-    public Job[] getJobs() {
-        return jobs;
-    }
-
-    public void setJobs(Job[] jobs) {
-        this.jobs = jobs;
+    public void setSecret(String secret) {
+        this.secret = secret;
     }
 }

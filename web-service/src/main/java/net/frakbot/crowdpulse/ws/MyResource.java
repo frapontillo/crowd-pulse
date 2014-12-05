@@ -1,4 +1,4 @@
-package net.frakbot.socialsentinel.ws;
+package net.frakbot.crowdpulse.ws;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;

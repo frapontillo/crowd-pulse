@@ -1,7 +1,7 @@
 {
-  "name": "social-sentinel-data-nodejs",
+  "name": "crowd-pulse-data-nodejs",
   "version": "0.0.1",
-  "description": "Social Sentinel Data Layer API for NodeJS",
+  "description": "Crowd Pulse Data Layer API for NodeJS",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"

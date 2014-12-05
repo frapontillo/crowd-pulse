@@ -14,13 +14,13 @@
  *    limitations under the License.
  */
 
-rootProject.name = 'social-sentinel'
+rootProject.name = 'crowd-pulse'
 
 include ':entity'
 
-include 'oauth-service'
+include ':oauth-service'
 include ':web-service'
 
-include 'data-nodejs'
-include 'data-java'
+include ':data-nodejs'
+include ':data-java'
 
