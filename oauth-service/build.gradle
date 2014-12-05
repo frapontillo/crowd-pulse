@@ -23,3 +23,18 @@ version = '1.0'
 repositories {
     mavenCentral()
 }
+
+task npmLinkDataNodeJS(type: NpmTask) {
+    dependsOn ':data-nodejs:npmLink'
+    args = ['link', 'crowd-pulse-data-nodejs']
+}
+
+task nodeStart(type: NodeTask) {
+    dependsOn npmInstall
+    setScript file('index.js')
+}
+
+task nodeStartLocal(type: NodeTask) {
+    dependsOn npmLinkDataNodeJS, npmInstall
+    setScript file('index.js')
+}
