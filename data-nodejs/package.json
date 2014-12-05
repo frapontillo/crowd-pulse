@@ -11,6 +11,8 @@
   "license": "Apache-2.0",
   "dependencies": {
     "mongodb": "^1.4.22",
-    "mongoose": "^3.8.20"
+    "mongoose": "^3.8.20",
+    "q": "^1.1.2",
+    "mongoose-q": "0.0.13"
   }
 }
