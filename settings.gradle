@@ -16,11 +16,11 @@
 
 rootProject.name = 'crowd-pulse'
 
-include ':entity'
+include 'entity'
 
-include ':oauth-service'
-include ':web-service'
+include 'oauth-service'
+include 'web-service'
 
-include ':data-nodejs'
-include ':data-java'
+include 'data-nodejs'
+include 'data-java'
 
