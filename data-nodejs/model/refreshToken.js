@@ -14,23 +14,8 @@
  * limitations under the License.
  */
 
-var mongoose = require('mongoose');
-var JobSchema = require('./job');
+var OAuthAccessRefreshSchema = require('./../schema/refreshToken');
 
-var StepSchema = new mongoose.Schema({
-  id: mongoose.Schema.ObjectId,
-  name: String,
-  notifyEvery: Number,
-  waitPrevStep: Boolean,
-  jobs: [{
-    type: mongoose.Schema.ObjectId, ref: JobSchema.statics.getSchemaName()
-  }]
-});
-
-var SCHEMA_NAME = 'Step';
-
-StepSchema.statics.getSchemaName = function() {
-  return SCHEMA_NAME;
+module.exports = function(mongoose) {
+  return mongoose.model(OAuthAccessRefreshSchema.statics.getSchemaName(), OAuthAccessRefreshSchema);
 };
-
-module.exports = StepSchema;

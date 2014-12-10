@@ -16,7 +16,7 @@
 
 var Q = require('q');
 var mongoose = require('mongoose');
-var AppStore = require('./store/app')(mongoose);
+var AppStore = require('./model/app')(mongoose);
 
 // make mongoose Promise/A+ compliant
 require('mongoose-q')(mongoose);
@@ -59,22 +59,14 @@ var DataLayer = function() {
         });
       });
   };
+
+  this.AccessTokenModel = require('./model/accessToken');
+  this.AppModel = require('./model/app');
+  this.JobModel = require('./model/job');
+  this.ProjectModel = require('./model/project');
+  this.RefreshTokenModel = require('./model/refreshToken');
+  this.StepModel = require('./model/step');
+  this.UserModel = require('./model/user');
 };
 
-var data = new DataLayer();
-
-data.connect('mongodb://localhost/test')
-  .then(function() {
-    return data.initDatabase();
-  })
-  .then(function() {
-    return data.disconnect();
-  })
-  .finally(function() {
-    console.log('we\'re done');
-  })
-  .catch(function(err) {
-    console.error(err);
-  });
-
-console.log('yolo');
+module.exports = DataLayer;

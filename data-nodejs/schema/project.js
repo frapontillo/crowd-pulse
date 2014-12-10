@@ -29,9 +29,9 @@ var ProjectSchema = new mongoose.Schema({
   id: mongoose.Schema.ObjectId,
   name: String,
   steps: [{
-    type: Schema.Types.ObjectId, ref: StepSchema.statics.getSchemaName()
+    type: mongoose.Schema.ObjectId, ref: StepSchema.statics.getSchemaName()
   }],
-  creationUser: { type: Schema.Types.ObjectId, ref: UserSchema.statics.getSchemaName() },
+  creationUser: { type: mongoose.Schema.ObjectId, ref: UserSchema.statics.getSchemaName() },
   creationDate: Date
 });
 

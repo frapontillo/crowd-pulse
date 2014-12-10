@@ -18,23 +18,18 @@ var mongoose = require('mongoose');
 var AppSchema = require('./app');
 var UserSchema = require('./user');
 
-var UserSessionSchema = new mongoose.Schema({
+var OAuthAccessToken = new mongoose.Schema({
   id: mongoose.Schema.ObjectId,
-  userId: { type: Schema.Types.ObjectId, ref: UserSchema.statics.getSchemaName() },
-  appId: { type: Schema.Types.ObjectId, ref: AppSchema.statics.getSchemaName() },
-  token: String,
-  issueDate: Date,
-  lockedSession: Boolean
+  accessToken: { type: String },
+  appId: { type: mongoose.Schema.ObjectId, ref: AppSchema.statics.getSchemaName() },
+  userId: { type: mongoose.Schema.ObjectId, ref: UserSchema.statics.getSchemaName() },
+  expires: { type: Date }
 });
 
-var SCHEMA_NAME = 'UserSession';
+var SCHEMA_NAME = 'OAuthAccessToken';
 
-UserSessionSchema.statics.getSchemaName = function() {
+OAuthAccessToken.statics.getSchemaName = function() {
   return SCHEMA_NAME;
 };
 
-UserSessionSchema.statics.findByToken = function (token) {
-  return this.model(SCHEMA_NAME).find({ token: token }).exec();
-};
-
-module.exports = UserSessionSchema;
+module.exports = OAuthAccessToken;

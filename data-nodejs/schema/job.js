@@ -24,7 +24,7 @@ var JobSchema = new mongoose.Schema({
     location: String,
     instances: Number
   },
-  jobConfig: Schema.Types.Mixed
+  jobConfig: mongoose.Schema.Types.Mixed
 });
 
 var SCHEMA_NAME = 'Job';

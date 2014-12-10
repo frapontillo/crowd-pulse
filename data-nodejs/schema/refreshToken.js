@@ -15,22 +15,21 @@
  */
 
 var mongoose = require('mongoose');
-var JobSchema = require('./job');
+var AppSchema = require('./app');
+var UserSchema = require('./user');
 
-var StepSchema = new mongoose.Schema({
+var OAuthRefreshToken = new mongoose.Schema({
   id: mongoose.Schema.ObjectId,
-  name: String,
-  notifyEvery: Number,
-  waitPrevStep: Boolean,
-  jobs: [{
-    type: mongoose.Schema.ObjectId, ref: JobSchema.statics.getSchemaName()
-  }]
+  refreshToken: { type: String },
+  appId: { type: mongoose.Schema.ObjectId, ref: AppSchema.statics.getSchemaName() },
+  userId: { type: mongoose.Schema.ObjectId, ref: UserSchema.statics.getSchemaName() },
+  expires: { type: Date }
 });
 
-var SCHEMA_NAME = 'Step';
+var SCHEMA_NAME = 'OAuthRefreshToken';
 
-StepSchema.statics.getSchemaName = function() {
+OAuthRefreshToken.statics.getSchemaName = function() {
   return SCHEMA_NAME;
 };
 
-module.exports = StepSchema;
+module.exports = OAuthRefreshToken;

@@ -19,7 +19,9 @@ var mongoose = require('mongoose');
 var AppSchema = new mongoose.Schema({
   id: mongoose.Schema.ObjectId,
   name: String,
-  secret: String
+  secret: String,
+  redirectUri: String,
+  allowedGrants: [ String ]
 });
 
 var SCHEMA_NAME = 'App';
