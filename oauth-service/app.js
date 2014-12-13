@@ -49,11 +49,14 @@ function gracefulExit() {
 
 var dataLayer = new DataLayer();
 dataLayer.connect('mongodb://localhost/test')
+  .then(dataLayer.initDatabase)
   .then(function() {
-    setupOAuth(dataLayer.model);
+    console.log('Setting up OAuth2...');
+    setupOAuth(dataLayer);
     return true;
   })
   .then(function() {
+    console.log('Listening...');
     app.listen(3000);
   });
 
