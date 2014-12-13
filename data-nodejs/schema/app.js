@@ -34,4 +34,14 @@ AppSchema.statics.findByName = function (name) {
   return this.model(SCHEMA_NAME).find({ name: name }).exec();
 };
 
+AppSchema.statics.findOneByIdSecret = function (id, secret, callback) {
+  return this.model(SCHEMA_NAME).findOne({ _id: mongoose.Types.ObjectId(id), secret: secret }).exec(callback);
+};
+
+AppSchema.statics.hasAllowedGrant = function (id, grantType, callback) {
+  return this.model(SCHEMA_NAME).findOne({ _id: mongoose.Types.ObjectId(id), allowedGrants: grantType }).exec(function(err, res) {
+    callback(err, !!res);
+  });
+};
+
 module.exports = AppSchema;

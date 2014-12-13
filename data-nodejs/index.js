@@ -16,7 +16,6 @@
 
 var Q = require('q');
 var mongoose = require('mongoose');
-var AppStore = require('./model/app')(mongoose);
 
 // make mongoose Promise/A+ compliant
 require('mongoose-q')(mongoose);
@@ -35,38 +34,49 @@ var DataLayer = function() {
 
   var self = this;
 
-  this.connect = function(host, database, port, options) {
-    var connectionPromise = Q.defer();
-    self.connection = mongoose.createConnection();
+  self.AccessTokenModel = require('./model/accessToken')(mongoose);
+  self.AppModel = require('./model/app')(mongoose);
+  self.JobModel = require('./model/job')(mongoose);
+  self.ProjectModel = require('./model/project')(mongoose);
+  self.RefreshTokenModel = require('./model/refreshToken')(mongoose);
+  self.StepModel = require('./model/step')(mongoose);
+  self.UserModel = require('./model/user')(mongoose);
+  self.ObjectId = mongoose.Types.ObjectId;
 
-    self.connection.open(host, database, port, options, getCallbackAsPromiseFn(connectionPromise, self.connection));
+  self.connect = function(uri, options) {
+    var connectionPromise = Q.defer();
+    mongoose.connect(uri, getCallbackAsPromiseFn(connectionPromise, self));
     return connectionPromise.promise;
   };
 
-  this.disconnect = function() {
+  self.disconnect = function() {
     var disconnectionPromise = Q.defer();
 
-    mongoose.disconnect(getCallbackAsPromiseFn(disconnectionPromise, self.connection));
+    mongoose.disconnect(getCallbackAsPromiseFn(disconnectionPromise, self));
     return disconnectionPromise.promise;
   };
 
-  this.initDatabase = function() {
-    AppStore.findOneQ({ name: 'test' })
+  self.initDatabase = function() {
+    var appInit = self.AppModel.findOneQ({ name: 'testApp' })
       .then(function (result) {
-        return result || AppStore.createQ({
-          name: 'test',
-          secret: 'yolo'
+        return result || self.AppModel.createQ({
+          name: 'testApp',
+          secret: 'yolo123',
+          allowedGrants: ['authorization_code', 'password', 'refresh_token', 'client_credentials']
         });
       });
-  };
 
-  this.AccessTokenModel = require('./model/accessToken');
-  this.AppModel = require('./model/app');
-  this.JobModel = require('./model/job');
-  this.ProjectModel = require('./model/project');
-  this.RefreshTokenModel = require('./model/refreshToken');
-  this.StepModel = require('./model/step');
-  this.UserModel = require('./model/user');
+    var userInit = self.UserModel.findOneQ({ username: 'admin' })
+      .then(function (result) {
+        return result || self.UserModel.createQ({
+            username: 'admin',
+            email: "francescopontillo@gmail.com",
+            secret: 'yolo'
+          });
+      });
+
+    return Q.all(appInit, userInit);
+  };
 };
 
 module.exports = DataLayer;
