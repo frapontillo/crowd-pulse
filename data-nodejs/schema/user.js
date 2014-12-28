@@ -29,4 +29,15 @@ UserSchema.statics.getSchemaName = function() {
   return SCHEMA_NAME;
 };
 
+UserSchema.statics.findOneIdByNameSecret = function (username, secret, callback) {
+  return this.model(SCHEMA_NAME).findOneQ({ username: username })
+    .then(function(user) {
+      // TODO: implement hashing system
+      if (user.secret === secret) {
+        return callback(user._id);
+      }
+      callback();
+    });
+};
+
 module.exports = UserSchema;

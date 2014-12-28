@@ -32,4 +32,8 @@ OAuthRefreshToken.statics.getSchemaName = function() {
   return SCHEMA_NAME;
 };
 
+OAuthRefreshToken.statics.findOneByToken = function (token, callback) {
+  return this.model(SCHEMA_NAME).findOne({ refreshToken: token }).exec(callback);
+};
+
 module.exports = OAuthRefreshToken;

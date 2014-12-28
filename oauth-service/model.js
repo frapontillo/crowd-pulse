@@ -24,7 +24,7 @@ var modelGenerator = function(dataLayer) {
    */
   model.getAuthCode = function (bearerToken, callback) {
     console.log('getAccessToken (bearerToken: ' + bearerToken + ')');
-    dataLayer.AccessTokenModel.findOne({ accessToken: bearerToken }, callback);
+    dataLayer.AccessTokenModel.findOneByToken(bearerToken, callback);
   };
 
   /**
@@ -37,14 +37,12 @@ var modelGenerator = function(dataLayer) {
    */
   model.saveAccessToken = function (token, clientId, expires, userId, callback) {
     console.log('saveAccessToken (token: ' + token + ', clientId: ' + clientId + ', userId: ' + userId + ', expires: ' + expires + ')');
-
     var accessToken = new dataLayer.AccessTokenModel({
       accessToken: token,
       userId: userId,
       appId: clientId,
       expires: expires
     });
-
     accessToken.save(callback);
   };
 
@@ -57,9 +55,8 @@ var modelGenerator = function(dataLayer) {
   model.getClient = function (clientId, clientSecret, callback) {
     console.log('getClient (clientId: ' + clientId + ', clientSecret: ' + clientSecret + ')');
     if (clientSecret === null) {
-      return dataLayer.AppModel.findOne({ id: clientId }, callback);
+      return dataLayer.AppModel.findById(clientId, callback);
     }
-
     dataLayer.AppModel.findOneByIdSecret(clientId, clientSecret, callback);
   };
 
@@ -74,21 +71,19 @@ var modelGenerator = function(dataLayer) {
     dataLayer.AppModel.hasAllowedGrant(clientId, grantType, callback);
   };
 
-  /*
-   * Required to support password grant type
+  /**
+   * Finds a user ID given its username and a password.
+   * @param username  The username
+   * @param password  The password
+   * @param callback  Function that will be called with the user ID as an argument, or null if no users were found
    */
   model.getUser = function (username, password, callback) {
     console.log('getUser (username: ' + username + ', password: ' + password + ')');
+    dataLayer.UserModel.findOneIdByNameSecret(username, password, callback);
+  };
 
-    dataLayer.UserModel.findOne({
-      username: username,
-      secret: password
-    }, function(err, user) {
-      if(err) {
-        return callback(err);
-      }
-      callback(null, user._id);
-    });
+  model.getUserFromClient = function(clientId, clientSecret, callback) {
+    return model.getClient(clientId, clientSecret, callback);
   };
 
   /**
@@ -101,14 +96,12 @@ var modelGenerator = function(dataLayer) {
    */
   model.saveRefreshToken = function (token, clientId, expires, userId, callback) {
     console.log('saveRefreshToken (token: ' + token + ', clientId: ' + clientId +', userId: ' + userId + ', expires: ' + expires + ')');
-
     var refreshToken = new dataLayer.RefreshTokenModel({
       refreshToken: token,
       userId: userId,
       appId: clientId,
       expires: expires
     });
-
     refreshToken.save(callback);
   };
 
@@ -119,8 +112,7 @@ var modelGenerator = function(dataLayer) {
    */
   model.getRefreshToken = function (refreshToken, callback) {
     console.log('in getRefreshToken (refreshToken: ' + refreshToken + ')');
-
-    dataLayer.RefreshTokenModel.findOne({ refreshToken: refreshToken }, callback);
+    dataLayer.RefreshTokenModel.findOneByToken(refreshToken, callback);
   };
 
   return model;

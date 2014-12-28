@@ -32,4 +32,8 @@ OAuthAccessToken.statics.getSchemaName = function() {
   return SCHEMA_NAME;
 };
 
+OAuthAccessToken.statics.findOneByToken = function (token, callback) {
+  return this.model(SCHEMA_NAME).findOne({ accessToken: token }).exec(callback);
+};
+
 module.exports = OAuthAccessToken;
