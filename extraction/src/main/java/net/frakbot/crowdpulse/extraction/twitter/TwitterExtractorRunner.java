@@ -22,6 +22,7 @@ import net.frakbot.crowdpulse.extraction.util.*;
 import rx.Observable;
 import rx.Subscriber;
 import rx.functions.Func1;
+import rx.observables.ConnectableObservable;
 import rx.schedulers.Schedulers;
 import twitter4j.*;
 import twitter4j.conf.ConfigurationBuilder;
@@ -29,6 +30,7 @@ import twitter4j.conf.ConfigurationBuilder;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author Francesco Pontillo
@@ -63,7 +65,6 @@ public class TwitterExtractorRunner {
             @Override public void call(Subscriber<? super Message> subscriber) {
                 System.out.println("Started streaming.");
                 getNewMessages(parameters, subscriber);
-                waitUntil(parameters.getUntil(), subscriber);
             }
         });
         // filter the new messages to properly match the extraction parameters
@@ -71,18 +72,65 @@ public class TwitterExtractorRunner {
                 .filter(checkFromUser(parameters))
                 .filter(checkToUser(parameters))
                 .filter(checkReferencedUsers(parameters))
-                .filter(checkUntilDate(parameters));
+                .filter(checkUntilDate(parameters))
+                        // continue producing elements until the target date is reached
+                .takeUntil(timeToWait(parameters));
 
         // both observables should execute the subscribe function in separate threads
         oldMessages = oldMessages.subscribeOn(Schedulers.io());
         newMessages = newMessages.subscribeOn(Schedulers.io());
 
         // the resulting Observable should be a union of both old and new messages
-        Observable<Message> messages = Observable.merge(oldMessages, newMessages);
-        //messages.subscribeOn(Schedulers.newThread());
+        // make it as a ConnectableObservable so that multiple subscribers can subscribe to it
+        ConnectableObservable<Message> messages = Observable.merge(oldMessages, newMessages).publish();
+
+        // subscribe to the merged messages in order to attempt a shutdown of the TwitterStreaming
+        messages.subscribe(new Subscriber<Message>() {
+            @Override public void onCompleted() {
+                try {
+                    getTwitterStreamInstance().cleanUp();
+                    getTwitterStreamInstance().shutdown();
+                } catch (TwitterException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override public void onError(Throwable e) {
+            }
+
+            @Override public void onNext(Message message) {
+            }
+        });
+        // from this moment on, start fetching tweets
+        messages.connect();
+
         return messages;
     }
 
+    /**
+     * Get the appropriate {@link rx.Observable} that will either complete after a certain amount of time (depending
+     * on the input {@link net.frakbot.crowdpulse.extraction.cli.ExtractionParameters#getUntil()}) or never complete.
+     *
+     * @param parameters The parameters, as set by the user, that can contain a null or valid "until date".
+     * @return {@link rx.Observable} that can complete after some time, or will never complete.
+     */
+    private Observable<Long> timeToWait(ExtractionParameters parameters) {
+        if (parameters.getUntil() != null) {
+            long timeToDeath = parameters.getUntil().getTime() - new Date().getTime();
+            System.out.println(String.format("Shutting down the Streaming service in %d seconds.", timeToDeath));
+            return Observable.timer(timeToDeath, TimeUnit.MILLISECONDS, Schedulers.io());
+        }
+        return Observable.never();
+    }
+
+    /**
+     * Download all old messages (maximum 7-10 days past) that match the {@link net.frakbot.crowdpulse.extraction.cli
+     * .ExtractionParameters}.
+     *
+     * @param parameters The {@link net.frakbot.crowdpulse.extraction.cli.ExtractionParameters} with all extraction
+     *                   settings.
+     * @param subscriber The {@link rx.Subscriber} that will be notified of new tweets, errors and completion.
+     */
     private void getOldMessages(ExtractionParameters parameters, Subscriber<? super Message> subscriber) {
         try {
             Twitter twitter = getTwitterInstance();
@@ -108,6 +156,14 @@ public class TwitterExtractorRunner {
         }
     }
 
+    /**
+     * Open up a stream to Twitter, listening to new tweets according to the {@link net.frakbot.crowdpulse.extraction
+     * .cli.ExtractionParameters}.
+     *
+     * @param parameters The {@link net.frakbot.crowdpulse.extraction.cli.ExtractionParameters} with all extraction
+     *                   settings.
+     * @param subscriber The {@link rx.Subscriber} that will be notified of new tweets, errors and completion.
+     */
     private void getNewMessages(ExtractionParameters parameters, final Subscriber<? super Message> subscriber) {
         try {
             TwitterStream twitterStream = getTwitterStreamInstance();
@@ -139,12 +195,17 @@ public class TwitterExtractorRunner {
             });
             FilterQuery filterQuery = buildFilterQuery(parameters);
             twitterStream.filter(filterQuery);
-            twitterStream.shutdown();
         } catch (TwitterException e) {
             subscriber.onError(e);
         }
     }
 
+    /**
+     * Returns a singleton instance of the {@link twitter4j.Twitter} client.
+     *
+     * @return A set up and ready {@link twitter4j.Twitter} client.
+     * @throws TwitterException if the client could not be built.
+     */
     private Twitter getTwitterInstance() throws TwitterException {
         if (twitter == null) {
             ConfigurationBuilder cb = new ConfigurationBuilder()
@@ -157,6 +218,12 @@ public class TwitterExtractorRunner {
         return twitter;
     }
 
+    /**
+     * Returns a singleton instance of the {@link twitter4j.Twitter} client.
+     *
+     * @return A set up and ready {@link twitter4j.TwitterStream} client.
+     * @throws TwitterException if the client could not be built.
+     */
     private TwitterStream getTwitterStreamInstance() throws TwitterException {
         if (twitterStream == null) {
             twitterStream = new TwitterStreamFactory().getInstance();
@@ -220,6 +287,14 @@ public class TwitterExtractorRunner {
         return query;
     }
 
+    /**
+     * Creates a {@link twitter4j.FilterQuery} object from some {@link net.frakbot.crowdpulse.extraction.cli
+     * .ExtractionParameters}.
+     *
+     * @param parameters The source-independent search parameters.
+     * @return A {@link twitter4j.FilterQuery} Twitter object.
+     * @throws TwitterException if the query could not be built because of some issues instantiating the regular client.
+     */
     private FilterQuery buildFilterQuery(ExtractionParameters parameters) throws TwitterException {
         FilterQuery filterQuery = new FilterQuery();
 
@@ -265,36 +340,6 @@ public class TwitterExtractorRunner {
         }
 
         return filterQuery;
-    }
-
-    private void waitUntil(Date date, Subscriber<? super Message> subscriber) {
-        Thread timer = new TimerThread(date, subscriber);
-        timer.start();
-    }
-
-    private class TimerThread extends Thread {
-        Date untilDate;
-        Subscriber<? super Message> subscriber;
-
-        public TimerThread(Date untilDate, Subscriber<? super Message> subscriber) {
-            this.untilDate = untilDate;
-            this.subscriber = subscriber;
-        }
-
-        @Override public void run() {
-            Date date = new Date();
-            while (date.compareTo(untilDate) <= 0){
-                // sleep for a minute
-                try {
-                    Thread.sleep(1000 * 60);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                    subscriber.onError(e);
-                }
-                date = new Date();
-            }
-            subscriber.onCompleted();
-        }
     }
 
     private Func1<Message, Boolean> checkFromUser(final ExtractionParameters parameters) {
