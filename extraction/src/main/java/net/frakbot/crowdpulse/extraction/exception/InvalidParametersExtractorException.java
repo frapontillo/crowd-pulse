@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-rootProject.name = 'crowd-pulse'
+package net.frakbot.crowdpulse.extraction.exception;
 
-include 'entity'
-include 'extraction'
-
-include 'oauth-service'
-include 'web-service'
-
-include 'data-nodejs'
-include 'data-java'
+/**
+ * @author Francesco Pontillo
+ */
+public class InvalidParametersExtractorException extends ExtractorException {
+    public InvalidParametersExtractorException(String message) {
+        super(message);
+    }
+}

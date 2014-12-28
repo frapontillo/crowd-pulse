@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-rootProject.name = 'crowd-pulse'
+package net.frakbot.crowdpulse.extraction.util;
 
-include 'entity'
-include 'extraction'
-
-include 'oauth-service'
-include 'web-service'
-
-include 'data-nodejs'
-include 'data-java'
+/**
+ * @author Francesco Pontillo
+ */
+public class StringUtil {
+    public static boolean isNullOrEmpty(String string) {
+        return (string == null || string.equals(""));
+    }
+}

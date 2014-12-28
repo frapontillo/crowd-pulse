@@ -14,13 +14,21 @@
  * limitations under the License.
  */
 
-rootProject.name = 'crowd-pulse'
+apply plugin: 'java'
+apply plugin: 'application'
 
-include 'entity'
-include 'extraction'
+mainClassName = 'net.frakbot.crowdpulse.extraction.cli.Main'
 
-include 'oauth-service'
-include 'web-service'
+sourceCompatibility = 1.7
+targetCompatibility = 1.7
 
-include 'data-nodejs'
-include 'data-java'
+version = '1.0'
+
+dependencies {
+    compile project(':entity')
+    compile group: 'com.beust', name: 'jcommander', version: '1.47'
+    compile group: 'io.reactivex', name: 'rxjava', version: '1.0.3'
+    compile group: 'org.twitter4j', name: 'twitter4j-core', version: '4.0.2'
+    compile group: 'org.twitter4j', name: 'twitter4j-stream', version: '4.0.2'
+    compile group: 'joda-time', name: 'joda-time', version: '2.5'
+}

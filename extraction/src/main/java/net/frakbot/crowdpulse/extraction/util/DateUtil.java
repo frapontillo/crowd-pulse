@@ -14,13 +14,18 @@
  * limitations under the License.
  */
 
-rootProject.name = 'crowd-pulse'
+package net.frakbot.crowdpulse.extraction.util;
 
-include 'entity'
-include 'extraction'
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
-include 'oauth-service'
-include 'web-service'
-
-include 'data-nodejs'
-include 'data-java'
+/**
+ * @author Francesco Pontillo
+ */
+public class DateUtil {
+    public static String toString(Date date, String format) {
+        DateFormat df = new SimpleDateFormat(format);
+        return df.format(date);
+    }
+}

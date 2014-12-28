@@ -14,13 +14,24 @@
  * limitations under the License.
  */
 
-rootProject.name = 'crowd-pulse'
+package net.frakbot.crowdpulse.extraction;
 
-include 'entity'
-include 'extraction'
+import net.frakbot.crowdpulse.entity.Message;
 
-include 'oauth-service'
-include 'web-service'
+import java.util.ArrayList;
+import java.util.List;
 
-include 'data-nodejs'
-include 'data-java'
+/**
+ * @author Francesco Pontillo
+ */
+public abstract class MessageConverter<T> {
+    public abstract Message fromExtractor(T original);
+
+    public List<Message> fromExtractor(List<T> originalList) {
+        List<Message> messageList = new ArrayList<Message>(originalList.size());
+        for (T original : originalList) {
+            messageList.add(fromExtractor(original));
+        }
+        return messageList;
+    }
+}

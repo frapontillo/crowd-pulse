@@ -14,13 +14,21 @@
  * limitations under the License.
  */
 
-rootProject.name = 'crowd-pulse'
+package net.frakbot.crowdpulse.extraction.cli;
 
-include 'entity'
-include 'extraction'
+import com.beust.jcommander.IStringConverter;
+import org.joda.time.DateTime;
 
-include 'oauth-service'
-include 'web-service'
+import java.util.Date;
 
-include 'data-nodejs'
-include 'data-java'
+/**
+ * @author Francesco Pontillo
+ */
+public class ISO8601DateConverter implements IStringConverter<Date> {
+    @Override public Date convert(String value) {
+        if (value == null) {
+            return null;
+        }
+        return new DateTime(value).toDate();
+    }
+}

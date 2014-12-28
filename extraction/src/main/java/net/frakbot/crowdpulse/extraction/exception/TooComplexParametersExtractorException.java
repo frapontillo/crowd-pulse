@@ -14,13 +14,18 @@
  * limitations under the License.
  */
 
-rootProject.name = 'crowd-pulse'
+package net.frakbot.crowdpulse.extraction.exception;
 
-include 'entity'
-include 'extraction'
+/**
+ * @author Francesco Pontillo
+ */
+public class TooComplexParametersExtractorException extends InvalidParametersExtractorException {
+    public TooComplexParametersExtractorException(String message) {
+        super(message);
+    }
 
-include 'oauth-service'
-include 'web-service'
-
-include 'data-nodejs'
-include 'data-java'
+    public TooComplexParametersExtractorException(long maximumQuantity, long actualQuantity) {
+        this("The maximum parameter number for this extractor is " + maximumQuantity +
+                ", while the number of actual parameters was " + actualQuantity + ".");
+    }
+}
