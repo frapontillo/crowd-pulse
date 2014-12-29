@@ -30,5 +30,6 @@ dependencies {
     compile group: 'io.reactivex', name: 'rxjava', version: '1.0.3'
     compile group: 'org.twitter4j', name: 'twitter4j-core', version: '4.0.2'
     compile group: 'org.twitter4j', name: 'twitter4j-stream', version: '4.0.2'
+    compile group: 'com.restfb', name: 'restfb', version: '1.7.0'
     compile group: 'joda-time', name: 'joda-time', version: '2.5'
 }

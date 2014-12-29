@@ -73,7 +73,7 @@ public class TwitterExtractorRunner {
                 .filter(checkToUser(parameters))
                 .filter(checkReferencedUsers(parameters))
                 .filter(checkUntilDate(parameters))
-                        // continue producing elements until the target date is reached
+                // continue producing elements until the target date is reached
                 .takeUntil(timeToWait(parameters));
 
         // both observables should execute the subscribe function in separate threads

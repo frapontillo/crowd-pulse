@@ -19,13 +19,11 @@ package net.frakbot.crowdpulse.extraction.cli;
 import com.beust.jcommander.JCommander;
 import net.frakbot.crowdpulse.entity.Message;
 import net.frakbot.crowdpulse.extraction.ExtractorCollection;
-import net.frakbot.crowdpulse.extraction.IExtractor;
-import net.frakbot.crowdpulse.extraction.exception.InvalidParametersExtractorException;
+import net.frakbot.crowdpulse.extraction.Extractor;
+import net.frakbot.crowdpulse.extraction.facebook.FacebookExtractor;
 import net.frakbot.crowdpulse.extraction.twitter.TwitterExtractor;
 import rx.Observable;
 import rx.Observer;
-import rx.Scheduler;
-import rx.schedulers.Schedulers;
 
 import java.io.IOException;
 
@@ -36,6 +34,7 @@ public class Main {
 
     static {
         ExtractorCollection.registerExtractor(new TwitterExtractor());
+        ExtractorCollection.registerExtractor(new FacebookExtractor());
     }
 
     public static void main(String[] args) throws IOException {
@@ -44,7 +43,7 @@ public class Main {
         ExtractionParameters params = new ExtractionParameters();
         new JCommander(params, args);
         System.out.println("Parameters read.");
-        IExtractor extractor = ExtractorCollection.getExtractorImplByParams(params);
+        Extractor extractor = ExtractorCollection.getExtractorImplByParams(params);
 
         Observable<Message> messages = extractor.getMessages(params);
         messages

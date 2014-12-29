@@ -17,8 +17,9 @@
 package net.frakbot.crowdpulse.extraction.twitter;
 
 import net.frakbot.crowdpulse.entity.Message;
-import net.frakbot.crowdpulse.extraction.IExtractor;
+import net.frakbot.crowdpulse.extraction.Extractor;
 import net.frakbot.crowdpulse.extraction.cli.ExtractionParameters;
+import net.frakbot.crowdpulse.extraction.exception.ExtractorException;
 import net.frakbot.crowdpulse.extraction.exception.InvalidParametersExtractorException;
 import net.frakbot.crowdpulse.extraction.exception.TooComplexParametersExtractorException;
 import rx.Observable;
@@ -26,7 +27,7 @@ import rx.Observable;
 /**
  * @author Francesco Pontillo
  */
-public class TwitterExtractor implements IExtractor {
+public class TwitterExtractor extends Extractor {
 
     public static final String EXTRACTOR_NAME = "twitter";
     private static TwitterExtractorRunner runner = null;
@@ -47,10 +48,6 @@ public class TwitterExtractor implements IExtractor {
         return true;
     }
 
-    @Override public boolean getSupportHashTag() {
-        return true;
-    }
-
     @Override public boolean getSupportFrom() {
         return true;
     }
@@ -61,6 +58,10 @@ public class TwitterExtractor implements IExtractor {
 
     @Override public boolean getSupportReference() {
         return true;
+    }
+
+    @Override public boolean getSupportGroup() {
+        return false;
     }
 
     @Override public boolean getSupportSince() {
@@ -80,7 +81,8 @@ public class TwitterExtractor implements IExtractor {
     }
 
     @Override
-    public boolean validateParameters(ExtractionParameters parameters) throws InvalidParametersExtractorException {
+    public boolean validateParameters(ExtractionParameters parameters) throws ExtractorException {
+        super.validateParameters(parameters);
         long paramCount = countNotNullParameters(parameters);
         long maxParamCount = getMaximumQueryParameters();
         if (paramCount > maxParamCount) {
@@ -141,7 +143,7 @@ public class TwitterExtractor implements IExtractor {
         // validate parameters
         try {
             validateParameters(parameters);
-        } catch (InvalidParametersExtractorException e) {
+        } catch (ExtractorException e) {
             System.err.println(e);
             messages = Observable.empty();
             return messages;

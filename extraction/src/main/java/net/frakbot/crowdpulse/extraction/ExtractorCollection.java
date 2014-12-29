@@ -25,18 +25,18 @@ import java.util.List;
  * @author Francesco Pontillo
  */
 public class ExtractorCollection {
-    private static List<IExtractor> extractors;
+    private static List<Extractor> extractors;
 
     static {
-        extractors = new ArrayList<IExtractor>();
+        extractors = new ArrayList<Extractor>();
     }
 
-    public static void registerExtractor(IExtractor extractor) {
+    public static void registerExtractor(Extractor extractor) {
         extractors.add(extractor);
     }
 
-    public static IExtractor getExtractorImplByName(String source) {
-        for (IExtractor extractor : extractors) {
+    public static Extractor getExtractorImplByName(String source) {
+        for (Extractor extractor : extractors) {
             if (extractor.getName().equals(source)) {
                 return extractor;
             }
@@ -44,7 +44,7 @@ public class ExtractorCollection {
         return null;
     }
 
-    public static IExtractor getExtractorImplByParams(ExtractionParameters parameters) {
+    public static Extractor getExtractorImplByParams(ExtractionParameters parameters) {
         return getExtractorImplByName(parameters.getSource());
     }
 }
