@@ -61,10 +61,6 @@ public class FacebookExtractor extends Extractor {
         return true;
     }
 
-    @Override public boolean getSupportGroup() {
-        return true;
-    }
-
     @Override public boolean getSupportSince() {
         return true;
     }
@@ -79,6 +75,10 @@ public class FacebookExtractor extends Extractor {
 
     @Override public boolean getSupportLocale() {
         return false;
+    }
+
+    @Override public boolean mustSpecifyToOrFrom() {
+        return true;
     }
 
     @Override public boolean validateParameters(ExtractionParameters parameters) throws ExtractorException {

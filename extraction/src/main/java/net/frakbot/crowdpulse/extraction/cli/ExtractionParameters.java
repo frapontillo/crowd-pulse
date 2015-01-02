@@ -50,9 +50,6 @@ public class ExtractionParameters {
     @Parameter(names = "-ref", description = "User identifiers the messages reference")
     private List<String> referenceUsers;
 
-    @Parameter(names = "-group", description = "Group where to look for messages in")
-    private String group;
-
     @Parameter(names = "-since", description = "Date since searching must start from", converter = ISO8601DateConverter.class)
     private Date since;
 
@@ -91,10 +88,6 @@ public class ExtractionParameters {
 
     public List<String> getReferenceUsers() {
         return referenceUsers;
-    }
-
-    public String getGroup() {
-        return group;
     }
 
     public Date getSince() {

@@ -69,10 +69,10 @@ public class TwitterExtractorRunner {
         });
         // filter the new messages to properly match the extraction parameters
         newMessages = newMessages
-                .filter(checkFromUser(parameters))
-                .filter(checkToUser(parameters))
+                .filter(Checker.checkFromUser(parameters))
+                .filter(Checker.checkToUser(parameters))
                 .filter(checkReferencedUsers(parameters))
-                .filter(checkUntilDate(parameters))
+                .filter(Checker.checkUntilDate(parameters))
                 // continue producing elements until the target date is reached
                 .takeUntil(timeToWait(parameters));
 
@@ -342,24 +342,6 @@ public class TwitterExtractorRunner {
         return filterQuery;
     }
 
-    private Func1<Message, Boolean> checkFromUser(final ExtractionParameters parameters) {
-        return new Func1<Message, Boolean>() {
-            @Override public Boolean call(Message message) {
-                return (StringUtil.isNullOrEmpty(parameters.getFromUser()) || parameters.getFromUser().equals(message
-                        .getFromUser()));
-            }
-        };
-    }
-
-    private Func1<Message, Boolean> checkToUser(final ExtractionParameters parameters) {
-        return new Func1<Message, Boolean>() {
-            @Override public Boolean call(Message message) {
-                return (StringUtil.isNullOrEmpty(parameters.getToUser()) || parameters.getToUser().equals(message
-                        .getToUser()));
-            }
-        };
-    }
-
     private Func1<Message, Boolean> checkReferencedUsers(final ExtractionParameters parameters) {
         return new Func1<Message, Boolean>() {
             @Override public Boolean call(Message message) {
@@ -375,11 +357,4 @@ public class TwitterExtractorRunner {
         };
     }
 
-    private Func1<Message, Boolean> checkUntilDate(final ExtractionParameters parameters) {
-        return new Func1<Message, Boolean>() {
-            @Override public Boolean call(Message message) {
-                return message.getDate().compareTo(parameters.getUntil()) <= 0;
-            }
-        };
-    }
 }

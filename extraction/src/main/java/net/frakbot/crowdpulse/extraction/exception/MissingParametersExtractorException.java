@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Francesco Pontillo
+ * Copyright 2015 Francesco Pontillo
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,22 +14,13 @@
  * limitations under the License.
  */
 
-package net.frakbot.crowdpulse.extraction.util;
-
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+package net.frakbot.crowdpulse.extraction.exception;
 
 /**
  * @author Francesco Pontillo
  */
-public class DateUtil {
-    public static String toString(Date date, String format) {
-        DateFormat df = new SimpleDateFormat(format);
-        return df.format(date);
-    }
-
-    public static Object getTimestamp(Date date) {
-        return date.getTime() / 1000;
+public class MissingParametersExtractorException extends ExtractorException {
+    public MissingParametersExtractorException(String message) {
+        super(message);
     }
 }

@@ -60,10 +60,6 @@ public class TwitterExtractor extends Extractor {
         return true;
     }
 
-    @Override public boolean getSupportGroup() {
-        return false;
-    }
-
     @Override public boolean getSupportSince() {
         return true;
     }
@@ -78,6 +74,10 @@ public class TwitterExtractor extends Extractor {
 
     @Override public boolean getSupportLocale() {
         return true;
+    }
+
+    @Override public boolean mustSpecifyToOrFrom() {
+        return false;
     }
 
     @Override

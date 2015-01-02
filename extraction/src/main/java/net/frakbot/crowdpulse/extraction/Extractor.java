@@ -20,6 +20,7 @@ import net.frakbot.crowdpulse.entity.Message;
 import net.frakbot.crowdpulse.extraction.cli.ExtractionParameters;
 import net.frakbot.crowdpulse.extraction.exception.ExtractorException;
 import net.frakbot.crowdpulse.extraction.exception.InvalidParametersExtractorException;
+import net.frakbot.crowdpulse.extraction.exception.MissingParametersExtractorException;
 import net.frakbot.crowdpulse.extraction.util.StringUtil;
 import rx.Observable;
 
@@ -83,13 +84,6 @@ public abstract class Extractor {
     public abstract boolean getSupportReference();
 
     /**
-     * Check if the extractor supports searching for messages in a specific group.
-     *
-     * @return {@link boolean} true if there is support for in-group searching.
-     */
-    public abstract boolean getSupportGroup();
-
-    /**
      * Check if the extractor supports searching for messages sent since a specific date.
      *
      * @return {@link boolean} true if there is support for starting date searching.
@@ -120,6 +114,14 @@ public abstract class Extractor {
     public abstract boolean getSupportLocale();
 
     /**
+     * Check if the extractor needs the author user OR the recipient user to be specified.
+     * Please not this is an inclusive OR.
+     *
+     * @return {@link boolean} true if the extractor needs the author or the recipient user.
+     */
+    public abstract boolean mustSpecifyToOrFrom();
+
+    /**
      * Validate some extraction parameters, returning true if they are valid for the current implementation of
      * {@link Extractor}, or throwing an
      * {@link net.frakbot.crowdpulse.extraction.exception.ExtractorException}.
@@ -135,11 +137,14 @@ public abstract class Extractor {
         validateParameter("from", parameters.getFromUser(), getSupportFrom());
         validateParameter("to", parameters.getToUser(), getSupportTo());
         validateParameter("reference", parameters.getReferenceUsers(), getSupportReference());
-        validateParameter("group", parameters.getGroup(), getSupportGroup());
         validateParameter("since", parameters.getSince(), getSupportSince());
         validateParameter("until", parameters.getUntil(), getSupportUntil());
         validateParameter("language", parameters.getLanguage(), getSupportLanguage());
         validateParameter("locale", parameters.getLocale(), getSupportLocale());
+        if (mustSpecifyToOrFrom() &&
+                StringUtil.isNullOrEmpty(parameters.getFromUser()) && StringUtil.isNullOrEmpty(parameters.getToUser())) {
+            throw new MissingParametersExtractorException("You must specify at least one among \"from\" and \"to\".");
+        }
         return true;
     }
 
