@@ -17,6 +17,7 @@
 package net.frakbot.crowdpulse.entity;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author Francesco Pontillo
@@ -26,6 +27,7 @@ public class Message {
     private String source;
     private String fromUser;
     private String toUser;
+    private List<String> refUsers;
 
     private Date date;
 
@@ -67,5 +69,13 @@ public class Message {
 
     public void setDate(Date date) {
         this.date = date;
+    }
+
+    public List<String> getRefUsers() {
+        return refUsers;
+    }
+
+    public void setRefUsers(List<String> refUsers) {
+        this.refUsers = refUsers;
     }
 }
