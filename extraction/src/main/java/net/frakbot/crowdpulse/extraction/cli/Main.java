@@ -24,6 +24,7 @@ import net.frakbot.crowdpulse.extraction.facebook.FacebookExtractor;
 import net.frakbot.crowdpulse.extraction.twitter.TwitterExtractor;
 import rx.Observable;
 import rx.Observer;
+import rx.Subscription;
 
 import java.io.IOException;
 import java.util.concurrent.CountDownLatch;
@@ -49,12 +50,13 @@ public class Main {
         Extractor extractor = ExtractorCollection.getExtractorImplByParams(params);
 
         Observable<Message> messages = extractor.getMessages(params);
-        messages.subscribe(new MessageObserver());
+        Subscription subscription = messages.subscribe(new MessageObserver());
 
-        try {
-            endSignal.await();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+        // the thread can be interrupted while "await"-ing, so we "await" again until the subscription is over
+        while (!subscription.isUnsubscribed()) {
+            try {
+                endSignal.await();
+            } catch (InterruptedException ignore) { }
         }
     }
 
