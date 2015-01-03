@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Francesco Pontillo
+ * Copyright 2015 Francesco Pontillo
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,8 +24,6 @@ import net.frakbot.crowdpulse.extraction.facebook.FacebookExtractor;
 import net.frakbot.crowdpulse.extraction.twitter.TwitterExtractor;
 import rx.Observable;
 import rx.Observer;
-import rx.Subscription;
-import rx.schedulers.Schedulers;
 
 import java.io.IOException;
 import java.util.concurrent.CountDownLatch;
@@ -40,7 +38,7 @@ public class Main {
         ExtractorCollection.registerExtractor(new FacebookExtractor());
     }
 
-    static CountDownLatch endSignal = new CountDownLatch(1);
+    private static final CountDownLatch endSignal = new CountDownLatch(1);
 
     public static void main(String[] args) throws IOException {
         System.out.println("Extraction started.");
