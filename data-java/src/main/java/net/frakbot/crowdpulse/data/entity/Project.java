@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Francesco Pontillo
+ * Copyright 2015 Francesco Pontillo
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,9 +14,14 @@
  * limitations under the License.
  */
 
-package net.frakbot.crowdpulse.entity;
+package net.frakbot.crowdpulse.data.entity;
+
+import org.bson.types.ObjectId;
+import org.mongodb.morphia.annotations.Id;
+import org.mongodb.morphia.annotations.Reference;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * Holds project-level information:
@@ -27,17 +32,17 @@ import java.util.Date;
  * @author Francesco Pontillo
  */
 public class Project {
-    private long id;
+    @Id private ObjectId id;
     private String name;
-    private Step[] steps;
-    private User creationUser;
+    @Reference private List<Step> steps;
+    @Reference private User creationUser;
     private Date creationDate;
 
-    public long getId() {
+    public ObjectId getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(ObjectId id) {
         this.id = id;
     }
 
@@ -49,11 +54,11 @@ public class Project {
         this.name = name;
     }
 
-    public Step[] getSteps() {
+    public List<Step> getSteps() {
         return steps;
     }
 
-    public void setSteps(Step[] steps) {
+    public void setSteps(List<Step> steps) {
         this.steps = steps;
     }
 

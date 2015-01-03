@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Francesco Pontillo
+ * Copyright 2015 Francesco Pontillo
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,11 +14,28 @@
  * limitations under the License.
  */
 
-package net.frakbot.crowdpulse.entity;
+package net.frakbot.crowdpulse.data.entity;
 
 /**
  * @author Francesco Pontillo
  */
-public abstract class JobType {
-    public abstract String getName();
+public class JobExecutionPolicy {
+    private String location;
+    private Long instances;
+
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
+    }
+
+    public Long getInstances() {
+        return instances;
+    }
+
+    public void setInstances(Long instances) {
+        this.instances = instances;
+    }
 }

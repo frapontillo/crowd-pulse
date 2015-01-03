@@ -16,7 +16,7 @@
 
 package net.frakbot.crowdpulse.extraction;
 
-import net.frakbot.crowdpulse.entity.Message;
+import net.frakbot.crowdpulse.data.entity.Message;
 import net.frakbot.crowdpulse.extraction.cli.ExtractionParameters;
 import net.frakbot.crowdpulse.extraction.exception.ExtractorException;
 import net.frakbot.crowdpulse.extraction.exception.InvalidParametersExtractorException;
@@ -174,11 +174,11 @@ public abstract class Extractor {
     }
 
     /**
-     * Starts an asynchronous search loading an {@link rx.Observable} of {@link net.frakbot.crowdpulse.entity.Message}
+     * Starts an asynchronous search loading an {@link rx.Observable} of {@link net.frakbot.crowdpulse.data.entity.Message}
      * that will be populated as results come in.
      *
      * @param parameters {@link net.frakbot.crowdpulse.extraction.cli.ExtractionParameters} to search for.
-     * @return {@link rx.Observable<net.frakbot.crowdpulse.entity.Message>}
+     * @return {@link rx.Observable<net.frakbot.crowdpulse.data.entity.Message>}
      */
     public abstract Observable<Message> getMessages(ExtractionParameters parameters);
 }

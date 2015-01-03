@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Francesco Pontillo
+ * Copyright 2015 Francesco Pontillo
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,23 +14,29 @@
  * limitations under the License.
  */
 
-package net.frakbot.crowdpulse.entity;
+package net.frakbot.crowdpulse.data.entity;
+
+import org.bson.types.ObjectId;
+import org.mongodb.morphia.annotations.Id;
+import org.mongodb.morphia.annotations.Reference;
+
+import java.util.List;
 
 /**
  * @author Francesco Pontillo
  */
 public class Step {
-    private long id;
+    @Id private ObjectId id;
     private String name;
     Integer notifyEvery;
     boolean waitPrevStep;
-    private Job[] jobs;
+    @Reference private List<Job> jobs;
 
-    public long getId() {
+    public ObjectId getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(ObjectId id) {
         this.id = id;
     }
 
@@ -58,11 +64,11 @@ public class Step {
         this.waitPrevStep = waitPrevStep;
     }
 
-    public Job[] getJobs() {
+    public List<Job> getJobs() {
         return jobs;
     }
 
-    public void setJobs(Job[] jobs) {
+    public void setJobs(List<Job> jobs) {
         this.jobs = jobs;
     }
 }

@@ -25,7 +25,7 @@ targetCompatibility = 1.7
 version = '1.0'
 
 dependencies {
-    compile project(':entity')
+    compile project(':data-java')
     compile group: 'com.beust', name: 'jcommander', version: '1.47'
     compile group: 'io.reactivex', name: 'rxjava', version: '1.0.3'
     compile group: 'org.twitter4j', name: 'twitter4j-core', version: '4.0.2'

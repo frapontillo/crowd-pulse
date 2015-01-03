@@ -14,13 +14,6 @@
  * limitations under the License.
  */
 
-/*
-private long id;
-private String name;
-private Step[] steps;
-private User creationUser;
-private Date creationDate;*/
-
 var mongoose = require('mongoose');
 var UserSchema = require('./user');
 var StepSchema = require('./step');

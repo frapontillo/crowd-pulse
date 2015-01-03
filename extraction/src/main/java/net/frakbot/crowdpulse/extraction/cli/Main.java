@@ -17,7 +17,7 @@
 package net.frakbot.crowdpulse.extraction.cli;
 
 import com.beust.jcommander.JCommander;
-import net.frakbot.crowdpulse.entity.Message;
+import net.frakbot.crowdpulse.data.entity.Message;
 import net.frakbot.crowdpulse.extraction.ExtractorCollection;
 import net.frakbot.crowdpulse.extraction.Extractor;
 import net.frakbot.crowdpulse.extraction.facebook.FacebookExtractor;

@@ -16,7 +16,7 @@
 
 package net.frakbot.crowdpulse.extraction.facebook;
 
-import net.frakbot.crowdpulse.entity.Message;
+import net.frakbot.crowdpulse.data.entity.Message;
 import net.frakbot.crowdpulse.extraction.Extractor;
 import net.frakbot.crowdpulse.extraction.cli.ExtractionParameters;
 import net.frakbot.crowdpulse.extraction.exception.ExtractorException;

@@ -16,7 +16,6 @@
 
 rootProject.name = 'crowd-pulse'
 
-include 'entity'
 include 'extraction'
 
 include 'oauth-service'

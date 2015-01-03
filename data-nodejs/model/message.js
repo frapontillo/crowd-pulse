@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Francesco Pontillo
+ * Copyright 2015 Francesco Pontillo
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,28 +14,8 @@
  * limitations under the License.
  */
 
-package net.frakbot.crowdpulse.entity;
+var MessageSchema = require('./../schema/message');
 
-/**
- * @author Francesco Pontillo
- */
-public class JobExecutionPolicy {
-    private String location;
-    private Long instances;
-
-    public String getLocation() {
-        return location;
-    }
-
-    public void setLocation(String location) {
-        this.location = location;
-    }
-
-    public Long getInstances() {
-        return instances;
-    }
-
-    public void setInstances(Long instances) {
-        this.instances = instances;
-    }
-}
+module.exports = function(mongoose) {
+  return mongoose.model(MessageSchema.statics.getSchemaName(), MessageSchema);
+};

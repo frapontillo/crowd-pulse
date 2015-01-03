@@ -19,7 +19,7 @@ package net.frakbot.crowdpulse.extraction.facebook;
 import facebook4j.IdNameEntity;
 import facebook4j.Post;
 import facebook4j.Tag;
-import net.frakbot.crowdpulse.entity.Message;
+import net.frakbot.crowdpulse.data.entity.Message;
 import net.frakbot.crowdpulse.extraction.MessageConverter;
 
 import java.util.ArrayList;

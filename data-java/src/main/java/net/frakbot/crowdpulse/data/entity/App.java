@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Francesco Pontillo
+ * Copyright 2015 Francesco Pontillo
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,21 +14,28 @@
  * limitations under the License.
  */
 
-package net.frakbot.crowdpulse.entity;
+package net.frakbot.crowdpulse.data.entity;
+
+import org.bson.types.ObjectId;
+import org.mongodb.morphia.annotations.Id;
+
+import java.util.List;
 
 /**
  * @author Francesco Pontillo
  */
 public class App {
-    private long id;
+    @Id private ObjectId id;
     private String name;
     private String secret;
+    private String redirectUri;
+    private List<String> allowedGrants;
 
-    public long getId() {
+    public ObjectId getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(ObjectId id) {
         this.id = id;
     }
 
@@ -46,5 +53,21 @@ public class App {
 
     public void setSecret(String secret) {
         this.secret = secret;
+    }
+
+    public String getRedirectUri() {
+        return redirectUri;
+    }
+
+    public void setRedirectUri(String redirectUri) {
+        this.redirectUri = redirectUri;
+    }
+
+    public List<String> getAllowedGrants() {
+        return allowedGrants;
+    }
+
+    public void setAllowedGrants(List<String> allowedGrants) {
+        this.allowedGrants = allowedGrants;
     }
 }

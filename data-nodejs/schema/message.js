@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Francesco Pontillo
+ * Copyright 2015 Francesco Pontillo
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,9 +14,22 @@
  * limitations under the License.
  */
 
-apply plugin: 'java'
+var mongoose = require('mongoose');
 
-sourceCompatibility = 1.7
-targetCompatibility = 1.7
+var MessageSchema = new mongoose.Schema({
+  id: mongoose.Schema.ObjectId,
+  text: String,
+  source: String,
+  fromUser: String,
+  toUsers: [String],
+  refUsers: [String],
+  date: Date
+});
 
-version = '1.0'
+var SCHEMA_NAME = 'Message';
+
+MessageSchema.statics.getSchemaName = function() {
+  return SCHEMA_NAME;
+};
+
+module.exports = MessageSchema;

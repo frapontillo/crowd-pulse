@@ -25,4 +25,5 @@ repositories {
 
 dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.11'
+    compile group: 'org.mongodb.morphia', name: 'morphia', version: '0.109'
 }

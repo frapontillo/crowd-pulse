@@ -16,7 +16,7 @@
 
 package net.frakbot.crowdpulse.extraction.util;
 
-import net.frakbot.crowdpulse.entity.Message;
+import net.frakbot.crowdpulse.data.entity.Message;
 import net.frakbot.crowdpulse.extraction.cli.ExtractionParameters;
 import rx.functions.Func1;
 

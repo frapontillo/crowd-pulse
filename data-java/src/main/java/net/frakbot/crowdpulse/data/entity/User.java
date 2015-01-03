@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Francesco Pontillo
+ * Copyright 2015 Francesco Pontillo
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,22 +14,25 @@
  * limitations under the License.
  */
 
-package net.frakbot.crowdpulse.entity;
+package net.frakbot.crowdpulse.data.entity;
+
+import org.bson.types.ObjectId;
+import org.mongodb.morphia.annotations.Id;
 
 /**
  * @author Francesco
  */
 public class User {
-    private long id;
+    @Id private ObjectId id;
     private String username;
     private String email;
     private String secret;
 
-    public long getId() {
+    public ObjectId getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(ObjectId id) {
         this.id = id;
     }
 

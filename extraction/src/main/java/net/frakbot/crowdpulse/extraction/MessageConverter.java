@@ -16,7 +16,7 @@
 
 package net.frakbot.crowdpulse.extraction;
 
-import net.frakbot.crowdpulse.entity.Message;
+import net.frakbot.crowdpulse.data.entity.Message;
 
 import java.util.ArrayList;
 import java.util.List;

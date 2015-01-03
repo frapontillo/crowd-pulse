@@ -17,7 +17,7 @@
 package net.frakbot.crowdpulse.extraction.facebook;
 
 import facebook4j.*;
-import net.frakbot.crowdpulse.entity.Message;
+import net.frakbot.crowdpulse.data.entity.Message;
 import net.frakbot.crowdpulse.extraction.cli.ExtractionParameters;
 import net.frakbot.crowdpulse.extraction.util.Checker;
 import net.frakbot.crowdpulse.extraction.util.StringUtil;
