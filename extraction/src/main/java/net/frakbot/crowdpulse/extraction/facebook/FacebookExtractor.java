@@ -20,7 +20,6 @@ import net.frakbot.crowdpulse.entity.Message;
 import net.frakbot.crowdpulse.extraction.Extractor;
 import net.frakbot.crowdpulse.extraction.cli.ExtractionParameters;
 import net.frakbot.crowdpulse.extraction.exception.ExtractorException;
-import net.frakbot.crowdpulse.extraction.twitter.TwitterExtractorRunner;
 import rx.Observable;
 
 /**

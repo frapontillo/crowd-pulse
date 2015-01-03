@@ -24,6 +24,14 @@ import rx.functions.Func1;
  * @author Francesco Pontillo
  */
 public class Checker {
+    public static Func1<Message, Boolean> checkNonNullMessage() {
+        return new Func1<Message, Boolean>() {
+            @Override public Boolean call(Message message) {
+                return (!StringUtil.isNullOrEmpty(message.getText()));
+            }
+        };
+    }
+
     public static Func1<Message, Boolean> checkQuery(final ExtractionParameters parameters) {
         return new Func1<Message, Boolean>() {
             @Override public Boolean call(Message message) {
@@ -44,8 +52,8 @@ public class Checker {
     public static Func1<Message, Boolean> checkToUser(final ExtractionParameters parameters) {
         return new Func1<Message, Boolean>() {
             @Override public Boolean call(Message message) {
-                return (StringUtil.isNullOrEmpty(parameters.getToUser()) || parameters.getToUser().equals(message
-                        .getToUser()));
+                return (StringUtil.isNullOrEmpty(parameters.getToUser())
+                        || message.getToUsers().contains(parameters.getToUser()));
             }
         };
     }
@@ -73,6 +81,14 @@ public class Checker {
         return new Func1<Message, Boolean>() {
             @Override public Boolean call(Message message) {
                 return message.getDate().compareTo(parameters.getUntil()) <= 0;
+            }
+        };
+    }
+
+    public static Func1<Message, Boolean> checkSinceDate(final ExtractionParameters parameters) {
+        return new Func1<Message, Boolean>() {
+            @Override public Boolean call(Message message) {
+                return message.getDate().compareTo(parameters.getSince()) >= 0;
             }
         };
     }

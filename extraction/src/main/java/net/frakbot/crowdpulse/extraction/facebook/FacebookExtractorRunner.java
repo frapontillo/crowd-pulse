@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Francesco Pontillo
+ * Copyright 2015 Francesco Pontillo
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,88 +16,77 @@
 
 package net.frakbot.crowdpulse.extraction.facebook;
 
-import com.restfb.*;
-import com.restfb.types.Comment;
-import com.restfb.types.Post;
+import facebook4j.*;
 import net.frakbot.crowdpulse.entity.Message;
 import net.frakbot.crowdpulse.extraction.cli.ExtractionParameters;
 import net.frakbot.crowdpulse.extraction.util.Checker;
-import net.frakbot.crowdpulse.extraction.util.DateUtil;
 import net.frakbot.crowdpulse.extraction.util.StringUtil;
 import rx.Observable;
 import rx.Subscriber;
-import rx.functions.Func1;
 import rx.observables.ConnectableObservable;
 import rx.schedulers.Schedulers;
-import twitter4j.GeoLocation;
-import twitter4j.QueryResult;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.*;
-import java.util.concurrent.LinkedBlockingQueue;
+import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 /**
  * @author Francesco Pontillo
  */
 public class FacebookExtractorRunner {
+    private static Facebook facebook;
 
-    private static FacebookClient facebook;
-    private static final int POSTS_PER_PAGE = 200;
+    private static final int POSTS_PER_PAGE = 50;
+    private static final int POSTS_POLLING_MINUTES = 1;
 
     public Observable<Message> getMessages(final ExtractionParameters parameters) {
 
-        Subscriber<Message> finalSubscriber = new Subscriber<Message>() {
-            @Override public void onCompleted() {
-                // TODO: cleanup the facebook instance
-            }
-
-            @Override public void onError(Throwable e) {
-            }
-
-            @Override public void onNext(Message message) {
-            }
-        };
-
-        // initialize the facebook instance
+        // initialize the facebook instances
         try {
             getFacebookInstance();
-        } catch (IOException e) {
+        } catch (FacebookException e) {
             e.printStackTrace();
-            finalSubscriber.onError(e);
         }
 
         // create the old messages Observable
         Observable<Message> oldMessages = Observable.create(new Observable.OnSubscribe<Message>() {
             @Override public void call(Subscriber<? super Message> subscriber) {
                 System.out.println("Started searching.");
-                // fetch old messages
                 getOldMessages(parameters, subscriber);
             }
         });
-        // filter the old messages to properly match the extraction parameters
-        oldMessages = oldMessages
-                .filter(Checker.checkFromUser(parameters))
-                .filter(Checker.checkToUser(parameters))
-                .filter(Checker.checkReferencedUsers(parameters))
-                .filter(Checker.checkQuery(parameters));
 
         // create the new messages (streamed) Observable
         Observable<Message> newMessages = Observable.create(new Observable.OnSubscribe<Message>() {
-            @Override public void call(Subscriber<? super Message> subscriber) {
-                System.out.println("Started streaming.");
-                // TODO: listen to new messages
-                // getNewMessages(parameters, subscriber);
+            @Override public void call(final Subscriber<? super Message> subscriber) {
+                Observable
+                        .timer(POSTS_POLLING_MINUTES, POSTS_POLLING_MINUTES, TimeUnit.MINUTES)
+                        .subscribe(new Subscriber<Long>() {
+                            Date date;
+                            @Override public void onStart() {
+                                super.onStart();
+                                date = new Date();
+                                System.out.println("Started streaming.");
+                            }
+
+                            @Override public void onCompleted() { /* never completes by design */ }
+
+                            @Override public void onError(Throwable e) {
+                                subscriber.onError(e);
+                            }
+
+                            @Override public void onNext(Long aLong) {
+                                System.out.println(String.format("Polling attempt number %d.", aLong));
+                                Date newDate = new Date();
+                                parameters.setSince(date);
+                                parameters.setUntil(newDate);
+                                date = newDate;
+                                getOldMessages(parameters, subscriber, false);
+                            }
+                        });
             }
         });
-        // filter the new messages to properly match the extraction parameters
+        // continue producing elements until the target date is reached
         newMessages = newMessages
-                // .filter(checkFromUser(parameters))
-                // .filter(checkToUser(parameters))
-                // .filter(checkReferencedUsers(parameters))
-                // .filter(checkUntilDate(parameters))
-                // continue producing elements until the target date is reached
                 .takeUntil(timeToWait(parameters));
 
         // both observables should execute the subscribe function in separate threads
@@ -106,27 +95,34 @@ public class FacebookExtractorRunner {
 
         // the resulting Observable should be a union of both old and new messages
         // make it as a ConnectableObservable so that multiple subscribers can subscribe to it
-        ConnectableObservable<Message> messages = Observable.merge(oldMessages, newMessages).publish();
+        Observable<Message> mergedAndFiltered = Observable
+                .merge(oldMessages, newMessages)
+                .filter(Checker.checkNonNullMessage())
+                .filter(Checker.checkFromUser(parameters))
+                .filter(Checker.checkToUser(parameters))
+                .filter(Checker.checkReferencedUsers(parameters))
+                .filter(Checker.checkQuery(parameters));
+        mergedAndFiltered = mergedAndFiltered.subscribeOn(Schedulers.io());
 
-        // subscribe to the merged messages in order to attempt a shutdown of the TwitterStreaming
-        messages.subscribe(finalSubscriber);
-        // from this moment on, start fetching posts
+        ConnectableObservable<Message> messages = mergedAndFiltered.publish();
+
+        // subscribe to the merged messages in order to attempt a shutdown of the Facebook instance
+        messages.subscribe(new Subscriber<Message>() {
+            @Override public void onCompleted() {
+                // cleanup Facebook
+                facebook.shutdown();
+            }
+
+            @Override public void onError(Throwable e) {
+            }
+
+            @Override public void onNext(Message message) {
+            }
+        });
+        // from this moment on, start fetching messages
         messages.connect();
 
         return messages;
-    }
-
-    public FacebookClient getFacebookInstance() throws IOException {
-        if (facebook == null) {
-            facebook = new DefaultFacebookClient();
-            InputStream propertiesStream = getClass().getClassLoader().getResourceAsStream("facebook.properties");
-            Properties properties = new Properties();
-            properties.load(propertiesStream);
-            FacebookClient.AccessToken accessToken = facebook.obtainAppAccessToken(
-                    properties.getProperty("oauth.consumerKey"), properties.getProperty("oauth.consumerSecret"));
-            facebook = new DefaultFacebookClient(accessToken.getAccessToken(), properties.getProperty("oauth.consumerSecret"));
-        }
-        return facebook;
     }
 
     /**
@@ -139,71 +135,118 @@ public class FacebookExtractorRunner {
     private Observable<Long> timeToWait(ExtractionParameters parameters) {
         if (parameters.getUntil() != null) {
             long timeToDeath = parameters.getUntil().getTime() - new Date().getTime();
-            System.out.println(String.format("Shutting down the Streaming service in %d seconds.", timeToDeath));
+            System.out.println(String.format("Shutting down the Streaming service in %d seconds.", timeToDeath/1000));
             return Observable.timer(timeToDeath, TimeUnit.MILLISECONDS, Schedulers.io());
         }
         return Observable.never();
     }
 
     /**
-     * Download all old messages (maximum 7-10 days past) that match the {@link net.frakbot.crowdpulse.extraction.cli
-     * .ExtractionParameters}.
+     * Same as {@link net.frakbot.crowdpulse.extraction.facebook.FacebookExtractorRunner#getOldMessages(net.frakbot.crowdpulse.extraction.cli.ExtractionParameters, rx.Subscriber, boolean)}
+     * but without ever notifying the completion.
+     *
+     * @see net.frakbot.crowdpulse.extraction.facebook.FacebookExtractorRunner#getOldMessages(net.frakbot.crowdpulse.extraction.cli.ExtractionParameters, rx.Subscriber, boolean)
+     */
+    private void getOldMessages(ExtractionParameters parameters, Subscriber<? super Message> subscriber) {
+        getOldMessages(parameters, subscriber, true);
+    }
+
+    /**
+     * Download all old messages that match the {@link net.frakbot.crowdpulse.extraction.cli.ExtractionParameters}.
      *
      * @param parameters The {@link net.frakbot.crowdpulse.extraction.cli.ExtractionParameters} with all extraction
      *                   settings.
      * @param subscriber The {@link rx.Subscriber} that will be notified of new tweets, errors and completion.
+     * @param complete   Whether to notify the completion of posts to the subscriber.
      */
-    private void getOldMessages(ExtractionParameters parameters, Subscriber<? super Message> subscriber) {
+    private void getOldMessages(ExtractionParameters parameters, Subscriber<? super Message> subscriber, boolean
+            complete) {
         try {
-            FacebookClient facebook = getFacebookInstance();
-            List<Parameter> query = buildQuery(parameters);
-            String endpoint = getEndpoint(parameters);
-            FacebookMessageConverter postConverter = new FacebookMessageConverter();
-            FacebookCommentConverter commentConverter = new FacebookCommentConverter();
-            // fetch first page of data
-            Connection<Post> posts = facebook.fetchConnection(endpoint, Post.class, query.toArray(new Parameter[query.size()]));
-            Queue<String> nextPages = new LinkedBlockingQueue<String>();
-            // continue fetching new pages until there are some
-            do {
-                // extract the first posts
-                List<Post> postList = posts.getData();
-                List<Message> messageList = postConverter.fromExtractor(postList);
+            Facebook facebook = getFacebookInstance();
 
-                // for each post, add all comments
-                for (Post post : postList) {
-                    // TODO: this will only get the first 25 comments, RestFB currently has this limitation (https://github.com/revetkn/restfb/issues/17)
-                    if (post.getComments() != null) {
-                        messageList.addAll(commentConverter.fromExtractor(post.getComments().getData()));
-                    }
+            // the endpoint can be a reference string (such as a user name), not an ID
+            String endpoint = handleFeedId(parameters, facebook);
+
+            // build the query, prepare the loop data
+            Reading query = buildQuery(parameters);
+            FacebookMessageConverter converter = new FacebookMessageConverter();
+            Paging<Post> page = null;
+
+            // query can be null if we reach the end of the search result pages
+            // urlsToFetch can be empty if there are no more pages to retrieve
+            while (query != null || page != null) {
+                // get the messages
+                ResponseList<Post> postList;
+                // if the query is null, it's the first call
+                if (query != null) {
+                    postList = facebook.getFeed(endpoint, query);
+                    // add the next page URL
+                    page = postList.getPaging();
+                    query = null;
+                } else {
+                    // retrieve the next page
+                    postList = facebook.fetchNext(page);
+                    page = postList.getPaging();
                 }
-
-                // notify the subscriber of new posts
-                for (Message message : messageList) {
+                // notify the subscriber of new tweets
+                for (Post post : postList) {
+                    // convert the message
+                    Message message = converter.fromExtractor(post);
+                    // since the Facebook API ignores "since" and "until" while paging, thus sucking big time
+                    // we have to manually stop notifying new messages
+                    if (!Checker.checkSinceDate(parameters).call(message)) {
+                        page = null;
+                        break;
+                    }
                     subscriber.onNext(message);
                 }
-
-                posts = facebook.fetchConnectionPage(posts.getNextPageUrl(), Post.class);
-            } while (posts.hasNext());
-            // at this point, there is no other available page: we have finished
-            subscriber.onCompleted();
-        } catch (IOException e) {
+            }
+            // at this point, there is no other available query: we have finished
+            if (complete) {
+                subscriber.onCompleted();
+            }
+        } catch (FacebookException e) {
+            e.printStackTrace();
             subscriber.onError(e);
         }
     }
 
     /**
-     * Get the proper endpoint to apply the filter parameters to and start searching from.
+     * Returns a singleton instance of the {@link facebook4j.Facebook} client.
      *
-     * @param parameters The {@link net.frakbot.crowdpulse.extraction.cli.ExtractionParameters} as specified by the user.
-     * @return A {@link java.lang.String} representing the endpoint to query.
+     * @return A set up and ready {@link facebook4j.Facebook} client.
+     * @throws facebook4j.FacebookException if the client could not be built.
      */
-    private String getEndpoint(ExtractionParameters parameters) {
+    private Facebook getFacebookInstance() throws FacebookException {
+        if (facebook == null) {
+            facebook = new FacebookFactory().getInstance();
+            facebook.getOAuthAppAccessToken();
+        }
+        return facebook;
+    }
+
+    /**
+     * Get the proper endpoint ID to search the feed or posts on.
+     *
+     * @param parameters The {@link net.frakbot.crowdpulse.extraction.cli.ExtractionParameters} as specified by the
+     *                   user.
+     * @return A {@link java.lang.String} representing the endpoint ID to query.
+     * @throws facebook4j.FacebookException if the endpoint could not be retrieved.
+     */
+    private String handleFeedId(ExtractionParameters parameters, Facebook facebook) throws FacebookException {
+        String endpoint;
+
         // if we have the recipient user, fetch the user's feed (all posts)
         if (!StringUtil.isNullOrEmpty(parameters.getToUser())) {
-            return parameters.getToUser() + "/feed";
+            endpoint = facebook.getUser(parameters.getToUser()).getId();
+            parameters.setToUser(endpoint);
+        } else {
+            // if we only have the author user, get only the posts by that user
+            endpoint = facebook.getUser(parameters.getFromUser()).getId();
+            parameters.setFromUser(endpoint);
         }
-        // if we only have the author user, get only the posts by that user
-        return parameters.getFromUser() + "/posts";
+
+        return endpoint;
     }
 
     /**
@@ -213,16 +256,16 @@ public class FacebookExtractorRunner {
      * @param parameters The source-independent search parameters.
      * @return A {@link twitter4j.Query} Twitter object.
      */
-    private List<Parameter> buildQuery(ExtractionParameters parameters) {
-        List<Parameter> query = new ArrayList<Parameter>();
+    private Reading buildQuery(ExtractionParameters parameters) {
+        Reading query = new Reading();
 
-        query.add(Parameter.with("limit", POSTS_PER_PAGE));
-        query.add(Parameter.with("fields", "from,to,message,comments"));
+        query.limit(POSTS_PER_PAGE);
+        query.fields("from", "to", "message", "comments", "message_tags");
         if (parameters.getSince() != null) {
-            query.add(Parameter.with("since", DateUtil.getTimestamp(parameters.getSince())));
+            query.since(parameters.getSince());
         }
         if (parameters.getUntil() != null) {
-            query.add(Parameter.with("until", DateUtil.getTimestamp(parameters.getUntil())));
+            query.until(parameters.getUntil());
         }
 
         return query;

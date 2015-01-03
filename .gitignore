@@ -6,4 +6,4 @@
 build/
 gradle/
 extraction/src/main/resources/twitter4j.properties
-extraction/src/main/resources/facebook.properties
+extraction/src/main/resources/facebook4j.properties

@@ -352,7 +352,7 @@ public class TwitterExtractorRunner {
                 // if some referenced users are requested, all tweets should contain those
                 // BUT we need to exclude all tweets whose recipient user matches a referenced user
                 // (referenced users are all users involved in a tweet but the recipient)
-                return !parameters.getReferenceUsers().contains(message.getToUser());
+                return !parameters.getReferenceUsers().contains(message.getToUsers());
             }
         };
     }

@@ -18,7 +18,11 @@ package net.frakbot.crowdpulse.extraction.twitter;
 
 import net.frakbot.crowdpulse.entity.Message;
 import net.frakbot.crowdpulse.extraction.MessageConverter;
+import net.frakbot.crowdpulse.extraction.util.StringUtil;
 import twitter4j.Status;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Francesco Pontillo
@@ -30,7 +34,11 @@ public class TwitterMessageConverter extends MessageConverter<Status> {
         message.setSource(TwitterExtractor.EXTRACTOR_NAME);
         message.setText(original.getText());
         message.setFromUser(original.getUser().getScreenName());
-        message.setToUser(original.getInReplyToScreenName());
+        if (!StringUtil.isNullOrEmpty(original.getInReplyToScreenName())) {
+            List<String> toIds = new ArrayList<String>();
+            toIds.add(original.getInReplyToScreenName());
+            message.setToUsers(toIds);
+        }
         message.setDate(original.getCreatedAt());
         return message;
     }

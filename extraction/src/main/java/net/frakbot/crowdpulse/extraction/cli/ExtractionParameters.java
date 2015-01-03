@@ -105,4 +105,20 @@ public class ExtractionParameters {
     public String getLocale() {
         return locale;
     }
+
+    public void setToUser(String toUser) {
+        this.toUser = toUser;
+    }
+
+    public void setFromUser(String fromUser) {
+        this.fromUser = fromUser;
+    }
+
+    public void setSince(Date since) {
+        this.since = since;
+    }
+
+    public void setUntil(Date until) {
+        this.until = until;
+    }
 }

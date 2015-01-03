@@ -16,7 +16,9 @@
 
 package net.frakbot.crowdpulse.extraction.facebook;
 
-import com.restfb.types.Post;
+import facebook4j.IdNameEntity;
+import facebook4j.Post;
+import facebook4j.Tag;
 import net.frakbot.crowdpulse.entity.Message;
 import net.frakbot.crowdpulse.extraction.MessageConverter;
 
@@ -32,16 +34,25 @@ public class FacebookMessageConverter extends MessageConverter<Post> {
         message.setSource(FacebookExtractor.EXTRACTOR_NAME);
         message.setText(original.getMessage());
         message.setFromUser(original.getFrom().getId());
-        // TODO: get the optional recipient user
-        message.setToUser(null);
-        message.setDate(original.getCreatedTime());
+
+        // the "to" user is, by convention, the first user in the "to" list
+        List<String> toIds = new ArrayList<String>(original.getTo().size());
+        for (IdNameEntity to : original.getTo()) {
+            toIds.add(to.getId());
+        }
+        message.setToUsers(toIds);
+
+        // the creation time is (strangely) not always present, use the updated time info instead
+        if (original.getCreatedTime() != null) {
+            message.setDate(original.getCreatedTime());
+        } else {
+            message.setDate(original.getUpdatedTime());
+        }
 
         // convert the referenced users
         List<String> refUsers = new ArrayList<String>(original.getMessageTags().size());
-        for (List<Post.MessageTag> tagList : original.getMessageTags().values()) {
-            for (Post.MessageTag tag : tagList) {
-                refUsers.add(tag.getId());
-            }
+        for (Tag tag : original.getMessageTags()) {
+            refUsers.add(tag.getId());
         }
         message.setRefUsers(refUsers);
 

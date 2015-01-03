@@ -26,7 +26,7 @@ public class Message {
     private String text;
     private String source;
     private String fromUser;
-    private String toUser;
+    private List<String> toUsers;
     private List<String> refUsers;
 
     private Date date;
@@ -55,12 +55,12 @@ public class Message {
         this.fromUser = fromUser;
     }
 
-    public String getToUser() {
-        return toUser;
+    public List<String> getToUsers() {
+        return toUsers;
     }
 
-    public void setToUser(String toUser) {
-        this.toUser = toUser;
+    public void setToUsers(List<String> toUsers) {
+        this.toUsers = toUsers;
     }
 
     public Date getDate() {

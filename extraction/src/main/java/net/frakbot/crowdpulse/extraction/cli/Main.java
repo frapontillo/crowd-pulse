@@ -24,8 +24,11 @@ import net.frakbot.crowdpulse.extraction.facebook.FacebookExtractor;
 import net.frakbot.crowdpulse.extraction.twitter.TwitterExtractor;
 import rx.Observable;
 import rx.Observer;
+import rx.Subscription;
+import rx.schedulers.Schedulers;
 
 import java.io.IOException;
+import java.util.concurrent.CountDownLatch;
 
 /**
  * @author Francesco Pontillo
@@ -37,6 +40,8 @@ public class Main {
         ExtractorCollection.registerExtractor(new FacebookExtractor());
     }
 
+    static CountDownLatch endSignal = new CountDownLatch(1);
+
     public static void main(String[] args) throws IOException {
         System.out.println("Extraction started.");
 
@@ -46,16 +51,20 @@ public class Main {
         Extractor extractor = ExtractorCollection.getExtractorImplByParams(params);
 
         Observable<Message> messages = extractor.getMessages(params);
-        messages
-                .subscribe(new MessageObserver());
+        messages.subscribe(new MessageObserver());
 
-        System.in.read();
+        try {
+            endSignal.await();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     public static class MessageObserver implements Observer<Message> {
 
         @Override public void onCompleted() {
             System.out.println("Message stream ended.");
+            endSignal.countDown();
         }
 
         @Override public void onError(Throwable e) {
