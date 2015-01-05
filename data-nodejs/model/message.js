@@ -17,5 +17,5 @@
 var MessageSchema = require('./../schema/message');
 
 module.exports = function(mongoose) {
-  return mongoose.model(MessageSchema.statics.getSchemaName(), MessageSchema);
+  return mongoose.model(MessageSchema.statics.getSchemaName(), MessageSchema, MessageSchema.statics.getSchemaName());
 };

@@ -17,5 +17,5 @@
 var ProjectSchema = require('./../schema/project');
 
 module.exports = function(mongoose) {
-  return mongoose.model(ProjectSchema.statics.getSchemaName(), ProjectSchema);
+  return mongoose.model(ProjectSchema.statics.getSchemaName(), ProjectSchema, ProjectSchema.statics.getSchemaName());
 };

@@ -17,5 +17,5 @@
 var JobSchema = require('./../schema/job');
 
 module.exports = function(mongoose) {
-  return mongoose.model(JobSchema.statics.getSchemaName(), JobSchema);
+  return mongoose.model(JobSchema.statics.getSchemaName(), JobSchema, JobSchema.statics.getSchemaName());
 };

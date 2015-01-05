@@ -17,5 +17,5 @@
 var UserSchema = require('./../schema/user');
 
 module.exports = function(mongoose) {
-  return mongoose.model(UserSchema.statics.getSchemaName(), UserSchema);
+  return mongoose.model(UserSchema.statics.getSchemaName(), UserSchema, UserSchema.statics.getSchemaName());
 };

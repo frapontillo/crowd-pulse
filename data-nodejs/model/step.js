@@ -17,5 +17,5 @@
 var StepSchema = require('./../schema/step');
 
 module.exports = function(mongoose) {
-  return mongoose.model(StepSchema.statics.getSchemaName(), StepSchema);
+  return mongoose.model(StepSchema.statics.getSchemaName(), StepSchema, StepSchema.statics.getSchemaName());
 };

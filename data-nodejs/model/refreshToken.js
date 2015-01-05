@@ -17,5 +17,5 @@
 var OAuthAccessRefreshSchema = require('./../schema/refreshToken');
 
 module.exports = function(mongoose) {
-  return mongoose.model(OAuthAccessRefreshSchema.statics.getSchemaName(), OAuthAccessRefreshSchema);
+  return mongoose.model(OAuthAccessRefreshSchema.statics.getSchemaName(), OAuthAccessRefreshSchema, OAuthAccessRefreshSchema.statics.getSchemaName());
 };
