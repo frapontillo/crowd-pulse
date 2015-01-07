@@ -23,3 +23,6 @@ include 'web-service'
 
 include 'data-nodejs'
 include 'data-java'
+
+include 'admin-cli'
+

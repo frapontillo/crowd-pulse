@@ -16,31 +16,19 @@
 
 package net.frakbot.crowdpulse.data.entity;
 
-import org.bson.types.ObjectId;
-import org.mongodb.morphia.annotations.Id;
-
 import java.util.Date;
 import java.util.List;
 
 /**
  * @author Francesco Pontillo
  */
-public class Message {
-    @Id private ObjectId id;
+public class Message extends IdEntity {
     private String text;
     private String source;
     private String fromUser;
     private List<String> toUsers;
     private List<String> refUsers;
     private Date date;
-
-    public ObjectId getId() {
-        return id;
-    }
-
-    public void setId(ObjectId id) {
-        this.id = id;
-    }
 
     public String getText() {
         return text;

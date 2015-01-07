@@ -16,28 +16,16 @@
 
 package net.frakbot.crowdpulse.data.entity;
 
-import org.bson.types.ObjectId;
-import org.mongodb.morphia.annotations.Id;
-
 import java.util.HashMap;
 
 /**
  * @author Francesco Pontillo
  */
-public class Job {
-    @Id private ObjectId id;
+public class Job extends IdEntity {
     private String name;
     private String jobType;
     JobExecutionPolicy executionPolicy;
     private HashMap<String, Object> jobConfig;
-
-    public ObjectId getId() {
-        return id;
-    }
-
-    public void setId(ObjectId id) {
-        this.id = id;
-    }
 
     public String getName() {
         return name;

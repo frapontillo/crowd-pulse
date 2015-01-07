@@ -16,8 +16,6 @@
 
 package net.frakbot.crowdpulse.data.entity;
 
-import org.bson.types.ObjectId;
-import org.mongodb.morphia.annotations.Id;
 import org.mongodb.morphia.annotations.Reference;
 
 import java.util.Date;
@@ -31,20 +29,11 @@ import java.util.List;
  *
  * @author Francesco Pontillo
  */
-public class Project {
-    @Id private ObjectId id;
+public class Project extends IdEntity {
     private String name;
     @Reference private List<Step> steps;
     @Reference private User creationUser;
     private Date creationDate;
-
-    public ObjectId getId() {
-        return id;
-    }
-
-    public void setId(ObjectId id) {
-        this.id = id;
-    }
 
     public String getName() {
         return name;
