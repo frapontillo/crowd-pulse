@@ -21,9 +21,7 @@ var StepSchema = require('./step');
 var ProjectSchema = new mongoose.Schema({
   id: mongoose.Schema.ObjectId,
   name: String,
-  steps: [{
-    type: mongoose.Schema.ObjectId, ref: StepSchema.statics.getSchemaName()
-  }],
+  steps: [ StepSchema ],
   creationUser: { type: mongoose.Schema.ObjectId, ref: UserSchema.statics.getSchemaName() },
   creationDate: Date
 });

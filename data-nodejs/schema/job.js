@@ -16,7 +16,7 @@
 
 var mongoose = require('mongoose');
 
-var JobSchema = new mongoose.Schema({
+var JobSchema = {
   id: mongoose.Schema.ObjectId,
   name: String,
   jobType: String,
@@ -25,12 +25,6 @@ var JobSchema = new mongoose.Schema({
     instances: Number
   },
   jobConfig: mongoose.Schema.Types.Mixed
-});
-
-var SCHEMA_NAME = 'Job';
-
-JobSchema.statics.getSchemaName = function() {
-  return SCHEMA_NAME;
 };
 
 module.exports = JobSchema;

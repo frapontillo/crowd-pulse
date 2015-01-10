@@ -17,20 +17,12 @@
 var mongoose = require('mongoose');
 var JobSchema = require('./job');
 
-var StepSchema = new mongoose.Schema({
+var StepSchema = {
   id: mongoose.Schema.ObjectId,
   name: String,
   notifyEvery: Number,
   waitPrevStep: Boolean,
-  jobs: [{
-    type: mongoose.Schema.ObjectId, ref: JobSchema.statics.getSchemaName()
-  }]
-});
-
-var SCHEMA_NAME = 'Step';
-
-StepSchema.statics.getSchemaName = function() {
-  return SCHEMA_NAME;
+  jobs: [ JobSchema ]
 };
 
 module.exports = StepSchema;

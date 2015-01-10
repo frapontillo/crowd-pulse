@@ -36,10 +36,8 @@ var DataLayer = function() {
 
   self.AccessTokenModel = require('./model/accessToken')(mongoose);
   self.AppModel = require('./model/app')(mongoose);
-  self.JobModel = require('./model/job')(mongoose);
   self.ProjectModel = require('./model/project')(mongoose);
   self.RefreshTokenModel = require('./model/refreshToken')(mongoose);
-  self.StepModel = require('./model/step')(mongoose);
   self.UserModel = require('./model/user')(mongoose);
   self.MessageModel = require('./model/message')(mongoose);
   self.ObjectId = mongoose.Types.ObjectId;
