@@ -19,6 +19,7 @@ package net.frakbot.crowdpulse.admin.cli.command;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
 import net.frakbot.crowdpulse.admin.cli.operation.Operation;
+import net.frakbot.crowdpulse.admin.cli.operation.OperationProjectEdit;
 
 import java.io.File;
 
@@ -37,6 +38,10 @@ public class CommandProjectEdit extends Command {
     }
 
     @Override public Operation getOperation() {
-        return null;
+        return new OperationProjectEdit(this);
+    }
+
+    public File getFile() {
+        return file;
     }
 }

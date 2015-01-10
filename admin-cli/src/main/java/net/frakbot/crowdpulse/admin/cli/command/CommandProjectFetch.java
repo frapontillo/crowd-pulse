@@ -16,22 +16,39 @@
 
 package net.frakbot.crowdpulse.admin.cli.command;
 
+import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
 import net.frakbot.crowdpulse.admin.cli.operation.Operation;
-import net.frakbot.crowdpulse.admin.cli.operation.OperationProjectList;
+import net.frakbot.crowdpulse.admin.cli.operation.OperationProjectFetch;
+
+import java.io.File;
 
 /**
  * @author Francesco Pontillo
  */
-@Parameters(commandNames = CommandProjectList.COMMAND_NAME)
-public class CommandProjectList extends Command {
-    public static final String COMMAND_NAME = "project-list";
+@Parameters(commandNames = CommandProjectFetch.COMMAND_NAME)
+public class CommandProjectFetch extends Command {
+    public static final String COMMAND_NAME = "project-fetch";
+
+    @Parameter(names = "--id", description = "The ID of the project to fetch")
+    private String id;
+
+    @Parameter(names = "--output", description = "The file to save the project to")
+    private File output;
 
     @Override public String getCommandName() {
         return COMMAND_NAME;
     }
 
     @Override public Operation getOperation() {
-        return new OperationProjectList(this);
+        return new OperationProjectFetch(this);
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public File getOutput() {
+        return output;
     }
 }

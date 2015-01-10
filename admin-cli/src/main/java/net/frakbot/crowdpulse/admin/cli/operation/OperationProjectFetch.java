@@ -16,43 +16,47 @@
 
 package net.frakbot.crowdpulse.admin.cli.operation;
 
-import com.google.gson.Gson;
-import net.frakbot.crowdpulse.admin.cli.command.CommandProjectCreate;
+import net.frakbot.crowdpulse.admin.cli.command.CommandProjectFetch;
+import net.frakbot.crowdpulse.admin.cli.command.CommandProjectList;
 import net.frakbot.crowdpulse.admin.cli.json.PulseGson;
 import net.frakbot.crowdpulse.data.entity.Project;
 import net.frakbot.crowdpulse.data.repository.ProjectRepository;
+import org.bson.types.ObjectId;
 
+import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.List;
 
 /**
  * @author Francesco Pontillo
  */
-public class OperationProjectCreate extends Operation<CommandProjectCreate> {
-
-    public OperationProjectCreate(CommandProjectCreate command) {
+public class OperationProjectFetch extends Operation<CommandProjectFetch> {
+    public OperationProjectFetch(CommandProjectFetch command) {
         super(command);
     }
 
     @Override public void run() {
-        // read the new project
+        // get the project
         ProjectRepository projectRepository = new ProjectRepository();
-        Gson gson = PulseGson.getGson();
-        Project project = null;
+        Project project = projectRepository.get(new ObjectId(command.getId()));
+        if (project == null) {
+            System.out.println(String.format(NO_PROJECT_WITH_ID, command.getId()));
+            return;
+        }
+        // serialize and save the project to disk
+        String jsonProject = PulseGson.getGson().toJson(project);
         try {
-            FileReader fileReader = new FileReader(command.getFile());
-            project = gson.fromJson(fileReader, Project.class);
-            fileReader.close();
+            FileOutputStream outputStream = new FileOutputStream(command.getOutput());
+            outputStream.write(jsonProject.getBytes());
+            outputStream.close();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        // insert the project
-        projectRepository.save(project);
-
-        System.out.println("Project created.");
+        System.out.println("Project fetched.");
     }
 }

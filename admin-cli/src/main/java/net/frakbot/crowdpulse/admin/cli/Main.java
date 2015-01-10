@@ -29,13 +29,12 @@ public class Main {
     }
 
     public void run(String[] args) {
-        System.out.println("Extraction started.");
-
         JCommander jCommander = new JCommander();
 
         // all the sub-commands
         CommandProjectList projectList = new CommandProjectList();
         CommandProjectCreate projectCreate = new CommandProjectCreate();
+        CommandProjectFetch projectFetch = new CommandProjectFetch();
         CommandProjectEdit projectEdit = new CommandProjectEdit();
         CommandProjectDelete projectDelete = new CommandProjectDelete();
         CommandProjectStart projectStart = new CommandProjectStart();
@@ -44,6 +43,7 @@ public class Main {
 
         jCommander.addCommand(projectList);
         jCommander.addCommand(projectCreate);
+        jCommander.addCommand(projectFetch);
         jCommander.addCommand(projectEdit);
         jCommander.addCommand(projectDelete);
         jCommander.addCommand(projectStart);
@@ -53,7 +53,7 @@ public class Main {
         jCommander.parse(args);
 
         Command bestFit = Command.getCommandByName(jCommander.getParsedCommand(), projectList, projectCreate,
-                projectEdit, projectDelete, projectStart, executionList, executionStop);
+                projectFetch, projectEdit, projectDelete, projectStart, executionList, executionStop);
         bestFit.getOperation().run();
 
         System.out.println("Done.");

@@ -19,6 +19,9 @@ package net.frakbot.crowdpulse.admin.cli.command;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
 import net.frakbot.crowdpulse.admin.cli.operation.Operation;
+import net.frakbot.crowdpulse.admin.cli.operation.OperationProjectDelete;
+
+import java.util.List;
 
 /**
  * @author Francesco Pontillo
@@ -27,14 +30,18 @@ import net.frakbot.crowdpulse.admin.cli.operation.Operation;
 public class CommandProjectDelete extends Command {
     public static final String COMMAND_NAME = "project-delete";
 
-    @Parameter(description = "The project ID to delete")
-    private String projectId;
+    @Parameter(description = "The ID of the project to delete")
+    private List<String> id;
 
     @Override public String getCommandName() {
         return COMMAND_NAME;
     }
 
     @Override public Operation getOperation() {
-        return null;
+        return new OperationProjectDelete(this);
+    }
+
+    public String getId() {
+        return id != null ? id.get(0) : null;
     }
 }

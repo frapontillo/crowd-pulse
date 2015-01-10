@@ -16,43 +16,43 @@
 
 package net.frakbot.crowdpulse.admin.cli.operation;
 
-import com.google.gson.Gson;
-import net.frakbot.crowdpulse.admin.cli.command.CommandProjectCreate;
+import net.frakbot.crowdpulse.admin.cli.command.CommandProjectEdit;
+import net.frakbot.crowdpulse.admin.cli.command.CommandProjectFetch;
 import net.frakbot.crowdpulse.admin.cli.json.PulseGson;
 import net.frakbot.crowdpulse.data.entity.Project;
 import net.frakbot.crowdpulse.data.repository.ProjectRepository;
+import org.bson.types.ObjectId;
 
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 
 /**
  * @author Francesco Pontillo
  */
-public class OperationProjectCreate extends Operation<CommandProjectCreate> {
-
-    public OperationProjectCreate(CommandProjectCreate command) {
+public class OperationProjectEdit extends Operation<CommandProjectEdit> {
+    public OperationProjectEdit(CommandProjectEdit command) {
         super(command);
     }
 
     @Override public void run() {
-        // read the new project
-        ProjectRepository projectRepository = new ProjectRepository();
-        Gson gson = PulseGson.getGson();
-        Project project = null;
+        // read the project
+        BufferedReader reader = null;
         try {
-            FileReader fileReader = new FileReader(command.getFile());
-            project = gson.fromJson(fileReader, Project.class);
-            fileReader.close();
+            reader = new BufferedReader(new FileReader(command.getFile()));
         } catch (FileNotFoundException e) {
             e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
+        }
+        Project project = PulseGson.getGson().fromJson(reader, Project.class);
+
+        // validate the project
+        if (project.getId() == null) {
+            System.err.println("The project has no ID.");
+            return;
         }
 
-        // insert the project
+        // save the project
+        ProjectRepository projectRepository = new ProjectRepository();
         projectRepository.save(project);
 
-        System.out.println("Project created.");
+        System.out.println("Project edited.");
     }
 }

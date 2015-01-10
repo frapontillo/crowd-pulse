@@ -29,4 +29,6 @@ public abstract class Operation<T extends Command> {
     }
 
     public abstract void run();
+
+    protected static final String NO_PROJECT_WITH_ID = "No project found with ID %s.";
 }

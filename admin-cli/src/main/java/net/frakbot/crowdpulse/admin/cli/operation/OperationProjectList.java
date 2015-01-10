@@ -16,43 +16,31 @@
 
 package net.frakbot.crowdpulse.admin.cli.operation;
 
-import com.google.gson.Gson;
-import net.frakbot.crowdpulse.admin.cli.command.CommandProjectCreate;
-import net.frakbot.crowdpulse.admin.cli.json.PulseGson;
+import net.frakbot.crowdpulse.admin.cli.command.CommandProjectList;
 import net.frakbot.crowdpulse.data.entity.Project;
 import net.frakbot.crowdpulse.data.repository.ProjectRepository;
 
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
+import java.util.List;
 
 /**
  * @author Francesco Pontillo
  */
-public class OperationProjectCreate extends Operation<CommandProjectCreate> {
-
-    public OperationProjectCreate(CommandProjectCreate command) {
+public class OperationProjectList extends Operation<CommandProjectList> {
+    public OperationProjectList(CommandProjectList command) {
         super(command);
     }
 
     @Override public void run() {
-        // read the new project
         ProjectRepository projectRepository = new ProjectRepository();
-        Gson gson = PulseGson.getGson();
-        Project project = null;
-        try {
-            FileReader fileReader = new FileReader(command.getFile());
-            project = gson.fromJson(fileReader, Project.class);
-            fileReader.close();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
+        List<Project> projects = projectRepository.find().asList();
+        System.out.println("Found projects: ");
+        if (projects.size() <= 0) {
+            System.out.println("NONE.");
+            return;
         }
-
-        // insert the project
-        projectRepository.save(project);
-
-        System.out.println("Project created.");
+        String projectFormat = " - %s | %s";
+        for (Project p : projects) {
+            System.out.println(String.format(projectFormat, p.getId().toString(), p.getName()));
+        }
     }
 }

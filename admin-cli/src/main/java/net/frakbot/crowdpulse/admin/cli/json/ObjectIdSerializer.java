@@ -16,23 +16,19 @@
 
 package net.frakbot.crowdpulse.admin.cli.json;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonPrimitive;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
 import org.bson.types.ObjectId;
+
+import java.lang.reflect.Type;
 
 /**
  * @author Francesco Pontillo
  */
-public class PulseGson {
-    private static GsonBuilder gsonBuilder;
-
-    public static Gson getGson() {
-        if (gsonBuilder == null) {
-            gsonBuilder = new GsonBuilder();
-            gsonBuilder.setPrettyPrinting()
-                    .registerTypeAdapter(ObjectId.class, new ObjectIdSerializer())
-                    .registerTypeAdapter(ObjectId.class, new ObjectIdDeserializer());
-        }
-        return gsonBuilder.create();
+public class ObjectIdSerializer implements JsonSerializer<ObjectId> {
+    @Override public JsonElement serialize(ObjectId src, Type typeOfSrc, JsonSerializationContext context) {
+        return new JsonPrimitive(src.toHexString());
     }
 }
