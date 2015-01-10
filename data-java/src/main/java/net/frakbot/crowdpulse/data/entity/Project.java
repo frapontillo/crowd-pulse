@@ -31,7 +31,7 @@ import java.util.List;
  */
 public class Project extends Entity {
     private String name;
-    @Reference private List<Step> steps;
+    private List<Step> steps;
     @Reference private User creationUser;
     private Date creationDate;
 

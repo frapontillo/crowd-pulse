@@ -16,8 +16,6 @@
 
 package net.frakbot.crowdpulse.data.entity;
 
-import org.mongodb.morphia.annotations.Reference;
-
 import java.util.List;
 
 /**
@@ -27,7 +25,7 @@ public class Step extends Entity {
     private String name;
     Integer notifyEvery;
     boolean waitPrevStep;
-    @Reference private List<Job> jobs;
+    private List<Job> jobs;
 
     public String getName() {
         return name;
