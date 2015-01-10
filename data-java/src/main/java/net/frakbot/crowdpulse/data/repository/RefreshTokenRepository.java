@@ -17,9 +17,10 @@
 package net.frakbot.crowdpulse.data.repository;
 
 import net.frakbot.crowdpulse.data.entity.RefreshToken;
+import org.bson.types.ObjectId;
 
 /**
  * @author Francesco Pontillo
  */
-public class RefreshTokenRepository extends Repository<RefreshToken, String> {
+public class RefreshTokenRepository extends Repository<RefreshToken, ObjectId> {
 }

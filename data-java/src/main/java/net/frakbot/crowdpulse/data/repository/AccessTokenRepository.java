@@ -17,9 +17,10 @@
 package net.frakbot.crowdpulse.data.repository;
 
 import net.frakbot.crowdpulse.data.entity.AccessToken;
+import org.bson.types.ObjectId;
 
 /**
  * @author Francesco Pontillo
  */
-public class AccessTokenRepository extends Repository<AccessToken, String> {
+public class AccessTokenRepository extends Repository<AccessToken, ObjectId> {
 }

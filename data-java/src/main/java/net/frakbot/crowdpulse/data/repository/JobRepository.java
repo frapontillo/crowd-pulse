@@ -17,9 +17,10 @@
 package net.frakbot.crowdpulse.data.repository;
 
 import net.frakbot.crowdpulse.data.entity.Job;
+import org.bson.types.ObjectId;
 
 /**
  * @author Francesco Pontillo
  */
-public class JobRepository extends Repository<Job, String> {
+public class JobRepository extends Repository<Job, ObjectId> {
 }

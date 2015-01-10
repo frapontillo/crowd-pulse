@@ -17,9 +17,10 @@
 package net.frakbot.crowdpulse.data.repository;
 
 import net.frakbot.crowdpulse.data.entity.App;
+import org.bson.types.ObjectId;
 
 /**
  * @author Francesco Pontillo
  */
-public class AppRepository extends Repository<App, String> {
+public class AppRepository extends Repository<App, ObjectId> {
 }
