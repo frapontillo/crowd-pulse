@@ -18,8 +18,6 @@ package net.frakbot.crowdpulse.admin.cli.json;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import net.frakbot.crowdpulse.data.entity.IdEntity;
-import org.bson.types.ObjectId;
 
 /**
  * @author Francesco Pontillo
@@ -30,9 +28,6 @@ public class PulseGson {
     public static Gson getGson() {
         if (gsonBuilder == null) {
             gsonBuilder = new GsonBuilder();
-            gsonBuilder.registerTypeAdapter(ObjectId.class, new ObjectIdDeserializer());
-            gsonBuilder.registerTypeAdapter(ObjectId.class, new ObjectIdSerializer());
-            gsonBuilder.registerTypeAdapter(IdEntity.class, new IdEntityInstanceCreator());
         }
         return gsonBuilder.create();
     }

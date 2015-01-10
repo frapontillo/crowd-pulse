@@ -17,14 +17,10 @@
 package net.frakbot.crowdpulse.admin.cli.operation;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import net.frakbot.crowdpulse.admin.cli.command.CommandProjectCreate;
-import net.frakbot.crowdpulse.admin.cli.json.ObjectIdDeserializer;
-import net.frakbot.crowdpulse.admin.cli.json.ObjectIdSerializer;
 import net.frakbot.crowdpulse.admin.cli.json.PulseGson;
 import net.frakbot.crowdpulse.data.entity.Project;
 import net.frakbot.crowdpulse.data.repository.ProjectRepository;
-import org.bson.types.ObjectId;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
