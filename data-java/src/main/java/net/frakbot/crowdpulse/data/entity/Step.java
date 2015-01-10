@@ -23,7 +23,7 @@ import java.util.List;
 /**
  * @author Francesco Pontillo
  */
-public class Step extends IdEntity {
+public class Step extends Entity {
     private String name;
     Integer notifyEvery;
     boolean waitPrevStep;

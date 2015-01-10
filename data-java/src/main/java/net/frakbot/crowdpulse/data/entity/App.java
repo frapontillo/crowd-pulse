@@ -21,7 +21,7 @@ import java.util.List;
 /**
  * @author Francesco Pontillo
  */
-public class App extends IdEntity {
+public class App extends Entity {
     private String name;
     private String secret;
     private String redirectUri;

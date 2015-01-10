@@ -22,10 +22,10 @@ import org.mongodb.morphia.annotations.Id;
 /**
  * @author Francesco Pontillo
  */
-public class IdEntity {
+public class Entity {
     @Id private ObjectId id;
 
-    public IdEntity() {
+    public Entity() {
         id = new ObjectId();
     }
 

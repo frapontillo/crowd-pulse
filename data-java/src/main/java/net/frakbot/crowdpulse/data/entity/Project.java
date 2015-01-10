@@ -29,7 +29,7 @@ import java.util.List;
  *
  * @author Francesco Pontillo
  */
-public class Project extends IdEntity {
+public class Project extends Entity {
     private String name;
     @Reference private List<Step> steps;
     @Reference private User creationUser;

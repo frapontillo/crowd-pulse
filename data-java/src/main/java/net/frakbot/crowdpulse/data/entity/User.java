@@ -19,7 +19,7 @@ package net.frakbot.crowdpulse.data.entity;
 /**
  * @author Francesco
  */
-public class User extends IdEntity {
+public class User extends Entity {
     private String username;
     private String email;
     private String secret;

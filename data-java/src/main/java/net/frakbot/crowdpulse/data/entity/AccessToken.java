@@ -23,7 +23,7 @@ import java.util.Date;
 /**
  * @author Francesco Pontillo
  */
-public class AccessToken extends IdEntity {
+public class AccessToken extends Entity {
     private String accessToken;
     @Reference private App appId;
     @Reference private User userId;

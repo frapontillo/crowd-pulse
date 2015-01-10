@@ -23,7 +23,7 @@ import java.util.Date;
 /**
  * @author Francesco Pontillo
  */
-public class RefreshToken extends IdEntity {
+public class RefreshToken extends Entity {
     private String refreshToken;
     @Reference private App appId;
     @Reference private User userId;

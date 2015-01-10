@@ -22,7 +22,7 @@ import java.util.List;
 /**
  * @author Francesco Pontillo
  */
-public class Message extends IdEntity {
+public class Message extends Entity {
     private String text;
     private String source;
     private String fromUser;

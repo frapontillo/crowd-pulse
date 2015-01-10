@@ -21,7 +21,7 @@ import java.util.HashMap;
 /**
  * @author Francesco Pontillo
  */
-public class Job extends IdEntity {
+public class Job extends Entity {
     private String name;
     private String jobType;
     JobExecutionPolicy executionPolicy;
