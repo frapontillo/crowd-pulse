@@ -17,6 +17,7 @@
 package net.frakbot.crowdpulse.extraction;
 
 import net.frakbot.crowdpulse.data.entity.Message;
+import net.frakbot.crowdpulse.extraction.cli.ExtractionParameters;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,7 +26,19 @@ import java.util.List;
  * @author Francesco Pontillo
  */
 public abstract class MessageConverter<T> {
-    public abstract Message fromExtractor(T original);
+    private final ExtractionParameters parameters;
+
+    public MessageConverter(ExtractionParameters parameters) {
+        this.parameters = parameters;
+    }
+
+    protected abstract Message fromSpecificExtractor(T original);
+
+    public Message fromExtractor(T original) {
+        Message converted = fromSpecificExtractor(original);
+        converted.setTags(parameters.getTags());
+        return converted;
+    }
 
     public List<Message> fromExtractor(List<T> originalList) {
         List<Message> messageList = new ArrayList<Message>(originalList.size());

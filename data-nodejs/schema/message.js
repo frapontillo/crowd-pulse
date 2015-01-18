@@ -23,7 +23,8 @@ var MessageSchema = new mongoose.Schema({
   fromUser: String,
   toUsers: [String],
   refUsers: [String],
-  date: Date
+  date: Date,
+  tags: [String]
 });
 
 var SCHEMA_NAME = 'Message';

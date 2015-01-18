@@ -18,6 +18,7 @@ package net.frakbot.crowdpulse.extraction.twitter;
 
 import net.frakbot.crowdpulse.data.entity.Message;
 import net.frakbot.crowdpulse.extraction.MessageConverter;
+import net.frakbot.crowdpulse.extraction.cli.ExtractionParameters;
 import net.frakbot.crowdpulse.extraction.util.StringUtil;
 import twitter4j.Status;
 
@@ -29,7 +30,11 @@ import java.util.List;
  */
 public class TwitterMessageConverter extends MessageConverter<Status> {
 
-    @Override public Message fromExtractor(Status original) {
+    public TwitterMessageConverter(ExtractionParameters parameters) {
+        super(parameters);
+    }
+
+    @Override public Message fromSpecificExtractor(Status original) {
         Message message = new Message();
         message.setSource(TwitterExtractor.EXTRACTOR_NAME);
         message.setText(original.getText());

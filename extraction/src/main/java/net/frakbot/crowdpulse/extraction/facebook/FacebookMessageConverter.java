@@ -21,6 +21,7 @@ import facebook4j.Post;
 import facebook4j.Tag;
 import net.frakbot.crowdpulse.data.entity.Message;
 import net.frakbot.crowdpulse.extraction.MessageConverter;
+import net.frakbot.crowdpulse.extraction.cli.ExtractionParameters;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,7 +30,11 @@ import java.util.List;
  * @author Francesco Pontillo
  */
 public class FacebookMessageConverter extends MessageConverter<Post> {
-    @Override public Message fromExtractor(Post original) {
+    public FacebookMessageConverter(ExtractionParameters parameters) {
+        super(parameters);
+    }
+
+    @Override public Message fromSpecificExtractor(Post original) {
         Message message = new Message();
         message.setSource(FacebookExtractor.EXTRACTOR_NAME);
         message.setText(original.getMessage());

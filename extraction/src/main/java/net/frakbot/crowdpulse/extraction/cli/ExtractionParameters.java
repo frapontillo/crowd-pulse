@@ -62,6 +62,9 @@ public class ExtractionParameters {
     @Parameter(names = "-locale", description = "Locale of the messages to search for")
     private String locale;
 
+    @Parameter(names = "-tags", description = "Tags to add to extracted messages")
+    private List<String> tags;
+
     public String getSource() {
         return source;
     }
@@ -104,6 +107,10 @@ public class ExtractionParameters {
 
     public String getLocale() {
         return locale;
+    }
+
+    public List<String> getTags() {
+        return tags;
     }
 
     public void setToUser(String toUser) {

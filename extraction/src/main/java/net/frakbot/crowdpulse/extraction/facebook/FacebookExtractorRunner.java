@@ -169,7 +169,7 @@ public class FacebookExtractorRunner {
 
             // build the query, prepare the loop data
             Reading query = buildQuery(parameters);
-            FacebookMessageConverter converter = new FacebookMessageConverter();
+            FacebookMessageConverter converter = new FacebookMessageConverter(parameters);
             Paging<Post> page = null;
 
             // query can be null if we reach the end of the search result pages

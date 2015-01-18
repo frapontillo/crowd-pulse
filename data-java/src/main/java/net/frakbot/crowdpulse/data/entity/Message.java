@@ -29,6 +29,7 @@ public class Message extends Entity {
     private List<String> toUsers;
     private List<String> refUsers;
     private Date date;
+    private List<String> tags;
 
     public String getText() {
         return text;
@@ -76,5 +77,13 @@ public class Message extends Entity {
 
     public void setRefUsers(List<String> refUsers) {
         this.refUsers = refUsers;
+    }
+
+    public List<String> getTags() {
+        return tags;
+    }
+
+    public void setTags(List<String> tags) {
+        this.tags = tags;
     }
 }

@@ -135,7 +135,7 @@ public class TwitterExtractorRunner {
         try {
             Twitter twitter = getTwitterInstance();
             Query query = buildQuery(parameters);
-            TwitterMessageConverter converter = new TwitterMessageConverter();
+            TwitterMessageConverter converter = new TwitterMessageConverter(parameters);
             // query can be null if we reach the end of the search result pages
             while (query != null) {
                 // get the tweets and convert them
@@ -167,7 +167,7 @@ public class TwitterExtractorRunner {
     private void getNewMessages(ExtractionParameters parameters, final Subscriber<? super Message> subscriber) {
         try {
             TwitterStream twitterStream = getTwitterStreamInstance();
-            final TwitterMessageConverter converter = new TwitterMessageConverter();
+            final TwitterMessageConverter converter = new TwitterMessageConverter(parameters);
             twitterStream.addListener(new StatusListener() {
                 @Override public void onStatus(Status status) {
                     subscriber.onNext(converter.fromExtractor(status));
