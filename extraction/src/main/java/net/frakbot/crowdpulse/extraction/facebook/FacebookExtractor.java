@@ -20,6 +20,7 @@ import net.frakbot.crowdpulse.data.entity.Message;
 import net.frakbot.crowdpulse.extraction.Extractor;
 import net.frakbot.crowdpulse.extraction.cli.ExtractionParameters;
 import net.frakbot.crowdpulse.extraction.exception.ExtractorException;
+import net.frakbot.crowdpulse.extraction.util.Logger;
 import rx.Observable;
 import rx.observables.ConnectableObservable;
 
@@ -92,6 +93,7 @@ public class FacebookExtractor extends Extractor {
         try {
             validateParameters(parameters);
         } catch (ExtractorException e) {
+            Logger.getLogger().error(e);
             System.err.println(e);
             messages = Observable.empty();
             return messages.publish();

@@ -32,4 +32,6 @@ dependencies {
     compile group: 'org.twitter4j', name: 'twitter4j-stream', version: '4.0.2'
     compile group: 'org.facebook4j', name: 'facebook4j-core', version: '2.2.1'
     compile group: 'joda-time', name: 'joda-time', version: '2.5'
+    compile group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.1'
+    compile group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.1'
 }

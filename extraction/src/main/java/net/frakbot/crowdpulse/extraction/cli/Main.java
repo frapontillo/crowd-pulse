@@ -23,6 +23,8 @@ import net.frakbot.crowdpulse.extraction.ExtractorCollection;
 import net.frakbot.crowdpulse.extraction.Extractor;
 import net.frakbot.crowdpulse.extraction.facebook.FacebookExtractor;
 import net.frakbot.crowdpulse.extraction.twitter.TwitterExtractor;
+import net.frakbot.crowdpulse.extraction.util.Logger;
+import net.frakbot.crowdpulse.extraction.util.StringUtil;
 import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
@@ -47,17 +49,18 @@ public class Main {
     private static final CountDownLatch endSignal = new CountDownLatch(2);
 
     public static void main(String[] args) throws IOException {
-        System.out.println("Extraction started.");
+
+        Logger.getLogger().debug("Extraction started.");
 
         ExtractionParameters params = new ExtractionParameters();
         new JCommander(params, args);
-        System.out.println("Parameters read.");
+        Logger.getLogger().debug("Parameters read.");
         Extractor extractor = ExtractorCollection.getExtractorImplByParams(params);
 
         ConnectableObservable<Message> messages = extractor.getMessages(params);
         Observable<List<Message>> bufferedMessages = messages.buffer(1, TimeUnit.SECONDS, 3, Schedulers.io());
 
-        Subscription subscription = messages.subscribe(new MessageObserver());
+        Subscription subscription = messages.subscribe(new MessageObserver(params));
         Subscription bufferedSubscription = bufferedMessages.subscribe(new BufferedMessageListObserver(params));
 
         messages.connect();
@@ -69,24 +72,47 @@ public class Main {
             } catch (InterruptedException ignore) { }
         }
 
-        System.out.println("Done.");
+        Logger.getLogger().debug("Done.");
     }
 
     private static class MessageObserver implements Observer<Message> {
+        private final ExtractionParameters parameters;
+        private String tags;
+
+        public MessageObserver(ExtractionParameters params) {
+            parameters = params;
+            tags = join(parameters.getTags(), ",");
+            if (!StringUtil.isNullOrEmpty(tags)) {
+                tags += " | ";
+            }
+        }
 
         @Override public void onCompleted() {
-            System.out.println("Message Stream ended.");
+            Logger.getLogger().debug("Message Stream ended.");
             endSignal.countDown();
         }
 
         @Override public void onError(Throwable e) {
-            System.err.println("Message Stream errored.");
+            Logger.getLogger().error("Message Stream errored.");
             e.printStackTrace();
             endSignal.countDown();
         }
 
         @Override public void onNext(Message message) {
-            System.out.println(message.getText());
+            Logger.getLogger().info(tags + message.getText());
+        }
+
+        private String join(List<String> list, String with) {
+            StringBuilder builder = new StringBuilder();
+            if (list == null) {
+                return "";
+            }
+            for (String el : list) {
+                builder.append(el);
+                builder.append(with);
+            }
+            builder.replace(builder.length() - with.length(), builder.length() - 1 + with.length(), "");
+            return builder.toString();
         }
     }
 
@@ -100,12 +126,12 @@ public class Main {
         }
 
         @Override public void onCompleted() {
-            System.out.println("Buffered Message stream ended.");
+            Logger.getLogger().debug("Buffered Message stream ended.");
             endSignal.countDown();
         }
 
         @Override public void onError(Throwable e) {
-            System.err.println("Buffered Message Stream errored.");
+            Logger.getLogger().error("Buffered Message Stream errored.");
             e.printStackTrace();
             endSignal.countDown();
         }

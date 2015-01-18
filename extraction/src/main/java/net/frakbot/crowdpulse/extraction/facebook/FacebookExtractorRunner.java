@@ -20,6 +20,7 @@ import facebook4j.*;
 import net.frakbot.crowdpulse.data.entity.Message;
 import net.frakbot.crowdpulse.extraction.cli.ExtractionParameters;
 import net.frakbot.crowdpulse.extraction.util.Checker;
+import net.frakbot.crowdpulse.extraction.util.Logger;
 import net.frakbot.crowdpulse.extraction.util.StringUtil;
 import rx.Observable;
 import rx.Subscriber;
@@ -35,7 +36,7 @@ import java.util.concurrent.TimeUnit;
 public class FacebookExtractorRunner {
     private static Facebook facebook;
 
-    private static final int POSTS_PER_PAGE = 50;
+    private static final int POSTS_PER_PAGE = 250;
     private static final int POSTS_POLLING_MINUTES = 1;
 
     public ConnectableObservable<Message> getMessages(final ExtractionParameters parameters) {
@@ -50,7 +51,7 @@ public class FacebookExtractorRunner {
         // create the old messages Observable
         Observable<Message> oldMessages = Observable.create(new Observable.OnSubscribe<Message>() {
             @Override public void call(Subscriber<? super Message> subscriber) {
-                System.out.println("Started searching.");
+                Logger.getLogger().debug("Started searching.");
                 getOldMessages(parameters, subscriber);
             }
         });
@@ -65,7 +66,7 @@ public class FacebookExtractorRunner {
                             @Override public void onStart() {
                                 super.onStart();
                                 date = new Date();
-                                System.out.println("Started streaming.");
+                                Logger.getLogger().debug("Started streaming.");
                             }
 
                             @Override public void onCompleted() { /* never completes by design */ }
@@ -75,7 +76,7 @@ public class FacebookExtractorRunner {
                             }
 
                             @Override public void onNext(Long aLong) {
-                                System.out.println(String.format("Polling attempt number %d.", aLong));
+                                Logger.getLogger().debug(String.format("Polling attempt number %d.", aLong));
                                 Date newDate = new Date();
                                 parameters.setSince(date);
                                 parameters.setUntil(newDate);
@@ -133,7 +134,8 @@ public class FacebookExtractorRunner {
     private Observable<Long> timeToWait(ExtractionParameters parameters) {
         if (parameters.getUntil() != null) {
             long timeToDeath = parameters.getUntil().getTime() - new Date().getTime();
-            System.out.println(String.format("Shutting down the Streaming service in %d seconds.", timeToDeath/1000));
+            Logger.getLogger().debug(String.format("Shutting down the Streaming service in %d seconds.", timeToDeath /
+                    1000));
             return Observable.timer(timeToDeath, TimeUnit.MILLISECONDS, Schedulers.io());
         }
         return Observable.never();

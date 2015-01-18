@@ -19,6 +19,7 @@ package net.frakbot.crowdpulse.extraction.twitter;
 import net.frakbot.crowdpulse.data.entity.Message;
 import net.frakbot.crowdpulse.extraction.cli.ExtractionParameters;
 import net.frakbot.crowdpulse.extraction.util.*;
+import net.frakbot.crowdpulse.extraction.util.Logger;
 import rx.Observable;
 import rx.Subscriber;
 import rx.functions.Func1;
@@ -55,7 +56,7 @@ public class TwitterExtractorRunner {
         // create the old messages Observable
         Observable<Message> oldMessages = Observable.create(new Observable.OnSubscribe<Message>() {
             @Override public void call(Subscriber<? super Message> subscriber) {
-                System.out.println("SEARCH: started.");
+                Logger.getLogger().info("SEARCH: started.");
                 getOldMessages(parameters, subscriber);
             }
         });
@@ -63,7 +64,7 @@ public class TwitterExtractorRunner {
         // create the new messages (streamed) Observable
         Observable<Message> newMessages = Observable.create(new Observable.OnSubscribe<Message>() {
             @Override public void call(Subscriber<? super Message> subscriber) {
-                System.out.println("STREAMING: started.");
+                Logger.getLogger().info("STREAMING: started.");
                 getNewMessages(parameters, subscriber);
             }
         });
@@ -115,7 +116,7 @@ public class TwitterExtractorRunner {
     private Observable<Long> timeToWait(ExtractionParameters parameters) {
         if (parameters.getUntil() != null) {
             long timeToDeath = parameters.getUntil().getTime() - new Date().getTime();
-            System.out.println(String.format("Shutting down the Streaming service in %d seconds.", timeToDeath));
+            Logger.getLogger().info(String.format("Shutting down the Streaming service in %d seconds.", timeToDeath));
             return Observable.timer(timeToDeath, TimeUnit.MILLISECONDS, Schedulers.io());
         }
         return Observable.never();
@@ -189,6 +190,7 @@ public class TwitterExtractorRunner {
                 }
 
                 @Override public void onStallWarning(StallWarning warning) {
+                    Logger.getLogger().error(warning.toString());
                     System.err.println(warning);
                 }
 
