@@ -26,6 +26,7 @@ import net.frakbot.crowdpulse.extraction.twitter.TwitterExtractor;
 import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
+import rx.observables.ConnectableObservable;
 import rx.schedulers.Schedulers;
 
 import java.io.IOException;
@@ -53,11 +54,13 @@ public class Main {
         System.out.println("Parameters read.");
         Extractor extractor = ExtractorCollection.getExtractorImplByParams(params);
 
-        Observable<Message> messages = extractor.getMessages(params);
-        Subscription subscription = messages.subscribe(new MessageObserver());
+        ConnectableObservable<Message> messages = extractor.getMessages(params);
+        Observable<List<Message>> bufferedMessages = messages.buffer(1, TimeUnit.SECONDS, 3, Schedulers.io());
 
-        Observable<List<Message>> bufferedMessages = messages.buffer(10, TimeUnit.SECONDS, 50, Schedulers.io());
-        Subscription bufferedSubscription = bufferedMessages.subscribe(new BufferedMessageListObserver());
+        Subscription subscription = messages.subscribe(new MessageObserver());
+        Subscription bufferedSubscription = bufferedMessages.subscribe(new BufferedMessageListObserver(params));
+
+        messages.connect();
 
         // the thread can be interrupted while "await"-ing, so we "await" again until the subscription is over
         while (!subscription.isUnsubscribed() || !bufferedSubscription.isUnsubscribed()) {
@@ -72,12 +75,12 @@ public class Main {
     private static class MessageObserver implements Observer<Message> {
 
         @Override public void onCompleted() {
-            System.out.println("Message stream ended.");
+            System.out.println("Message Stream ended.");
             endSignal.countDown();
         }
 
         @Override public void onError(Throwable e) {
-            System.err.println("Some error occurred.");
+            System.err.println("Message Stream errored.");
             e.printStackTrace();
             endSignal.countDown();
         }
@@ -89,22 +92,27 @@ public class Main {
 
     private static class BufferedMessageListObserver implements Observer<List<Message>> {
         private final MessageRepository messageRepository;
+        private final ExtractionParameters parameters;
 
-        public BufferedMessageListObserver() {
+        public BufferedMessageListObserver(ExtractionParameters params) {
             messageRepository = new MessageRepository();
+            parameters = params;
         }
 
         @Override public void onCompleted() {
+            System.out.println("Buffered Message stream ended.");
             endSignal.countDown();
         }
 
         @Override public void onError(Throwable e) {
+            System.err.println("Buffered Message Stream errored.");
             e.printStackTrace();
             endSignal.countDown();
         }
 
         @Override public void onNext(List<Message> messages) {
             for (Message message : messages) {
+                message.setTags(parameters.getTags());
                 messageRepository.save(message);
             }
         }

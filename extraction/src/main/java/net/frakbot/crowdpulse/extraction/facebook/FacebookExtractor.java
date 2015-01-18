@@ -21,6 +21,7 @@ import net.frakbot.crowdpulse.extraction.Extractor;
 import net.frakbot.crowdpulse.extraction.cli.ExtractionParameters;
 import net.frakbot.crowdpulse.extraction.exception.ExtractorException;
 import rx.Observable;
+import rx.observables.ConnectableObservable;
 
 /**
  * Extractor implementation for Facebook.
@@ -84,7 +85,7 @@ public class FacebookExtractor extends Extractor {
         return super.validateParameters(parameters);
     }
 
-    @Override public Observable<Message> getMessages(ExtractionParameters parameters) {
+    @Override public ConnectableObservable<Message> getMessages(ExtractionParameters parameters) {
         Observable<Message> messages = null;
 
         // validate parameters
@@ -93,7 +94,7 @@ public class FacebookExtractor extends Extractor {
         } catch (ExtractorException e) {
             System.err.println(e);
             messages = Observable.empty();
-            return messages;
+            return messages.publish();
         }
 
         return getRunnerInstance().getMessages(parameters);

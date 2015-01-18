@@ -23,6 +23,7 @@ import net.frakbot.crowdpulse.extraction.exception.ExtractorException;
 import net.frakbot.crowdpulse.extraction.exception.InvalidParametersExtractorException;
 import net.frakbot.crowdpulse.extraction.exception.TooComplexParametersExtractorException;
 import rx.Observable;
+import rx.observables.ConnectableObservable;
 
 /**
  * @author Francesco Pontillo
@@ -137,7 +138,7 @@ public class TwitterExtractor extends Extractor {
     }
 
     @Override
-    public Observable<Message> getMessages(final ExtractionParameters parameters) {
+    public ConnectableObservable<Message> getMessages(final ExtractionParameters parameters) {
         Observable<Message> messages = null;
 
         // validate parameters
@@ -146,7 +147,7 @@ public class TwitterExtractor extends Extractor {
         } catch (ExtractorException e) {
             System.err.println(e);
             messages = Observable.empty();
-            return messages;
+            return messages.publish();
         }
 
         return getRunnerInstance().getMessages(parameters);

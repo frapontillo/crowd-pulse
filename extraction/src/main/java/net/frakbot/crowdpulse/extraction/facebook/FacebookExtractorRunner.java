@@ -38,7 +38,7 @@ public class FacebookExtractorRunner {
     private static final int POSTS_PER_PAGE = 50;
     private static final int POSTS_POLLING_MINUTES = 1;
 
-    public Observable<Message> getMessages(final ExtractionParameters parameters) {
+    public ConnectableObservable<Message> getMessages(final ExtractionParameters parameters) {
 
         // initialize the facebook instances
         try {
@@ -119,8 +119,6 @@ public class FacebookExtractorRunner {
             @Override public void onNext(Message message) {
             }
         });
-        // from this moment on, start fetching messages
-        messages.connect();
 
         return messages;
     }

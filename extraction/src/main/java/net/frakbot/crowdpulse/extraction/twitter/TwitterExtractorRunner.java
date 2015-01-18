@@ -42,7 +42,7 @@ public class TwitterExtractorRunner {
     private static final String DATE_FORMAT = "yyyy-MM-dd";
     private static final int TWEETS_PER_PAGE = 1;
 
-    public Observable<Message> getMessages(final ExtractionParameters parameters) {
+    public ConnectableObservable<Message> getMessages(final ExtractionParameters parameters) {
 
         // initialize the twitter instances
         try {
@@ -55,7 +55,7 @@ public class TwitterExtractorRunner {
         // create the old messages Observable
         Observable<Message> oldMessages = Observable.create(new Observable.OnSubscribe<Message>() {
             @Override public void call(Subscriber<? super Message> subscriber) {
-                System.out.println("Started searching.");
+                System.out.println("SEARCH: started.");
                 getOldMessages(parameters, subscriber);
             }
         });
@@ -63,7 +63,7 @@ public class TwitterExtractorRunner {
         // create the new messages (streamed) Observable
         Observable<Message> newMessages = Observable.create(new Observable.OnSubscribe<Message>() {
             @Override public void call(Subscriber<? super Message> subscriber) {
-                System.out.println("Started streaming.");
+                System.out.println("STREAMING: started.");
                 getNewMessages(parameters, subscriber);
             }
         });
@@ -101,8 +101,6 @@ public class TwitterExtractorRunner {
             @Override public void onNext(Message message) {
             }
         });
-        // from this moment on, start fetching tweets
-        messages.connect();
 
         return messages;
     }
@@ -165,6 +163,11 @@ public class TwitterExtractorRunner {
      * @param subscriber The {@link rx.Subscriber} that will be notified of new tweets, errors and completion.
      */
     private void getNewMessages(ExtractionParameters parameters, final Subscriber<? super Message> subscriber) {
+        long timeToDeath = parameters.getUntil().getTime() - new Date().getTime();
+        if (timeToDeath <= 0) {
+            subscriber.onCompleted();
+            return;
+        }
         try {
             TwitterStream twitterStream = getTwitterStreamInstance();
             final TwitterMessageConverter converter = new TwitterMessageConverter(parameters);

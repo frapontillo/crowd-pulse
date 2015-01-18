@@ -22,7 +22,7 @@ import net.frakbot.crowdpulse.extraction.exception.ExtractorException;
 import net.frakbot.crowdpulse.extraction.exception.InvalidParametersExtractorException;
 import net.frakbot.crowdpulse.extraction.exception.MissingParametersExtractorException;
 import net.frakbot.crowdpulse.extraction.util.StringUtil;
-import rx.Observable;
+import rx.observables.ConnectableObservable;
 
 import java.util.List;
 
@@ -180,5 +180,5 @@ public abstract class Extractor {
      * @param parameters {@link net.frakbot.crowdpulse.extraction.cli.ExtractionParameters} to search for.
      * @return {@link rx.Observable<net.frakbot.crowdpulse.data.entity.Message>}
      */
-    public abstract Observable<Message> getMessages(ExtractionParameters parameters);
+    public abstract ConnectableObservable<Message> getMessages(ExtractionParameters parameters);
 }
