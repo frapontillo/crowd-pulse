@@ -41,7 +41,7 @@ public class TwitterExtractorRunner {
     private static TwitterStream twitterStream;
 
     private static final String DATE_FORMAT = "yyyy-MM-dd";
-    private static final int TWEETS_PER_PAGE = 1;
+    private static final int TWEETS_PER_PAGE = 200;
 
     public ConnectableObservable<Message> getMessages(final ExtractionParameters parameters) {
 
@@ -54,12 +54,26 @@ public class TwitterExtractorRunner {
         }
 
         // create the old messages Observable
-        Observable<Message> oldMessages = Observable.create(new Observable.OnSubscribe<Message>() {
-            @Override public void call(Subscriber<? super Message> subscriber) {
-                Logger.getLogger().info("SEARCH: started.");
-                getOldMessages(parameters, subscriber);
-            }
-        });
+        Observable<Message> oldMessages;
+        if (StringUtil.isNullOrEmpty(parameters.getFromUser())) {
+            // if the generating user is not specified, we need to use the Search API
+            // which are very limited in the time span they can search (6-9 days top)
+            oldMessages = Observable.create(new Observable.OnSubscribe<Message>() {
+                @Override public void call(Subscriber<? super Message> subscriber) {
+                    Logger.getLogger().info("SEARCH: started.");
+                    getOldMessagesBySearch(parameters, subscriber);
+                }
+            });
+        } else {
+            // otherwise, we can use the author's timeline, but we have to manually filter on:
+            // query, location, to user, referenced users, since, until, language, locale
+            oldMessages = Observable.create(new Observable.OnSubscribe<Message>() {
+                @Override public void call(Subscriber<? super Message> subscriber) {
+                    Logger.getLogger().info("SEARCH: started.");
+                    getOldMessagesByTimeline(parameters, subscriber);
+                }
+            });
+        }
 
         // create the new messages (streamed) Observable
         Observable<Message> newMessages = Observable.create(new Observable.OnSubscribe<Message>() {
@@ -130,7 +144,7 @@ public class TwitterExtractorRunner {
      *                   settings.
      * @param subscriber The {@link rx.Subscriber} that will be notified of new tweets, errors and completion.
      */
-    private void getOldMessages(ExtractionParameters parameters, Subscriber<? super Message> subscriber) {
+    private void getOldMessagesBySearch(ExtractionParameters parameters, Subscriber<? super Message> subscriber) {
         try {
             Twitter twitter = getTwitterInstance();
             Query query = buildQuery(parameters);
@@ -147,6 +161,65 @@ public class TwitterExtractorRunner {
                 }
                 // get the next page query
                 query = result.nextQuery();
+            }
+            // at this point, there is no other available query: we have finished
+            subscriber.onCompleted();
+        } catch (TwitterException e) {
+            subscriber.onError(e);
+        }
+    }
+
+    /**
+     * Download all old messages (maximum 3200) that match the {@link net.frakbot.crowdpulse.extraction.cli
+     * .ExtractionParameters} from the author user's timeline.
+     * For this reason, call this method only if the "from" user is defined.
+     *
+     * @param parameters The {@link net.frakbot.crowdpulse.extraction.cli.ExtractionParameters} with all extraction
+     *                   settings.
+     * @param subscriber The {@link rx.Subscriber} that will be notified of new tweets, errors and completion.
+     */
+    private void getOldMessagesByTimeline(ExtractionParameters parameters, Subscriber<? super Message> subscriber) {
+        try {
+            Twitter twitter = getTwitterInstance();
+            Paging paging = new Paging().count(TWEETS_PER_PAGE);
+            TwitterMessageConverter converter = new TwitterMessageConverter(parameters);
+            // query can be null if we reach the end of the search result pages
+            while (paging != null) {
+                // get the tweets
+                ResponseList<Status> tweetList = twitter.getUserTimeline(parameters.getFromUser(), paging);
+
+                long maxId = -1;
+                // if there are no tweets, we reached the end of the search, otherwise get the latest ID
+                if (!tweetList.isEmpty()) {
+                    maxId = tweetList.get(tweetList.size() - 1).getId();
+                } else {
+                    paging = null;
+                }
+
+                // convert the whole list
+                List<Message> messageList = converter.fromExtractor(tweetList);
+                // notify the subscriber of new tweets
+                for (Message message : messageList) {
+                    if (Checker.checkQuery(parameters).call(message) &&
+                            Checker.checkLocation(parameters).call(message) &&
+                            Checker.checkToUser(parameters).call(message) &&
+                            Checker.checkReferencedUsers(parameters).call(message) &&
+                            Checker.checkSinceDate(parameters).call(message) &&
+                            Checker.checkUntilDate(parameters).call(message) &&
+                            Checker.checkLanguage(parameters).call(message)) {
+                        subscriber.onNext(message);
+                    }
+                    // since tweets are in inverse chronological order, if the current tweet is already past the
+                    // "since" threshold, all following tweets are too, so we can exit the loop and complete
+                    if (!Checker.checkSinceDate(parameters).call(message)) {
+                        paging = null;
+                    }
+                }
+
+                // get the next page
+                if (paging != null) {
+                    paging.setMaxId(maxId - 1);
+                }
             }
             // at this point, there is no other available query: we have finished
             subscriber.onCompleted();

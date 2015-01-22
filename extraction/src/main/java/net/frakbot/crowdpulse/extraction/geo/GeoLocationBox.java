@@ -81,4 +81,9 @@ public class GeoLocationBox {
         boundingBox[1][1] = latitude - Math.toDegrees(distance/R);
         return boundingBox;
     }
+
+    public boolean contains(double latitude, double longitude) {
+        // TODO: implement this
+        return true;
+    }
 }

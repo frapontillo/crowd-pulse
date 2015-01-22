@@ -20,6 +20,7 @@ import net.frakbot.crowdpulse.data.entity.Message;
 import net.frakbot.crowdpulse.extraction.MessageConverter;
 import net.frakbot.crowdpulse.extraction.cli.ExtractionParameters;
 import net.frakbot.crowdpulse.extraction.util.StringUtil;
+import twitter4j.GeoLocation;
 import twitter4j.Status;
 
 import java.util.ArrayList;
@@ -45,6 +46,11 @@ public class TwitterMessageConverter extends MessageConverter<Status> {
             message.setToUsers(toIds);
         }
         message.setDate(original.getCreatedAt());
+        if (original.getGeoLocation() != null) {
+            message.setLatitude(original.getGeoLocation().getLatitude());
+            message.setLongitude(original.getGeoLocation().getLongitude());
+        }
+        message.setLanguage(original.getLang());
         return message;
     }
 }

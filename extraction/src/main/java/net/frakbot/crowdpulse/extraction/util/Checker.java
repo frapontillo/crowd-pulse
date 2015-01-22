@@ -92,4 +92,21 @@ public class Checker {
             }
         };
     }
+
+    public static Func1<Message, Boolean> checkLanguage(final ExtractionParameters parameters) {
+        return new Func1<Message, Boolean>() {
+            @Override public Boolean call(Message message) {
+                return parameters.getLanguage() == null || parameters.getLanguage().equals(message.getLanguage());
+            }
+        };
+    }
+
+    public static Func1<Message, Boolean> checkLocation(final ExtractionParameters parameters) {
+        return new Func1<Message, Boolean>() {
+            @Override public Boolean call(Message message) {
+                return parameters.getGeoLocationBox() == null ||
+                        parameters.getGeoLocationBox().contains(message.getLatitude(), message.getLongitude());
+            }
+        };
+    }
 }
