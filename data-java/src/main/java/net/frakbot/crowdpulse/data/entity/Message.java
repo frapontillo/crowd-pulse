@@ -30,6 +30,9 @@ public class Message extends Entity {
     private List<String> refUsers;
     private Date date;
     private List<String> tags;
+    private String language;
+    private double latitude;
+    private double longitude;
 
     public String getText() {
         return text;
@@ -85,5 +88,29 @@ public class Message extends Entity {
 
     public void setTags(List<String> tags) {
         this.tags = tags;
+    }
+
+    public String getLanguage() {
+        return language;
+    }
+
+    public void setLanguage(String language) {
+        this.language = language;
+    }
+
+    public double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
+    }
+
+    public double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
     }
 }

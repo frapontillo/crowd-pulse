@@ -24,7 +24,10 @@ var MessageSchema = new mongoose.Schema({
   toUsers: [String],
   refUsers: [String],
   date: Date,
-  tags: [String]
+  tags: [String],
+  language: String,
+  latitude: Number,
+  longitude: Number
 });
 
 var SCHEMA_NAME = 'Message';
