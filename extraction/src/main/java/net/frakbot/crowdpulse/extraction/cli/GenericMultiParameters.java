@@ -14,28 +14,23 @@
  * limitations under the License.
  */
 
-package net.frakbot.crowdpulse.extraction.util;
+package net.frakbot.crowdpulse.extraction.cli;
 
+import com.beust.jcommander.Parameter;
+import com.beust.jcommander.Parameters;
+
+import java.io.File;
 import java.util.List;
 
 /**
  * @author Francesco Pontillo
  */
-public class StringUtil {
-    public static boolean isNullOrEmpty(String string) {
-        return (string == null || string.equals(""));
-    }
+@Parameters(separators = "=")
+public class GenericMultiParameters {
+    @Parameter(description = "File containing single extraction parameters")
+    private List<File> file;
 
-    public static String join(List<String> list, String with) {
-        StringBuilder builder = new StringBuilder();
-        if (list == null) {
-            return "";
-        }
-        for (String el : list) {
-            builder.append(el);
-            builder.append(with);
-        }
-        builder.replace(builder.length() - with.length(), builder.length() - 1 + with.length(), "");
-        return builder.toString();
+    public File getFile() {
+        return file.get(0);
     }
 }

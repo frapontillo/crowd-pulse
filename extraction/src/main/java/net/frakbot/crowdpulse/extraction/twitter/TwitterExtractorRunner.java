@@ -26,7 +26,6 @@ import rx.functions.Func1;
 import rx.observables.ConnectableObservable;
 import rx.schedulers.Schedulers;
 import twitter4j.*;
-import twitter4j.conf.ConfigurationBuilder;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -37,8 +36,6 @@ import java.util.concurrent.TimeUnit;
  * @author Francesco Pontillo
  */
 public class TwitterExtractorRunner {
-    private static Twitter twitter;
-    private static TwitterStream twitterStream;
 
     private static final String DATE_FORMAT = "yyyy-MM-dd";
     private static final int TWEETS_PER_PAGE = 200;
@@ -285,15 +282,7 @@ public class TwitterExtractorRunner {
      * @throws TwitterException if the client could not be built.
      */
     private Twitter getTwitterInstance() throws TwitterException {
-        if (twitter == null) {
-            ConfigurationBuilder cb = new ConfigurationBuilder()
-                    .setApplicationOnlyAuthEnabled(true)
-                    .setDebugEnabled(false);
-            TwitterFactory tf = new TwitterFactory(cb.build());
-            twitter = tf.getInstance();
-            twitter.getOAuth2Token();
-        }
-        return twitter;
+        return TwitterFactory.getTwitterInstance();
     }
 
     /**
@@ -303,10 +292,7 @@ public class TwitterExtractorRunner {
      * @throws TwitterException if the client could not be built.
      */
     private TwitterStream getTwitterStreamInstance() throws TwitterException {
-        if (twitterStream == null) {
-            twitterStream = new TwitterStreamFactory().getInstance();
-        }
-        return twitterStream;
+        return TwitterFactory.getTwitterStreamInstance();
     }
 
     /**

@@ -14,28 +14,13 @@
  * limitations under the License.
  */
 
-package net.frakbot.crowdpulse.extraction.util;
-
-import java.util.List;
+package net.frakbot.crowdpulse.extraction.exception;
 
 /**
  * @author Francesco Pontillo
  */
-public class StringUtil {
-    public static boolean isNullOrEmpty(String string) {
-        return (string == null || string.equals(""));
-    }
-
-    public static String join(List<String> list, String with) {
-        StringBuilder builder = new StringBuilder();
-        if (list == null) {
-            return "";
-        }
-        for (String el : list) {
-            builder.append(el);
-            builder.append(with);
-        }
-        builder.replace(builder.length() - with.length(), builder.length() - 1 + with.length(), "");
-        return builder.toString();
+public class ProfilerException extends Exception {
+    public ProfilerException(String message) {
+        super(message);
     }
 }

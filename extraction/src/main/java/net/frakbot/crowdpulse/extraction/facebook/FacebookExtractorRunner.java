@@ -34,8 +34,6 @@ import java.util.concurrent.TimeUnit;
  * @author Francesco Pontillo
  */
 public class FacebookExtractorRunner {
-    private static Facebook facebook;
-
     private static final int POSTS_PER_PAGE = 250;
     private static final int POSTS_POLLING_MINUTES = 1;
 
@@ -111,7 +109,11 @@ public class FacebookExtractorRunner {
         messages.subscribe(new Subscriber<Message>() {
             @Override public void onCompleted() {
                 // cleanup Facebook
-                facebook.shutdown();
+                try {
+                    getFacebookInstance().shutdown();
+                } catch (FacebookException e) {
+                    e.printStackTrace();
+                }
             }
 
             @Override public void onError(Throwable e) {
@@ -218,11 +220,7 @@ public class FacebookExtractorRunner {
      * @throws facebook4j.FacebookException if the client could not be built.
      */
     private Facebook getFacebookInstance() throws FacebookException {
-        if (facebook == null) {
-            facebook = new FacebookFactory().getInstance();
-            facebook.getOAuthAppAccessToken();
-        }
-        return facebook;
+        return FacebookFactory.getFacebookInstance();
     }
 
     /**

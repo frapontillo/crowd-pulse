@@ -28,26 +28,26 @@ import java.util.List;
 /**
  * @author Francesco Pontillo
  */
-public class MultiMain {
+public class ProfileMultiMain {
     public static void main(String[] args) throws IOException {
 
         long startTime = System.nanoTime();
-        Logger.getLogger().debug("Multiple extraction started.");
+        Logger.getLogger().debug("Multiple profiling started.");
 
-        MultiExtractionParameters params = new MultiExtractionParameters();
+        GenericMultiParameters params = new GenericMultiParameters();
         new JCommander(params, args);
         Logger.getLogger().debug("Parameters read.");
 
         List<String> lines = Files.readAllLines(Paths.get(params.getFile().getAbsolutePath()), Charset.forName("UTF-8"));
         if (lines != null) {
             for (String line : lines) {
-                Main.main(line.split(" "));
+                ProfileMain.main(line.split(" "));
             }
         }
 
         long endTime = System.nanoTime();
         double durationSeconds = ((endTime - startTime) * Math.pow(10, -9));
 
-        Logger.getLogger().info("Multiple extraction completed in {} seconds.", durationSeconds);
+        Logger.getLogger().info("Multiple profiling completed in {} seconds.", durationSeconds);
     }
 }
