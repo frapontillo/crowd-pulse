@@ -14,23 +14,13 @@
  * limitations under the License.
  */
 
-package net.frakbot.crowdpulse.extraction.cli;
+package net.frakbot.crowdpulse.data.repository;
 
-import com.beust.jcommander.Parameter;
-import com.beust.jcommander.Parameters;
-
-import java.io.File;
-import java.util.List;
+import net.frakbot.crowdpulse.data.entity.Profile;
+import org.bson.types.ObjectId;
 
 /**
  * @author Francesco Pontillo
  */
-@Parameters(separators = "=")
-public class MultiExtractionParameters {
-    @Parameter(description = "File containing single extraction parameters")
-    private List<File> file;
-
-    public File getFile() {
-        return file.get(0);
-    }
+public class ProfileRepository extends Repository<Profile, ObjectId> {
 }

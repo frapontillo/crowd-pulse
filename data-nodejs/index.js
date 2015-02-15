@@ -40,6 +40,7 @@ var DataLayer = function() {
   self.RefreshTokenModel = require('./model/refreshToken')(mongoose);
   self.UserModel = require('./model/user')(mongoose);
   self.MessageModel = require('./model/message')(mongoose);
+  self.ProfileModel = require('./model/profile')(mongoose);
   self.ObjectId = mongoose.Types.ObjectId;
 
   self.connect = function(uri, options) {
