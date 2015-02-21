@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Francesco Pontillo
+ * Copyright 2015 Francesco Pontillo
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,22 +14,13 @@
  * limitations under the License.
  */
 
-apply plugin: 'java'
-apply plugin: 'application'
+package net.frakbot.crowdpulse.social.exception;
 
-sourceCompatibility = 1.7
-targetCompatibility = 1.7
-
-version = '1.0'
-mainClassName = 'Main'
-
-run {
-    main = 'Main'
-    standardInput = System.in
-}
-
-dependencies {
-    compile group: 'org.glassfish.jersey.containers', name: 'jersey-container-grizzly2-http', version: '2.13'
-    compile group: 'org.glassfish.jersey.media', name: 'jersey-media-moxy', version: '2.13'
-    testCompile group: 'junit', name: 'junit', version: '4.11'
+/**
+ * @author Francesco Pontillo
+ */
+public class InvalidParametersSocialException extends SocialException {
+    public InvalidParametersSocialException(String message) {
+        super(message);
+    }
 }

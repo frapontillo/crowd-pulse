@@ -17,17 +17,14 @@
 package net.frakbot.crowdpulse.admin.cli.operation;
 
 import net.frakbot.crowdpulse.admin.cli.command.CommandProjectFetch;
-import net.frakbot.crowdpulse.admin.cli.command.CommandProjectList;
 import net.frakbot.crowdpulse.admin.cli.json.PulseGson;
 import net.frakbot.crowdpulse.data.entity.Project;
 import net.frakbot.crowdpulse.data.repository.ProjectRepository;
 import org.bson.types.ObjectId;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.List;
 
 /**
  * @author Francesco Pontillo

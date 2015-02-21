@@ -17,11 +17,9 @@
 package net.frakbot.crowdpulse.admin.cli.operation;
 
 import net.frakbot.crowdpulse.admin.cli.command.CommandProjectEdit;
-import net.frakbot.crowdpulse.admin.cli.command.CommandProjectFetch;
 import net.frakbot.crowdpulse.admin.cli.json.PulseGson;
 import net.frakbot.crowdpulse.data.entity.Project;
 import net.frakbot.crowdpulse.data.repository.ProjectRepository;
-import org.bson.types.ObjectId;
 
 import java.io.*;
 

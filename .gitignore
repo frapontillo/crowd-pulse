@@ -5,7 +5,6 @@
 */node_modules/
 build/
 gradle/
-extraction/src/main/resources/twitter4j.properties
-extraction/src/main/resources/facebook4j.properties
-extraction/src/main/resources/database.properties
-admin-cli/src/main/resources/database.properties
+temp/
+social-cli/src/main/resources/*.properties
+admin-cli/src/main/resources/*.properties

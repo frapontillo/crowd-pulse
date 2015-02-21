@@ -23,8 +23,6 @@ import net.frakbot.crowdpulse.data.entity.Message;
 import org.mongodb.morphia.Datastore;
 import org.mongodb.morphia.Morphia;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.UnknownHostException;
@@ -52,7 +50,7 @@ public class DataLayer {
     private static final String PROP_DATABASE_PASSWORD = "database.password";
 
     /**
-     * Get a singleton instance of {@link net.frakbot.crowdpulse.data.repository.DataLayer}, by reading a
+     * Get a singleton instance of {@link DataLayer}, by reading a
      * {@code database.properties} file in the classpath. The configuration file must have the following:
      * - database.host, the server host of the DB instance
      * - database.port, the server port of the DB instance
@@ -60,7 +58,7 @@ public class DataLayer {
      * - database.username, the username with access to the collection
      * - database.password, the password of the user with access to the collection
      *
-     * @return A setup instance of {@link net.frakbot.crowdpulse.data.repository.DataLayer}.
+     * @return A setup instance of {@link DataLayer}.
      */
     public static synchronized DataLayer getDataLayer() {
         if (dataLayer == null) {

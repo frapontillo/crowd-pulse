@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Francesco Pontillo
+ * Copyright 2015 Francesco Pontillo
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,22 +14,23 @@
  * limitations under the License.
  */
 
-apply plugin: 'java'
-apply plugin: 'application'
+package net.frakbot.crowdpulse.social.cli;
 
-sourceCompatibility = 1.7
-targetCompatibility = 1.7
+import com.beust.jcommander.Parameter;
+import com.beust.jcommander.Parameters;
 
-version = '1.0'
-mainClassName = 'Main'
+import java.io.File;
+import java.util.List;
 
-run {
-    main = 'Main'
-    standardInput = System.in
-}
+/**
+ * @author Francesco Pontillo
+ */
+@Parameters(separators = "=")
+public class GenericMultiParameters {
+    @Parameter(description = "File containing single extraction parameters")
+    private List<File> file;
 
-dependencies {
-    compile group: 'org.glassfish.jersey.containers', name: 'jersey-container-grizzly2-http', version: '2.13'
-    compile group: 'org.glassfish.jersey.media', name: 'jersey-media-moxy', version: '2.13'
-    testCompile group: 'junit', name: 'junit', version: '4.11'
+    public File getFile() {
+        return file.get(0);
+    }
 }

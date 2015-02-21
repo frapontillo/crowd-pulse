@@ -16,7 +16,10 @@
 
 rootProject.name = 'crowd-pulse'
 
-include 'extraction'
+include 'social'
+include 'social-facebook'
+include 'social-twitter'
+include 'social-cli'
 
 include 'oauth-service'
 include 'web-service'
