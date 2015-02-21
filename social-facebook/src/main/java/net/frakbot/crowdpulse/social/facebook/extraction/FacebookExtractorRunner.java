@@ -248,10 +248,10 @@ public class FacebookExtractorRunner {
     }
 
     /**
-     * Creates a {@link twitter4j.Query} object from some {@link net.frakbot.crowdpulse.social.extraction.ExtractionParameters}.
+     * Creates a {@link facebook4j.Reading} object from some {@link net.frakbot.crowdpulse.social.extraction.ExtractionParameters}.
      *
      * @param parameters The source-independent search parameters.
-     * @return A {@link twitter4j.Query} Twitter object.
+     * @return A {@link facebook4j.Reading} Twitter object.
      */
     private Reading buildQuery(ExtractionParameters parameters) {
         Reading query = new Reading();

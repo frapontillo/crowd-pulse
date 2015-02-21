@@ -38,6 +38,9 @@ public class TwitterProfileConverter extends ProfileConverter<User> {
         profile.setActivationDate(original.getCreatedAt());
         profile.setFollowings(original.getFriendsCount());
         profile.setFollowers(original.getFollowersCount());
+        profile.setLanguage(original.getLang());
+        profile.setLocation(original.getLocation());
+        // latitude and longitude are not directly exposed by Twitter
         return profile;
     }
 

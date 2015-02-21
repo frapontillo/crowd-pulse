@@ -21,6 +21,7 @@ import facebook4j.User;
 import net.frakbot.crowdpulse.data.entity.Profile;
 import net.frakbot.crowdpulse.social.profile.ProfileParameters;
 import net.frakbot.crowdpulse.social.profile.ProfileConverter;
+import net.frakbot.crowdpulse.social.util.StringUtil;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -36,6 +37,7 @@ public class FacebookProfileConverter extends ProfileConverter<Object> {
     public static final String DATA_ACTIVATION_DATE = "DATA_ACTIVATION_DATE";
     public static final String DATA_FOLLOWINGS_COUNT = "DATA_FOLLOWINGS_COUNT";
     public static final String DATA_FOLLOWERS_COUNT = "DATA_FOLLOWERS_COUNT";
+    public static final String DATA_LOCATION_PAGE = "DATA_LOCATION_PAGE";
 
     public FacebookProfileConverter(ProfileParameters parameters) {
         super(parameters);
@@ -49,9 +51,27 @@ public class FacebookProfileConverter extends ProfileConverter<Object> {
         }
         String objectType = (String) additionalData.get(DATA_OBJECT_TYPE);
         if (objectType.equals(DATA_OBJECT_TYPE_USER)) {
-            profile.setUsername(((User) original).getId());
+            User user = (User) original;
+            profile.setUsername(user.getId());
+            // set the language as ISO-3 ("en", "it", etc.)
+            profile.setLanguage(user.getLocale().getISO3Language());
         } else if (objectType.equals(DATA_OBJECT_TYPE_PAGE)) {
             profile.setUsername(((Page)original).getId());
+            // TODO: find a way to set language for pages
+        }
+
+        Page locationPage = (Page) additionalData.get(DATA_LOCATION_PAGE);
+        if (locationPage != null && locationPage.getLocation() != null) {
+            // set coordinates
+            if (locationPage.getLocation().getLongitude() != null) {
+                profile.setLongitude(locationPage.getLocation().getLongitude());
+            }
+            if (locationPage.getLocation().getLatitude() != null) {
+                profile.setLatitude(locationPage.getLocation().getLatitude());
+            }
+            // set the location name
+            profile.setLocation(StringUtil.join(", ", true, locationPage.getLocation().getCity(),
+                    locationPage.getLocation().getState(), locationPage.getLocation().getCountry()));
         }
 
         profile.setActivationDate((Date) additionalData.get(DATA_ACTIVATION_DATE));

@@ -16,6 +16,7 @@
 
 package net.frakbot.crowdpulse.social.facebook.profile;
 
+import net.frakbot.crowdpulse.social.facebook.FacebookFactory;
 import facebook4j.*;
 import facebook4j.internal.org.json.JSONException;
 import facebook4j.internal.org.json.JSONObject;
@@ -39,7 +40,7 @@ public class FacebookProfilerRunner {
 
         // initialize the twitter instance
         try {
-            net.frakbot.crowdpulse.social.facebook.FacebookFactory.getFacebookInstance();
+            FacebookFactory.getFacebookInstance();
         } catch (FacebookException e) {
             e.printStackTrace();
         }
@@ -59,7 +60,7 @@ public class FacebookProfilerRunner {
                     includeMetadata.metadata();
                     HashMap<String, String> rawMap = new HashMap<String, String>();
                     rawMap.put("metadata", "1");
-                    RawAPIResponse res = net.frakbot.crowdpulse.social.facebook.FacebookFactory.getFacebookInstance().rawAPI().callGetAPI(parameters.getProfile(), rawMap);
+                    RawAPIResponse res = FacebookFactory.getFacebookInstance().rawAPI().callGetAPI(parameters.getProfile(), rawMap);
 
                     // we now have the full JSON, so we go into it and check the object type
                     JSONObject json = res.asJSONObject();
@@ -70,25 +71,31 @@ public class FacebookProfilerRunner {
                         jsonType = null;
                     }
 
+                    Page locationPage = null;
+
                     if (jsonType.equals("user")) {
                         // if the profile is a user, fetch both friends and followers (subscribers)
                         userOrPage = DataObjectFactory.createUser(res.asString());
                         objectType = FacebookProfileConverter.DATA_OBJECT_TYPE_USER;
-                        followings = net.frakbot.crowdpulse.social.facebook.FacebookFactory.getFacebookInstance().friends()
+                        followings = FacebookFactory.getFacebookInstance().friends()
                                 .getFriends(parameters.getProfile()).getCount();
-                        followers = net.frakbot.crowdpulse.social.facebook.FacebookFactory.getFacebookInstance()
+                        followers = FacebookFactory.getFacebookInstance()
                                 .getSubscribers(parameters.getProfile()).getCount();
+                        locationPage = FacebookFactory.getFacebookInstance().getPage(((User)userOrPage).getLocation().getId());
                     } else if (jsonType.equals("page")) {
                         // if the profile is a page, followings stays to 0
                         userOrPage = DataObjectFactory.createPage(res.asString());
                         objectType = FacebookProfileConverter.DATA_OBJECT_TYPE_PAGE;
-                        followers = ((Page) userOrPage).getLikes();
+                        Page page = (Page) userOrPage;
+                        followers = page.getLikes();
+                        locationPage = page;
                     }
 
                     HashMap<String, Object> conversionMap = new HashMap<String, Object>();
                     conversionMap.put(FacebookProfileConverter.DATA_OBJECT_TYPE, objectType);
                     conversionMap.put(FacebookProfileConverter.DATA_FOLLOWINGS_COUNT, followings);
                     conversionMap.put(FacebookProfileConverter.DATA_FOLLOWERS_COUNT, followers);
+                    conversionMap.put(FacebookProfileConverter.DATA_LOCATION_PAGE, locationPage);
 
                     // convert the user or page
                     Profile profile = new FacebookProfileConverter(parameters).fromExtractor(userOrPage, conversionMap);

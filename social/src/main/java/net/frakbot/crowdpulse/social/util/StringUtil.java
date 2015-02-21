@@ -16,6 +16,8 @@
 
 package net.frakbot.crowdpulse.social.util;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -26,16 +28,31 @@ public class StringUtil {
         return (string == null || string.equals(""));
     }
 
-    public static String join(List<String> list, String with) {
+    public static String join(List<String> list, String with, boolean skipNull) {
         StringBuilder builder = new StringBuilder();
         if (list == null) {
             return "";
         }
         for (String el : list) {
-            builder.append(el);
-            builder.append(with);
+            if (!(skipNull && isNullOrEmpty(el))) {
+                builder.append(el).append(with);
+            }
         }
-        builder.replace(builder.length() - with.length(), builder.length() - 1 + with.length(), "");
+        if (builder.length() - with.length() > 0) {
+            builder.replace(builder.length() - with.length(), builder.length() - 1 + with.length(), "");
+        }
         return builder.toString();
+    }
+
+    public static String join(List<String> list, String with) {
+        return join(list, with, false);
+    }
+
+    public static String join(String with, boolean skipNull, String... params) {
+        return join(Arrays.asList(params), with, skipNull);
+    }
+
+    public static String join(String with, String... params) {
+        return join(with, false, params);
     }
 }
