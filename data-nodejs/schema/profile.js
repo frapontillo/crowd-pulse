@@ -23,7 +23,11 @@ var ProfileSchema = new mongoose.Schema({
   tags: [String],
   activationDate: Date,
   followers: Number,
-  following: Number
+  following: Number,
+  language: String,
+  location: String,
+  latitude: Number,
+  longitude: Number
 });
 
 var SCHEMA_NAME = 'Profile';

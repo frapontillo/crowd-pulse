@@ -31,8 +31,8 @@ public class Message extends Entity {
     private Date date;
     private List<String> tags;
     private String language;
-    private double latitude;
-    private double longitude;
+    private Double latitude;
+    private Double longitude;
 
     public String getText() {
         return text;
@@ -106,11 +106,11 @@ public class Message extends Entity {
         this.latitude = latitude;
     }
 
-    public double getLongitude() {
+    public Double getLongitude() {
         return longitude;
     }
 
-    public void setLongitude(double longitude) {
+    public void setLongitude(Double longitude) {
         this.longitude = longitude;
     }
 }

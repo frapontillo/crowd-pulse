@@ -29,6 +29,10 @@ public class Profile extends Entity {
     private Date activationDate;
     private long followers;
     private long followings;
+    private String language;
+    private String location;
+    private Double latitude;
+    private Double longitude;
 
     public String getSource() {
         return source;
@@ -76,5 +80,37 @@ public class Profile extends Entity {
 
     public void setFollowings(long following) {
         this.followings = following;
+    }
+
+    public String getLanguage() {
+        return language;
+    }
+
+    public void setLanguage(String language) {
+        this.language = language;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
+    }
+
+    public Double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(Double latitude) {
+        this.latitude = latitude;
+    }
+
+    public Double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(Double longitude) {
+        this.longitude = longitude;
     }
 }
