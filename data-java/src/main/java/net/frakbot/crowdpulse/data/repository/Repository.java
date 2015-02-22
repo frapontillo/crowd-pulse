@@ -16,7 +16,9 @@
 
 package net.frakbot.crowdpulse.data.repository;
 
+import org.bson.types.ObjectId;
 import org.mongodb.morphia.dao.BasicDAO;
+import org.mongodb.morphia.query.Query;
 
 /**
  * @author Francesco Pontillo
@@ -24,5 +26,16 @@ import org.mongodb.morphia.dao.BasicDAO;
 public class Repository<T,K> extends BasicDAO<T,K> {
     protected Repository() {
         super(DataLayer.getDataLayer().getDatastore());
+    }
+
+    public Query<T> findBetweenIds(String fromId, String toId) {
+        Query<T> query = createQuery();
+        if (fromId != null) {
+            query.field("_id >= ").greaterThanOrEq(new ObjectId(fromId));
+        }
+        if (toId != null) {
+            query.field("_id >= ").lessThanOrEq(new ObjectId(toId));
+        }
+        return query;
     }
 }
