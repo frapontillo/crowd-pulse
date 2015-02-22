@@ -16,6 +16,8 @@
 
 rootProject.name = 'crowd-pulse'
 
+include 'common-util'
+
 include 'social'
 include 'social-facebook'
 include 'social-twitter'

@@ -24,8 +24,9 @@ import net.frakbot.crowdpulse.social.extraction.ExtractionParameters;
 import net.frakbot.crowdpulse.social.extraction.Extractor;
 import net.frakbot.crowdpulse.social.facebook.extraction.FacebookExtractor;
 import net.frakbot.crowdpulse.social.twitter.extraction.TwitterExtractor;
-import net.frakbot.crowdpulse.social.util.Logger;
-import net.frakbot.crowdpulse.social.util.StringUtil;
+import net.frakbot.crowdpulse.common.util.CrowdLogger;
+import net.frakbot.crowdpulse.common.util.StringUtil;
+import org.apache.logging.log4j.Logger;
 import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
@@ -48,14 +49,15 @@ public class ExtractionMain {
     }
 
     private static final CountDownLatch endSignal = new CountDownLatch(2);
+    private static final Logger logger = CrowdLogger.getLogger(ExtractionMain.class);
 
     public static void main(String[] args) throws IOException {
 
-        Logger.getLogger().debug("Extraction started.");
+        logger.debug("Extraction started.");
 
         ExtractionParameters params = new ExtractionParameters();
         new JCommander(params, args);
-        Logger.getLogger().debug("Parameters read.");
+        logger.debug("Parameters read.");
         Extractor extractor = ExtractorCollection.getExtractorImplByParams(params);
 
         ConnectableObservable<Message> messages = extractor.getMessages(params);
@@ -73,7 +75,7 @@ public class ExtractionMain {
             } catch (InterruptedException ignore) { }
         }
 
-        Logger.getLogger().debug("Done.");
+        logger.debug("Done.");
     }
 
     private static class MessageObserver implements Observer<Message> {
@@ -89,18 +91,18 @@ public class ExtractionMain {
         }
 
         @Override public void onCompleted() {
-            Logger.getLogger().debug("Message Stream ended.");
+            logger.debug("Message Stream ended.");
             endSignal.countDown();
         }
 
         @Override public void onError(Throwable e) {
-            Logger.getLogger().error("Message Stream errored.");
+            logger.error("Message Stream errored.");
             e.printStackTrace();
             endSignal.countDown();
         }
 
         @Override public void onNext(Message message) {
-            Logger.getLogger().info(tags + message.getText());
+            logger.info(tags + message.getText());
         }
     }
 
@@ -114,12 +116,12 @@ public class ExtractionMain {
         }
 
         @Override public void onCompleted() {
-            Logger.getLogger().debug("Buffered Message stream ended.");
+            logger.debug("Buffered Message stream ended.");
             endSignal.countDown();
         }
 
         @Override public void onError(Throwable e) {
-            Logger.getLogger().error("Buffered Message Stream errored.");
+            logger.error("Buffered Message Stream errored.");
             e.printStackTrace();
             endSignal.countDown();
         }

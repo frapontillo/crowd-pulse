@@ -19,7 +19,7 @@ package net.frakbot.crowdpulse.social.twitter.profile;
 import net.frakbot.crowdpulse.data.entity.Profile;
 import net.frakbot.crowdpulse.social.profile.ProfileParameters;
 import net.frakbot.crowdpulse.social.twitter.TwitterFactory;
-import net.frakbot.crowdpulse.social.util.Logger;
+import net.frakbot.crowdpulse.common.util.CrowdLogger;
 import rx.Observable;
 import rx.Subscriber;
 import rx.observables.ConnectableObservable;
@@ -31,6 +31,7 @@ import twitter4j.User;
  * @author Francesco Pontillo
  */
 public class TwitterProfilerRunner {
+    private static final org.apache.logging.log4j.Logger logger = CrowdLogger.getLogger(TwitterProfilerRunner.class);
 
     public ConnectableObservable<Profile> getProfile(final ProfileParameters parameters) {
 
@@ -43,7 +44,7 @@ public class TwitterProfilerRunner {
 
         Observable<Profile> profiles = Observable.create(new Observable.OnSubscribe<Profile>() {
             @Override public void call(Subscriber<? super Profile> subscriber) {
-                Logger.getLogger().info("PROFILER: started.");
+                logger.info("PROFILER: started.");
                 try {
                     // fetch and convert the user
                     User user = TwitterFactory.getTwitterInstance().showUser(parameters.getProfile());
@@ -55,7 +56,7 @@ public class TwitterProfilerRunner {
                 }
                 // immediately complete, there's nothing else to do
                 subscriber.onCompleted();
-                Logger.getLogger().info("PROFILER: ended.");
+                logger.info("PROFILER: ended.");
             }
         });
 

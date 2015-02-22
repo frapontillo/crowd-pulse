@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package net.frakbot.crowdpulse.social.util;
+package net.frakbot.crowdpulse.common.util;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;

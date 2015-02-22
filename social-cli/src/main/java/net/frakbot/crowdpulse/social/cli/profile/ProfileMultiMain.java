@@ -18,7 +18,8 @@ package net.frakbot.crowdpulse.social.cli.profile;
 
 import com.beust.jcommander.JCommander;
 import net.frakbot.crowdpulse.social.cli.GenericMultiParameters;
-import net.frakbot.crowdpulse.social.util.Logger;
+import net.frakbot.crowdpulse.common.util.CrowdLogger;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -30,14 +31,16 @@ import java.util.List;
  * @author Francesco Pontillo
  */
 public class ProfileMultiMain {
+    private static final Logger logger = CrowdLogger.getLogger(ProfileMultiMain.class);
+
     public static void main(String[] args) throws IOException {
 
         long startTime = System.nanoTime();
-        Logger.getLogger().debug("Multiple profiling started.");
+        logger.debug("Multiple profiling started.");
 
         GenericMultiParameters params = new GenericMultiParameters();
         new JCommander(params, args);
-        Logger.getLogger().debug("Parameters read.");
+        logger.debug("Parameters read.");
 
         List<String> lines = Files.readAllLines(Paths.get(params.getFile().getAbsolutePath()), Charset.forName("UTF-8"));
         if (lines != null) {
@@ -49,6 +52,6 @@ public class ProfileMultiMain {
         long endTime = System.nanoTime();
         double durationSeconds = ((endTime - startTime) * Math.pow(10, -9));
 
-        Logger.getLogger().info("Multiple profiling completed in {} seconds.", durationSeconds);
+        logger.info("Multiple profiling completed in {} seconds.", durationSeconds);
     }
 }

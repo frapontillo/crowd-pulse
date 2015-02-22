@@ -24,8 +24,9 @@ import net.frakbot.crowdpulse.social.profile.ProfileParameters;
 import net.frakbot.crowdpulse.social.profile.Profiler;
 import net.frakbot.crowdpulse.social.cli.ProfilerCollection;
 import net.frakbot.crowdpulse.social.twitter.profile.TwitterProfiler;
-import net.frakbot.crowdpulse.social.util.Logger;
-import net.frakbot.crowdpulse.social.util.StringUtil;
+import net.frakbot.crowdpulse.common.util.CrowdLogger;
+import net.frakbot.crowdpulse.common.util.StringUtil;
+import org.apache.logging.log4j.Logger;
 import rx.Observer;
 import rx.Subscription;
 import rx.observables.ConnectableObservable;
@@ -44,14 +45,15 @@ public class ProfileMain {
     }
 
     private static final CountDownLatch endSignal = new CountDownLatch(1);
+    private static final Logger logger = CrowdLogger.getLogger(ProfileMain.class);
 
     public static void main(String[] args) throws IOException {
 
-        Logger.getLogger().debug("Profiling started.");
+        logger.debug("Profiling started.");
 
         ProfileParameters params = new ProfileParameters();
         new JCommander(params, args);
-        Logger.getLogger().debug("Parameters read.");
+        logger.debug("Parameters read.");
         Profiler profiler = ProfilerCollection.getProfilerImplByParams(params);
 
         ConnectableObservable<Profile> profiles = profiler.getProfile(params);
@@ -66,7 +68,7 @@ public class ProfileMain {
             } catch (InterruptedException ignore) { }
         }
 
-        Logger.getLogger().debug("Done.");
+        logger.debug("Done.");
     }
 
     private static class ProfileObserver implements Observer<Profile> {
@@ -84,18 +86,18 @@ public class ProfileMain {
         }
 
         @Override public void onCompleted() {
-            Logger.getLogger().debug("Profiling ended.");
+            logger.debug("Profiling ended.");
             endSignal.countDown();
         }
 
         @Override public void onError(Throwable e) {
-            Logger.getLogger().error("Profiling errored.");
+            logger.error("Profiling errored.");
             e.printStackTrace();
             endSignal.countDown();
         }
 
         @Override public void onNext(Profile profile) {
-            Logger.getLogger().info(tags + profile.getUsername());
+            logger.info(tags + profile.getUsername());
             profileRepository.save(profile);
         }
     }

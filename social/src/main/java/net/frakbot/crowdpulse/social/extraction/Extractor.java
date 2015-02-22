@@ -20,7 +20,7 @@ import net.frakbot.crowdpulse.data.entity.Message;
 import net.frakbot.crowdpulse.social.exception.SocialException;
 import net.frakbot.crowdpulse.social.exception.InvalidParametersSocialException;
 import net.frakbot.crowdpulse.social.exception.MissingParametersSocialException;
-import net.frakbot.crowdpulse.social.util.StringUtil;
+import net.frakbot.crowdpulse.common.util.StringUtil;
 import rx.observables.ConnectableObservable;
 
 import java.util.List;

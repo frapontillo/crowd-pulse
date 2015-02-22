@@ -16,15 +16,18 @@
 
 package net.frakbot.crowdpulse.social.twitter.extraction;
 
+import net.frakbot.crowdpulse.common.util.*;
 import net.frakbot.crowdpulse.data.entity.Message;
 import net.frakbot.crowdpulse.social.extraction.ExtractionParameters;
 import net.frakbot.crowdpulse.social.util.*;
+import org.apache.logging.log4j.*;
 import rx.Observable;
 import rx.Subscriber;
 import rx.functions.Func1;
 import rx.observables.ConnectableObservable;
 import rx.schedulers.Schedulers;
 import twitter4j.*;
+import twitter4j.Logger;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -38,6 +41,7 @@ public class TwitterExtractorRunner {
 
     private static final String DATE_FORMAT = "yyyy-MM-dd";
     private static final int TWEETS_PER_PAGE = 200;
+    private static final org.apache.logging.log4j.Logger logger = CrowdLogger.getLogger(TwitterExtractorRunner.class);
 
     public ConnectableObservable<Message> getMessages(final ExtractionParameters parameters) {
 
@@ -56,7 +60,7 @@ public class TwitterExtractorRunner {
             // which are very limited in the time span they can search (6-9 days top)
             oldMessages = Observable.create(new Observable.OnSubscribe<Message>() {
                 @Override public void call(Subscriber<? super Message> subscriber) {
-                    net.frakbot.crowdpulse.social.util.Logger.getLogger().info("SEARCH: started.");
+                    logger.info("SEARCH: started.");
                     getOldMessagesBySearch(parameters, subscriber);
                 }
             });
@@ -65,7 +69,7 @@ public class TwitterExtractorRunner {
             // query, location, to user, referenced users, since, until, language, locale
             oldMessages = Observable.create(new Observable.OnSubscribe<Message>() {
                 @Override public void call(Subscriber<? super Message> subscriber) {
-                    net.frakbot.crowdpulse.social.util.Logger.getLogger().info("SEARCH: started.");
+                    logger.info("SEARCH: started.");
                     getOldMessagesByTimeline(parameters, subscriber);
                 }
             });
@@ -74,7 +78,7 @@ public class TwitterExtractorRunner {
         // create the new messages (streamed) Observable
         Observable<Message> newMessages = Observable.create(new Observable.OnSubscribe<Message>() {
             @Override public void call(Subscriber<? super Message> subscriber) {
-                net.frakbot.crowdpulse.social.util.Logger.getLogger().info("STREAMING: started.");
+                logger.info("STREAMING: started.");
                 getNewMessages(parameters, subscriber);
             }
         });
@@ -126,7 +130,7 @@ public class TwitterExtractorRunner {
     private Observable<Long> timeToWait(ExtractionParameters parameters) {
         if (parameters.getUntil() != null) {
             long timeToDeath = parameters.getUntil().getTime() - new Date().getTime();
-            net.frakbot.crowdpulse.social.util.Logger.getLogger().info(String.format("Shutting down the Streaming service in %d seconds.", timeToDeath));
+            logger.info(String.format("Shutting down the Streaming service in %d seconds.", timeToDeath));
             return Observable.timer(timeToDeath, TimeUnit.MILLISECONDS, Schedulers.io());
         }
         return Observable.never();
@@ -257,7 +261,7 @@ public class TwitterExtractorRunner {
                 }
 
                 @Override public void onStallWarning(StallWarning warning) {
-                    net.frakbot.crowdpulse.social.util.Logger.getLogger().error(warning.toString());
+                    logger.error(warning.toString());
                     System.err.println(warning);
                 }
 
@@ -305,10 +309,10 @@ public class TwitterExtractorRunner {
             query.setGeoCode(new GeoLocation(parameters.getGeoLocationBox().getLatitude(), parameters
                     .getGeoLocationBox().getLongitude()), parameters.getGeoLocationBox().getDistance(), Query.Unit.km);
         }
-        if (!net.frakbot.crowdpulse.social.util.StringUtil.isNullOrEmpty(parameters.getLanguage())) {
+        if (!StringUtil.isNullOrEmpty(parameters.getLanguage())) {
             query.setLang(parameters.getLanguage());
         }
-        if (!net.frakbot.crowdpulse.social.util.StringUtil.isNullOrEmpty(parameters.getLocale())) {
+        if (!StringUtil.isNullOrEmpty(parameters.getLocale())) {
             query.setLocale(parameters.getLocale());
         }
         if (parameters.getSince() != null) {
@@ -320,20 +324,20 @@ public class TwitterExtractorRunner {
 
         // start building the main query text
         StringBuilder queryStringBuilder = new StringBuilder();
-        if (!net.frakbot.crowdpulse.social.util.StringUtil.isNullOrEmpty(parameters.getFromUser())) {
+        if (!StringUtil.isNullOrEmpty(parameters.getFromUser())) {
             queryStringBuilder.append("from:").append(parameters.getFromUser()).append(" ");
         }
-        if (!net.frakbot.crowdpulse.social.util.StringUtil.isNullOrEmpty(parameters.getToUser())) {
+        if (!StringUtil.isNullOrEmpty(parameters.getToUser())) {
             queryStringBuilder.append("to:").append(parameters.getToUser()).append(" ");
         }
         if (parameters.getReferenceUsers() != null && parameters.getReferenceUsers().size() > 0) {
             for (String user : parameters.getReferenceUsers()) {
-                if (!net.frakbot.crowdpulse.social.util.StringUtil.isNullOrEmpty(user)) {
+                if (!StringUtil.isNullOrEmpty(user)) {
                     queryStringBuilder.append("@").append(user).append(" ");
                 }
             }
         }
-        if (!net.frakbot.crowdpulse.social.util.StringUtil.isNullOrEmpty(parameters.getQuery())) {
+        if (!StringUtil.isNullOrEmpty(parameters.getQuery())) {
             String[] components = parameters.getQuery().split(",");
             for (String component : components) {
                 queryStringBuilder.append("\"").append(component).append("\" ");
@@ -363,21 +367,21 @@ public class TwitterExtractorRunner {
         }
 
         // set the language
-        if (!net.frakbot.crowdpulse.social.util.StringUtil.isNullOrEmpty(parameters.getLanguage())) {
+        if (!StringUtil.isNullOrEmpty(parameters.getLanguage())) {
             filterQuery.language(new String[]{parameters.getLanguage()});
         }
 
         // set the users to retrieve tweets from
         List<String> users = new ArrayList<String>();
-        if (!net.frakbot.crowdpulse.social.util.StringUtil.isNullOrEmpty(parameters.getFromUser())) {
+        if (!StringUtil.isNullOrEmpty(parameters.getFromUser())) {
             users.add(parameters.getFromUser());
         }
-        if (!net.frakbot.crowdpulse.social.util.StringUtil.isNullOrEmpty(parameters.getToUser())) {
+        if (!StringUtil.isNullOrEmpty(parameters.getToUser())) {
             users.add(parameters.getToUser());
         }
         if (parameters.getReferenceUsers() != null && parameters.getReferenceUsers().size() > 0) {
             for (String user : parameters.getReferenceUsers()) {
-                if (!net.frakbot.crowdpulse.social.util.StringUtil.isNullOrEmpty(user)) {
+                if (!StringUtil.isNullOrEmpty(user)) {
                     users.add(user);
                 }
             }
@@ -394,7 +398,7 @@ public class TwitterExtractorRunner {
         filterQuery.follow(twitterUserIds);
 
         // set the terms to search for
-        if (!net.frakbot.crowdpulse.social.util.StringUtil.isNullOrEmpty(parameters.getQuery())) {
+        if (!StringUtil.isNullOrEmpty(parameters.getQuery())) {
             filterQuery.track(parameters.getQuery().split(","));
         }
 

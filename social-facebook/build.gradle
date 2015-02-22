@@ -23,6 +23,7 @@ targetCompatibility = 1.7
 version = '1.0'
 
 dependencies {
+    compile project(':common-util')
     compile project(':data-java')
     compile project(':social')
     compile group: 'org.facebook4j', name: 'facebook4j-core', version: '2.2.1'

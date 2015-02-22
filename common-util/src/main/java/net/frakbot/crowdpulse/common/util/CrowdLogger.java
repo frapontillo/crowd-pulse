@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-package net.frakbot.crowdpulse.social.util;
+package net.frakbot.crowdpulse.common.util;
 
-import net.frakbot.crowdpulse.social.extraction.Extractor;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.LoggerContext;
@@ -26,10 +25,17 @@ import org.apache.logging.log4j.core.config.LoggerConfig;
 /**
  * @author Francesco Pontillo
  */
-public class Logger {
-    private static final String loggerName = Extractor.class.getPackage().getName();
+public class CrowdLogger {
 
-    public static org.apache.logging.log4j.Logger getLogger() {
+    public static org.apache.logging.log4j.Logger getLogger(Object context) {
+        return getLogger(context.getClass().getPackage().getName());
+    }
+
+    public static org.apache.logging.log4j.Logger getLogger(Class clazz) {
+        return getLogger(clazz.getPackage().getName());
+    }
+
+    public static org.apache.logging.log4j.Logger getLogger(String loggerName) {
         org.apache.logging.log4j.Logger logger = LogManager.getLogger(loggerName);
         LoggerContext ctx = (LoggerContext) LogManager.getContext(false);
         Configuration config = ctx.getConfiguration();
@@ -38,4 +44,5 @@ public class Logger {
         ctx.updateLoggers();
         return logger;
     }
+
 }

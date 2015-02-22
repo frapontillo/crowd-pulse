@@ -22,7 +22,8 @@ import net.frakbot.crowdpulse.social.extraction.Extractor;
 import net.frakbot.crowdpulse.social.exception.SocialException;
 import net.frakbot.crowdpulse.social.exception.InvalidParametersSocialException;
 import net.frakbot.crowdpulse.social.exception.TooComplexParametersSocialException;
-import net.frakbot.crowdpulse.social.util.Logger;
+import net.frakbot.crowdpulse.common.util.CrowdLogger;
+import org.apache.logging.log4j.Logger;
 import rx.Observable;
 import rx.observables.ConnectableObservable;
 
@@ -33,6 +34,7 @@ public class TwitterExtractor extends Extractor {
 
     public static final String EXTRACTOR_NAME = "twitter";
     private static TwitterExtractorRunner runner = null;
+    private static final Logger logger = CrowdLogger.getLogger(TwitterExtractor.class);
 
     @Override public String getName() {
         return EXTRACTOR_NAME;
@@ -146,7 +148,7 @@ public class TwitterExtractor extends Extractor {
         try {
             validateParameters(parameters);
         } catch (SocialException e) {
-            Logger.getLogger().error(e);
+            logger.error(e);
             System.err.println(e);
             messages = Observable.empty();
             return messages.publish();

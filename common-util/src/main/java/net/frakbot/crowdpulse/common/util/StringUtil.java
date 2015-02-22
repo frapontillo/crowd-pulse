@@ -1,4 +1,4 @@
-/*
+package net.frakbot.crowdpulse.common.util;/*
  * Copyright 2015 Francesco Pontillo
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,9 +14,6 @@
  * limitations under the License.
  */
 
-package net.frakbot.crowdpulse.social.util;
-
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 

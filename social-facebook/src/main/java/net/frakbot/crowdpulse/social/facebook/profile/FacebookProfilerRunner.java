@@ -23,7 +23,8 @@ import facebook4j.internal.org.json.JSONObject;
 import facebook4j.json.DataObjectFactory;
 import net.frakbot.crowdpulse.data.entity.Profile;
 import net.frakbot.crowdpulse.social.profile.ProfileParameters;
-import net.frakbot.crowdpulse.social.util.Logger;
+import net.frakbot.crowdpulse.common.util.CrowdLogger;
+import org.apache.logging.log4j.Logger;
 import rx.Observable;
 import rx.Subscriber;
 import rx.observables.ConnectableObservable;
@@ -35,6 +36,7 @@ import java.util.HashMap;
  * @author Francesco Pontillo
  */
 public class FacebookProfilerRunner {
+    private static final Logger logger = CrowdLogger.getLogger(FacebookProfilerRunner.class);
 
     public ConnectableObservable<Profile> getProfile(final ProfileParameters parameters) {
 
@@ -47,7 +49,7 @@ public class FacebookProfilerRunner {
 
         Observable<Profile> profiles = Observable.create(new Observable.OnSubscribe<Profile>() {
             @Override public void call(Subscriber<? super Profile> subscriber) {
-                Logger.getLogger().info("PROFILER: started.");
+                logger.info("PROFILER: started.");
                 try {
                     // fetch and convert the user/page
                     long followings = 0;
@@ -106,7 +108,7 @@ public class FacebookProfilerRunner {
                 }
                 // immediately complete, there's nothing else to do
                 subscriber.onCompleted();
-                Logger.getLogger().info("PROFILER: ended.");
+                logger.info("PROFILER: ended.");
             }
         });
 

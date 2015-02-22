@@ -21,7 +21,7 @@ import facebook4j.User;
 import net.frakbot.crowdpulse.data.entity.Profile;
 import net.frakbot.crowdpulse.social.profile.ProfileParameters;
 import net.frakbot.crowdpulse.social.profile.ProfileConverter;
-import net.frakbot.crowdpulse.social.util.StringUtil;
+import net.frakbot.crowdpulse.common.util.StringUtil;
 
 import java.util.Date;
 import java.util.HashMap;

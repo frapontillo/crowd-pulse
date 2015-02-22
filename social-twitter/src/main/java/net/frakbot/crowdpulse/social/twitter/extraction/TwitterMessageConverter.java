@@ -19,7 +19,7 @@ package net.frakbot.crowdpulse.social.twitter.extraction;
 import net.frakbot.crowdpulse.data.entity.Message;
 import net.frakbot.crowdpulse.social.extraction.ExtractionParameters;
 import net.frakbot.crowdpulse.social.extraction.MessageConverter;
-import net.frakbot.crowdpulse.social.util.StringUtil;
+import net.frakbot.crowdpulse.common.util.StringUtil;
 import twitter4j.Status;
 
 import java.util.ArrayList;
