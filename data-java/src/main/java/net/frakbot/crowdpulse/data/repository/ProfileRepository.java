@@ -18,9 +18,20 @@ package net.frakbot.crowdpulse.data.repository;
 
 import net.frakbot.crowdpulse.data.entity.Profile;
 import org.bson.types.ObjectId;
+import org.mongodb.morphia.query.Query;
+
+import java.util.List;
 
 /**
  * @author Francesco Pontillo
  */
 public class ProfileRepository extends Repository<Profile, ObjectId> {
+    public List<Profile> getGeoConsolidationCandidates(String fromId, String toId) {
+        Query<Profile> query = findBetweenIds(fromId, toId);
+        query.field("latitude").doesNotExist();
+        query.field("longitude").doesNotExist();
+        query.field("location").exists();
+        query.field("location").notEqual("");
+        return query.asList();
+    }
 }

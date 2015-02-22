@@ -13,6 +13,8 @@ Crowd Pulse: social extraction and analysis system
 - `social-facebook`: specific implementation of `social` for Facebook
 - `social-twitter`: specific implementation of `social` for Twitter
 - `social-cli`: simple CLI to launch social message extraction and user profiling
+- `fix-geo-profile`: fixes profile coordinates (lat/long) by forward geocoding via Google APIs
+- `fix-geo-message`: fixes message coordinates (lat/long) by assuming they're the same as the user profile
 - `web-service`: RESTful Web Service to expose stored data
 
 ## License

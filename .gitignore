@@ -8,3 +8,4 @@ gradle/
 temp/
 social-cli/src/main/resources/*.properties
 admin-cli/src/main/resources/*.properties
+fix-geo-profile/src/main/resources/*.properties
