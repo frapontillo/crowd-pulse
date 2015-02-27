@@ -18,9 +18,26 @@ package net.frakbot.crowdpulse.data.repository;
 
 import net.frakbot.crowdpulse.data.entity.Message;
 import org.bson.types.ObjectId;
+import org.mongodb.morphia.query.Criteria;
+import org.mongodb.morphia.query.CriteriaContainer;
+import org.mongodb.morphia.query.FieldCriteria;
+import org.mongodb.morphia.query.Query;
+
+import java.util.List;
 
 /**
  * @author Francesco Pontillo
  */
 public class MessageRepository extends Repository<Message, ObjectId> {
+
+    public List<Message> getGeoConsolidationCandidates(String fromId, String toId) {
+        Query<Message> query = findBetweenIds(fromId, toId);
+        query.or(
+                query.criteria("latitude").doesNotExist().criteria("longitude").doesNotExist(),
+                query.criteria("latitude").equal(0).criteria("longitude").equal(0)
+        )
+        ;
+        return query.asList();
+    }
+
 }
