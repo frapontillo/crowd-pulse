@@ -31,10 +31,10 @@ public class Repository<T,K> extends BasicDAO<T,K> {
     public Query<T> findBetweenIds(String fromId, String toId) {
         Query<T> query = createQuery();
         if (fromId != null) {
-            query.field("_id >= ").greaterThanOrEq(new ObjectId(fromId));
+            query.field("_id").greaterThanOrEq(new ObjectId(fromId));
         }
         if (toId != null) {
-            query.field("_id >= ").lessThanOrEq(new ObjectId(toId));
+            query.field("_id").lessThanOrEq(new ObjectId(toId));
         }
         return query;
     }

@@ -26,6 +26,7 @@ import java.util.List;
  * @author Francesco Pontillo
  */
 public class ProfileRepository extends Repository<Profile, ObjectId> {
+
     public List<Profile> getGeoConsolidationCandidates(String fromId, String toId) {
         Query<Profile> query = findBetweenIds(fromId, toId);
         query.field("latitude").doesNotExist();
@@ -34,4 +35,11 @@ public class ProfileRepository extends Repository<Profile, ObjectId> {
         query.field("location").notEqual("");
         return query.asList();
     }
+
+    public Profile getByUsername(String username) {
+        Query<Profile> query = createQuery();
+        query.field("username").equal(username);
+        return query.get();
+    }
+
 }

@@ -77,7 +77,8 @@ public class DataLayer {
         Properties prop = new Properties();
         try {
             prop.load(configInput);
-        } catch (IOException ignored) {
+        } catch (IOException noFileException) {
+            System.err.println(noFileException);
         }
         String host = prop.getProperty(PROP_DATABASE_HOST);
         int port = Integer.parseInt(prop.getProperty(PROP_DATABASE_PORT));
