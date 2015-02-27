@@ -25,6 +25,7 @@ targetCompatibility = 1.7
 version = '1.0'
 
 dependencies {
+    compile project(':common-util')
     compile project(':data-java')
     compile project(':social')
     compile project(':social-facebook')

@@ -71,7 +71,6 @@ public class ProfileGeoFixMain {
         logger.debug("Done.");
     }
 
-
     private static class ProfileObserver implements Observer<Profile> {
         @Override public void onCompleted() {
             logger.debug("Profile Stream ended.");
