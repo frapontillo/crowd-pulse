@@ -4,7 +4,6 @@ import it.alessandronatilla.preprocessing.model.StemmedWord;
 import it.alessandronatilla.preprocessing.model.TaggedWord;
 import opennlp.tools.sentdetect.SentenceDetectorME;
 import opennlp.tools.sentdetect.SentenceModel;
-import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -71,21 +70,6 @@ public class TextPreProcessorTest {
         System.out.println(stemmedWords);
 
         assert (stemmedWords.size() > 0);
-
-    }
-
-    private String getFile(String fileName) {
-
-        String result = "";
-
-        ClassLoader classLoader = getClass().getClassLoader();
-        try {
-            result = IOUtils.toString(classLoader.getResourceAsStream(fileName));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return result;
 
     }
 }
