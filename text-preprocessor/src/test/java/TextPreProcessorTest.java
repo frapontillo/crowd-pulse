@@ -20,7 +20,11 @@ import java.util.List;
  */
 
 public class TextPreProcessorTest {
-    String text = "Il tecnico del Parma, Donadoni, e il capitano della squadra, Lucarelli, in conferenza stampa spiegano il disagio e la situazione critica in cui versa il club emiliano.";
+    String text = "Il volo è durato tre partite, poi la caduta fragorosa, più nel risultato che nel gioco, ma che in pratica mette la parola fine alle residue speranze di terzo posto e allontana anche i piazzamenti che valgono l'Europa meno prestigiosa. Ieri a San Siro è andata in scena una sfida tra una squadra che sta ancora studiando per diventare grande (l'Inter) e una (la Fiorentina) che ha trovato la quadratura del cerchio e la fiducia derivante dal lungo filotto di gare senza conoscere sconfitta.\n" +
+            "\n" +
+            "E' vero che nell'assalto finale con la Viola in inferiorità numerica (prima in 10 e poi in 9) ci sarebbe anche potuto scappare il pareggio, ma se c'era una squadra che meritava i tre punti senza dubbio questa era la Fiorentina. Squadra solida, che gioca a memoria e che, nonostante le tante assenze (tra infortuni e scelte tecniche), non perde mai la propria identità, proponendo un calcio offensivo che è una delizia per gli occhi.\n" +
+            "\n" +
+            "Una grande del nostro campionato, senza dubbio, che lotterà fino alla fine per il terzo posto (e magari qualcosa di più). Obiettivo ormai precluso, invece, a Guarin e compagni che sono incappati in una sconfitta contro una diretta concorrente e devono riporre nel cassetto i sogni di gloria. Il lavoro che attende Mancini è mastodontico, anche perché i nerazzurri in questa stagione non hanno ancora mai battuto una big.";
 
     @Test
     public void segment() {
@@ -70,6 +74,14 @@ public class TextPreProcessorTest {
         System.out.println(stemmedWords);
 
         assert (stemmedWords.size() > 0);
+    }
 
+    @Test
+    public void lemmatization() {
+        String word = "spiegano";
+        String postag = "Ss";
+        String lemma = TextPreProcessor.lemmatize(word, postag);
+        System.out.println("Lemma for " + word + " is: " + lemma);
+        assert (lemma.length() > 0);
     }
 }

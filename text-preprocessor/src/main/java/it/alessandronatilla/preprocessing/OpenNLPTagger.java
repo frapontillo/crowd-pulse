@@ -19,11 +19,8 @@ import opennlp.tools.util.InvalidFormatException;
 class OpenNLPTagger {
 
 	private InputStream modelIn;
-
 	private POSModel model;
-
 	private POSTaggerME tagger;
-
 	private static OpenNLPTagger self;
 
 	private OpenNLPTagger() {
@@ -55,8 +52,7 @@ class OpenNLPTagger {
 			try {
 				taggedWords.add(tag(tokens[i]));
 			} catch (Exception e) {
-				// Die quietly
-				// System.err.println(e.getMessage());
+				System.err.println(e.getMessage());
 			}
 		}
 
@@ -74,7 +70,7 @@ class OpenNLPTagger {
 			throw new Exception("Sorry, there are no tags for this string!");
 
 		String tag = tags[0];
-		return new TaggedWord(token, tag, new String("TEMP, missing lemma"));
+		return new TaggedWord(token, tag, null);
 	}
 
 	@Override

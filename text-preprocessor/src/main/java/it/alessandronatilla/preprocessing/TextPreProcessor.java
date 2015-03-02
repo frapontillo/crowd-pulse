@@ -3,6 +3,8 @@ package it.alessandronatilla.preprocessing;
 import it.alessandronatilla.preprocessing.model.Language;
 import it.alessandronatilla.preprocessing.model.StemmedWord;
 import it.alessandronatilla.preprocessing.model.TaggedWord;
+import opennlp.tools.coref.mention.Dictionary;
+import opennlp.tools.coref.mention.DictionaryFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -60,7 +62,11 @@ public class TextPreProcessor {
      * @return
      */
     public static String lemmatize(String token, String posTag) {
-        return new String("TEMP, need lemmatization.");
+
+//        Dictionary dictionary = DictionaryFactory.getDictionary();
+//        dictionary.getLemmas(token, posTag);
+        return  null;
+
     }
 
     /**
@@ -68,7 +74,7 @@ public class TextPreProcessor {
      * @return
      */
     public static String lemmatize(TaggedWord taggedWord) {
-        return new String("TEMP, need lemmatization.");
+        return null;
     }
 
     /**
