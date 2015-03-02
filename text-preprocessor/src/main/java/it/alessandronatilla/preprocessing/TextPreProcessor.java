@@ -14,7 +14,13 @@ import java.util.List;
  * Project: text-preprocessor
  */
 public class TextPreProcessor {
+    /*
+    * Cleans text
+     */
+    public static List<String> clean(Language language, String text){
 
+        return null;
+    }
     /**
      * @param text
      * @return a list of sentences

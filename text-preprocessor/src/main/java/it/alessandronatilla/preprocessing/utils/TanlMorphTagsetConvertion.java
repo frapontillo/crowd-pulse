@@ -9,7 +9,7 @@ import java.util.Map;
  */
 public class TanlMorphTagsetConvertion {
 
-    private static Map<String, String> tagset = new HashMap<>();
+    private static Map<String, String> tagset = new HashMap<String, String>();
 
     static {
         tagset.put("A", "ADJ");
@@ -23,6 +23,7 @@ public class TanlMorphTagsetConvertion {
         tagset.put("S", "NOUN");
         tagset.put("V", "VER");
         tagset.put("I", "INT");
+//        tagset.put("MOD", "VER");
     }
 
     public static String tanl_to_morph_tagset(String tag) {
@@ -37,6 +38,8 @@ public class TanlMorphTagsetConvertion {
         if (tag.startsWith("S")) return tagset.get("S");
         if (tag.startsWith("V")) return tagset.get("V");
         if (tag.startsWith("I")) return tagset.get("I");
+//        if (tag.startsWith("MOD")) return tagset.get("I");
+
 
         return null;
     }

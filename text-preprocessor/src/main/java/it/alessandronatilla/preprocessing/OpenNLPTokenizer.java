@@ -46,10 +46,13 @@ class OpenNLPTokenizer {
             sentence_model = new SentenceModel(modelIn);
             sentenceDetector = new SentenceDetectorME(sentence_model);
 
+            resourceURL = null;
+            resourcePath = null;
+
             //Sentence tokenizer
-            if(language.equals(Language.IT)){
+            if (language.equals(Language.IT)) {
                 resourceURL = getClass().getResource("/it-token.bin");
-            } else if (language.equals(Language.EN)){
+            } else if (language.equals(Language.EN)) {
                 resourceURL = getClass().getResource("/en-token.bin");
             }
             resourcePath = Paths.get(resourceURL.toURI());

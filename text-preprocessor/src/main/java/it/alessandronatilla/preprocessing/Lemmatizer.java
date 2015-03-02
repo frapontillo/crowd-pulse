@@ -4,7 +4,7 @@ package it.alessandronatilla.preprocessing;
  * Author: alexander
  * Project: crowd-pulse
  */
-public class Lemmatizer {
+class Lemmatizer {
 
 
 
