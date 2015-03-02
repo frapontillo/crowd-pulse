@@ -3,8 +3,6 @@ package it.alessandronatilla.preprocessing;
 import it.alessandronatilla.preprocessing.model.Language;
 import it.alessandronatilla.preprocessing.model.StemmedWord;
 import it.alessandronatilla.preprocessing.model.TaggedWord;
-import opennlp.tools.coref.mention.Dictionary;
-import opennlp.tools.coref.mention.DictionaryFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,10 +15,11 @@ public class TextPreProcessor {
     /*
     * Cleans text
      */
-    public static List<String> clean(Language language, String text){
+    public static List<String> clean(Language language, String text) {
 
         return null;
     }
+
     /**
      * @param text
      * @return a list of sentences
@@ -71,7 +70,7 @@ public class TextPreProcessor {
 
 //        Dictionary dictionary = DictionaryFactory.getDictionary();
 //        dictionary.getLemmas(token, posTag);
-        return  null;
+        return new Lemmatizer().lemmatize(token, posTag);
 
     }
 
