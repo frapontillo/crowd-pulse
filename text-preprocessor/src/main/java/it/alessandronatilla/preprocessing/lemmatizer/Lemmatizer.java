@@ -48,7 +48,7 @@ public class Lemmatizer {
 
     public String lemmatize(String token, String postag) {
 
-        return dict.getLemma(new Entry(postag, token));
+        return dict.getLemma(new LemmaKey(postag, token));
     }
 
 }

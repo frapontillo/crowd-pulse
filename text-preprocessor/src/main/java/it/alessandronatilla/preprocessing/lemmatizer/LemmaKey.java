@@ -4,11 +4,30 @@ package it.alessandronatilla.preprocessing.lemmatizer;
  * Author: alexander
  * Project: crowd-pulse
  */
-class Entry {
-    public String token;
-    public String posTag;
+public class LemmaKey {
+    private String token;
+    private String posTag;
 
-    public Entry(String posTag, String token) {
+    public LemmaKey() {
+    }
+
+    public String getPosTag() {
+        return posTag;
+    }
+
+    public void setPosTag(String posTag) {
+        this.posTag = posTag;
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
+
+    public LemmaKey(String posTag, String token) {
         this.posTag = posTag;
         this.token = token;
     }

@@ -41,7 +41,7 @@ class MorphItCreator {
 //                System.out.println(i);
                 String res[] = input.split("\t");
                 String postag = res[2].split(":")[0];
-                dict.addLemma(new Entry(postag, res[0]), res[1]);
+                dict.addLemma(new LemmaKey(postag, res[0].toLowerCase()), res[1].toLowerCase());
 //                i++;
             }
 

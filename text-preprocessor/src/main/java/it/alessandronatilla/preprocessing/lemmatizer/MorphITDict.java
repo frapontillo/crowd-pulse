@@ -11,33 +11,35 @@ import java.util.Map;
  */
 public class MorphITDict {
 
-    private Map<Entry, String> morph; //(token, postag) => lemma
+    private Map<LemmaKey, String> dict; //(token, postag) => lemma
 
     public MorphITDict() {
-        morph = new HashMap<Entry, String>();
+        dict = new HashMap<LemmaKey, String>();
     }
 
-    public Map<Entry, String> getMorph() {
-        return morph;
+    public Map<LemmaKey, String> getDict() {
+        return dict;
     }
 
-    public void setMorph(Map<Entry, String> morph) {
-        this.morph = morph;
+    public void setDict(Map<LemmaKey, String> dict) {
+        this.dict = dict;
     }
 
-    public void addLemma(Entry entry, String lemma) {
-        if (entry == null || entry.posTag == null || entry.posTag.length() == 0
-                || entry.token == null || entry.token.length() == 0) throw new EmptyEntryException(entry.toString());
+    public void addLemma(LemmaKey lemmaKey, String lemma) {
+        if (lemmaKey == null || lemmaKey.getPosTag() == null || lemmaKey.getPosTag().length() == 0
+                || lemmaKey.getToken() == null || lemmaKey.getToken().length() == 0)
+            throw new EmptyEntryException(lemmaKey.toString());
 
-        morph.put(entry, lemma);
+        dict.put(lemmaKey, lemma);
 
     }
 
-    public String getLemma(Entry entry) {
-        if (entry == null || entry.posTag == null || entry.posTag.length() == 0
-                || entry.token == null || entry.token.length() == 0) throw new EmptyEntryException();
+    public String getLemma(LemmaKey lemmaKey) {
+        if (lemmaKey == null || lemmaKey.getPosTag() == null || lemmaKey.getPosTag().length() == 0
+                || lemmaKey.getToken() == null || lemmaKey.getToken().length() == 0)
+            throw new EmptyEntryException(lemmaKey.toString());
 
-        return morph.get(entry);
+        return dict.get(lemmaKey);
 
     }
 }
