@@ -79,7 +79,7 @@ public class TextPreProcessor {
      * @return
      */
     public static String lemmatize(TaggedWord taggedWord) {
-        return null;
+        return new Lemmatizer().lemmatize(taggedWord.getToken(), taggedWord.getPosTag());
     }
 
     /**

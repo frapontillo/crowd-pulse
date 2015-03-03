@@ -1,10 +1,12 @@
 package it.alessandronatilla.preprocessing.lemmatizer;
 
+import java.io.Serializable;
+
 /**
  * Author: alexander
  * Project: crowd-pulse
  */
-public class LemmaKey {
+public class LemmaKey implements Serializable{
     private String token;
     private String posTag;
 
