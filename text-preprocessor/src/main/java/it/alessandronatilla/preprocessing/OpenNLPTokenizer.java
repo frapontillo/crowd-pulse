@@ -74,7 +74,7 @@ class OpenNLPTokenizer {
             String[] tokens = tokenizer.tokenize(sentence);
 
             for (String token : tokens) {
-                tokens_list.add(token);
+                tokens_list.add(token.toLowerCase());
             }
         }
 

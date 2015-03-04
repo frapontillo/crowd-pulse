@@ -13,9 +13,9 @@ public class LemmaRepository extends Repository<Lemma, ObjectId> {
     public Lemma getLemma(String postag, String token) {
         Query<Lemma> query = createQuery();
         query.and(
-                query.criteria("posTag").equal(postag),
+                query.criteria("posTag").startsWith(postag),
                 query.criteria("token").equal(token)
         );
-        return query.get();
+        return query.limit(1).get();
     }
 }

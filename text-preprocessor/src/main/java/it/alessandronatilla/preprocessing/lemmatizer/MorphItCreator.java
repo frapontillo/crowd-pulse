@@ -9,6 +9,7 @@ import org.mongodb.morphia.Morphia;
 import java.io.*;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.charset.Charset;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -29,11 +30,12 @@ class MorphItCreator {
         URL resourceURL = getClass().getResource(fname);
         Path resourcePath = null;
         BufferedReader reader = null;
-
+        Charset charset = Charset.forName("ISO-8859-1");
+        int i = 1;
 
         try {
             resourcePath = Paths.get(resourceURL.toURI());
-            reader = new BufferedReader(new InputStreamReader(new FileInputStream(resourcePath.toString()), "UTF8"));
+            reader = new BufferedReader(new InputStreamReader(new FileInputStream(resourcePath.toString()), charset));
             String input;
 
             Morphia morphia = new Morphia();
@@ -42,7 +44,7 @@ class MorphItCreator {
             datastore.ensureIndexes();
 
 
-//            int i = 1;
+
             while ((input = reader.readLine()) != null) {
                 if (input == "") break;
 //                System.out.println(input);
@@ -50,6 +52,9 @@ class MorphItCreator {
                 String res[] = input.split("\t");
                 String postag = res[2].split(":")[0];
                 String token = res[0].toLowerCase();
+//                if(token.startsWith("abbarbicher")) {
+//                    System.out.println("KTM");
+//                }
                 String lemma_s = res[1].toLowerCase();
 
                 Lemma lemma = new Lemma();
@@ -59,7 +64,7 @@ class MorphItCreator {
 
                 datastore.save(lemma);
 
-//                i++;
+                i++;
             }
 
 //            try {
@@ -80,6 +85,8 @@ class MorphItCreator {
 //                out.close();
 //            }
 
+        } catch (ArrayIndexOutOfBoundsException e){
+            System.out.println("Line err:" + i);
         } catch (URISyntaxException e) {
             e.printStackTrace();
         } catch (IOException e) {

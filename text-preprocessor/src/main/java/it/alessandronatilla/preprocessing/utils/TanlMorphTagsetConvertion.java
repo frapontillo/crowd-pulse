@@ -13,7 +13,7 @@ public class TanlMorphTagsetConvertion {
 
     static {
         tagset.put("A", "ADJ");
-        tagset.put("B", "B");
+        tagset.put("B", "ADV");
         tagset.put("C", "C");
         tagset.put("D", "D");
         tagset.put("E", "E");

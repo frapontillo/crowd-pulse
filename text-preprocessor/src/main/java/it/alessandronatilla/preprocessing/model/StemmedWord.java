@@ -42,7 +42,7 @@ public class StemmedWord extends TaggedWord {
 	@Override
 	public String toString() {
 		return "StemmedWord [ token=" + token + ", posTag=" + posTag
-				+ ", lemma=" + lemma + "stem=" + stem + "]";
+				+ ", lemma=" + lemma + ", stem=" + stem + "]";
 	}
 
 }

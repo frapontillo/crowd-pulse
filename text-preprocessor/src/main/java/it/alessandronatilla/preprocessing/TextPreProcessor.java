@@ -3,8 +3,10 @@ package it.alessandronatilla.preprocessing;
 import it.alessandronatilla.preprocessing.model.Language;
 import it.alessandronatilla.preprocessing.model.StemmedWord;
 import it.alessandronatilla.preprocessing.model.TaggedWord;
+import it.alessandronatilla.preprocessing.stopwords.StopwordRemoval;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -15,9 +17,16 @@ public class TextPreProcessor {
     /*
     * Cleans text
      */
-    public static List<String> clean(Language language, String text) {
+    public static List<String> clean(Language language, List<String> text) {
 
-        return null;
+        StopwordRemoval removal = new StopwordRemoval(language);
+        List<String> tokens = new LinkedList<String>();
+
+        for (String word : text) {
+            if (!removal.isStopword(word)) tokens.add(word);
+        }
+
+        return tokens;
     }
 
     /**

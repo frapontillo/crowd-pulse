@@ -9,9 +9,9 @@ import org.junit.Test;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
@@ -28,12 +28,7 @@ public class TextPreProcessorTest {
     @Before
     public void init() {
 
-        String text1 = "Il volo è durato tre partite, poi la caduta fragorosa, più nel risultato che nel gioco, ma che in pratica mette la parola fine alle residue speranze di terzo posto e allontana anche i piazzamenti che valgono l'Europa meno prestigiosa. Ieri a San Siro è andata in scena una sfida tra una squadra che sta ancora studiando per diventare grande (l'Inter) e una (la Fiorentina) che ha trovato la quadratura del cerchio e la fiducia derivante dal lungo filotto di gare senza conoscere sconfitta.\n" +
-                "\n" +
-                "E' vero che nell'assalto finale con la Viola in inferiorità numerica (prima in 10 e poi in 9) ci sarebbe anche potuto scappare il pareggio, ma se c'era una squadra che meritava i tre punti senza dubbio questa era la Fiorentina. Squadra solida, che gioca a memoria e che, nonostante le tante assenze (tra infortuni e scelte tecniche), non perde mai la propria identità, proponendo un calcio offensivo che è una delizia per gli occhi.\n" +
-                "\n" +
-                "Una grande del nostro campionato, senza dubbio, che lotterà fino alla fine per il terzo posto (e magari qualcosa di più). Obiettivo ormai precluso, invece, a Guarin e compagni che sono incappati in una sconfitta contro una diretta concorrente e devono riporre nel cassetto i sogni di gloria. Il lavoro che attende Mancini è mastodontico, anche perché i nerazzurri in questa stagione non hanno ancora mai battuto una big.";
-        text = new String(text1.getBytes(StandardCharsets.UTF_8), StandardCharsets.UTF_8);
+        text = "Quando girano loro, insomma, gira tutto, ma se loro non vanno ne risente tutta la squadra. Con l'arrivo del tecnico jesino, il colombiano è tornato quello dei tempi del Porto: ha segnato 3 goal (6 quelli totali), fornito 5 assist per i compagni, ed è diventato il giocatore nerazzurro che ha tentato più volte il tiro in porta (29 volte, come Icardi) e il passaggio filtrante. Una vera e propria trasformazione, di cui la squadra ha chiaramente beneficiato.";
     }
 
 
@@ -88,11 +83,24 @@ public class TextPreProcessorTest {
     }
 
     @Test
-    public void lemmatization() {
-        String word = "abbarbichiamo";
-        String postag = "VMis";
+    public void lemmatization() throws UnsupportedEncodingException {
+
+        String word = "già";
+        System.out.println("già");
+        String postag = "Bis";
         String lemma = TextPreProcessor.lemmatize(word, postag);
         System.out.println("Lemma for " + word + " is: " + lemma);
-        assert (lemma.length() > 0);
+        assert (lemma != null);
+    }
+
+    @Test
+    public void complete_workflow() throws Exception {
+        List<String> segments = TextPreProcessor.segment(Language.IT, text);
+        List<String> tokens = TextPreProcessor.tokenize(Language.IT, segments);
+        List<String> clean_tokens = TextPreProcessor.clean(Language.IT, tokens);
+        List<TaggedWord> words = TextPreProcessor.tag(clean_tokens);
+        List<StemmedWord> stemmedWords = TextPreProcessor.stem(words);
+
+        assert (tokens.size() >= clean_tokens.size());
     }
 }
