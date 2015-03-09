@@ -108,6 +108,10 @@ public class Message extends Entity {
         this.longitude = longitude;
     }
 
+    public Double getLatitude() {
+        return latitude;
+    }
+
     public void setLatitude(Double latitude) {
         this.latitude = latitude;
     }
