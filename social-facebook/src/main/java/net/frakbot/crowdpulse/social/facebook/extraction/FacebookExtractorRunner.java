@@ -259,7 +259,8 @@ public class FacebookExtractorRunner {
         Reading query = new Reading();
 
         query.limit(POSTS_PER_PAGE);
-        query.fields("from", "to", "message", "comments", "message_tags");
+        query.fields("id", "from", "to", "message_tags", "with_tags", "message", "comments", "created_time",
+                "updated_time", "shares", "likes.summary(true)");
         if (parameters.getSince() != null) {
             query.since(parameters.getSince());
         }
