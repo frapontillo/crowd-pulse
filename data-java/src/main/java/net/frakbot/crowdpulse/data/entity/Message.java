@@ -33,6 +33,8 @@ public class Message extends Entity {
     private String language;
     private Double latitude;
     private Double longitude;
+    private Integer favs;
+    private Integer shares;
 
     public String getText() {
         return text;
@@ -98,19 +100,31 @@ public class Message extends Entity {
         this.language = language;
     }
 
-    public double getLatitude() {
-        return latitude;
-    }
-
-    public void setLatitude(double latitude) {
-        this.latitude = latitude;
-    }
-
     public Double getLongitude() {
         return longitude;
     }
 
     public void setLongitude(Double longitude) {
         this.longitude = longitude;
+    }
+
+    public void setLatitude(Double latitude) {
+        this.latitude = latitude;
+    }
+
+    public Integer getFavs() {
+        return favs;
+    }
+
+    public void setFavs(Integer favs) {
+        this.favs = favs;
+    }
+
+    public Integer getShares() {
+        return shares;
+    }
+
+    public void setShares(Integer shares) {
+        this.shares = shares;
     }
 }

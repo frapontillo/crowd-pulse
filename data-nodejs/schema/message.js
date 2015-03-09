@@ -27,7 +27,9 @@ var MessageSchema = new mongoose.Schema({
   tags: [String],
   language: String,
   latitude: Number,
-  longitude: Number
+  longitude: Number,
+  favs: Number,
+  shares: Number
 });
 
 var SCHEMA_NAME = 'Message';
