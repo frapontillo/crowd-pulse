@@ -50,6 +50,8 @@ public class TwitterMessageConverter extends MessageConverter<Status> {
             message.setLongitude(original.getGeoLocation().getLongitude());
         }
         message.setLanguage(original.getLang());
+        message.setFavs(original.getFavoriteCount());
+        message.setShares(original.getRetweetCount());
         return message;
     }
 }
