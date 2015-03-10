@@ -35,8 +35,16 @@ public class MessageRepository extends Repository<Message, ObjectId> {
         query.or(
                 query.criteria("latitude").doesNotExist().criteria("longitude").doesNotExist(),
                 query.criteria("latitude").equal(0).criteria("longitude").equal(0)
-        )
-        ;
+        );
+        return query.asList();
+    }
+
+    public List<Message> getLanguageDetectionCandidates(String fromId, String toId) {
+        Query<Message> query = findBetweenIds(fromId, toId);
+        query.or(
+                query.criteria("language").doesNotExist(),
+                query.criteria("language").equal("")
+        );
         return query.asList();
     }
 
