@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Francesco Pontillo
+ * Copyright 2015 Francesco Pontillo
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,25 +14,18 @@
  * limitations under the License.
  */
 
-rootProject.name = 'crowd-pulse'
+apply plugin: 'java'
+apply plugin: 'application'
 
-include 'common-util'
+sourceCompatibility = 1.7
+targetCompatibility = 1.7
 
-include 'social'
-include 'social-facebook'
-include 'social-twitter'
-include 'social-cli'
+version = '1.0'
 
-include 'oauth-service'
-include 'web-service'
-
-include 'data-nodejs'
-include 'data-java'
-
-include 'admin-cli'
-
-include 'fix-geo-profile'
-include 'fix-geo-message'
-
-include 'detect-language'
-
+dependencies {
+    compile project(':common-util')
+    compile project(':data-java')
+    compile group: 'com.beust', name: 'jcommander', version: '1.47'
+    compile group: 'io.reactivex', name: 'rxjava', version: '1.0.3'
+    compile group: 'com.optimaize.languagedetector', name: 'language-detector', version: '0.4'
+}
