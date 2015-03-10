@@ -61,6 +61,10 @@ public class FacebookMessageConverter extends MessageConverter<Post> {
         }
         message.setRefUsers(refUsers);
 
+        // TODO: implement proper likes.summary(true) and likes.summary.total_count fetching
+        message.setFavs(original.getLikes().size());
+        message.setShares(original.getSharesCount());
+
         return message;
     }
 }
