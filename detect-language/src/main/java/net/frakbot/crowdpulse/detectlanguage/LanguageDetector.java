@@ -68,7 +68,7 @@ public class LanguageDetector {
                 for (Message message : subsceptibleMessages) {
                     TextObject textObject = textObjectFactory.forText(message.getText());
                     Optional<String> lang = languageDetector.detect(textObject);
-                    if (lang.isPresent()) {
+                    if (lang.isPresent() && !lang.get().equals("und")) {
                         message.setLanguage(lang.get());
                     }
                     // edit and notify the message only if the language has been found
