@@ -1,8 +1,7 @@
 package it.alessandronatilla.preprocessing.lemmatizer;
 
+import it.alessandronatilla.preprocessing.lemmatizer.mongo.MorphItCreator;
 import org.junit.Test;
-
-import static org.junit.Assert.*;
 
 public class MorphItCreatorTest {
 

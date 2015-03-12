@@ -1,7 +1,6 @@
 package it.alessandronatilla.preprocessing;
 
-import it.alessandronatilla.preprocessing.lemmatizer.MongoMorphITLemmatizer;
-import it.alessandronatilla.preprocessing.lemmatizer.OldMorphITLemmatizer;
+import it.alessandronatilla.preprocessing.lemmatizer.LemmatizerITSingleton;
 
 /**
  * Author: alexander
@@ -13,8 +12,7 @@ class Lemmatizer {
 
     public String lemmatize(String token, String postag){
 
-
-        return new MongoMorphITLemmatizer().lemmatize(postag, token);
+        return LemmatizerITSingleton.lemmatizer(token, postag);
     }
 
 }

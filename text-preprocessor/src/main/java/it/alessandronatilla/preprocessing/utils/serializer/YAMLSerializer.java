@@ -1,7 +1,7 @@
 package it.alessandronatilla.preprocessing.utils.serializer;
 
-import it.alessandronatilla.preprocessing.lemmatizer.LemmaKey;
-import it.alessandronatilla.preprocessing.lemmatizer.MorphITDict;
+import it.alessandronatilla.preprocessing.lemmatizer.mongo.LemmaKey;
+import it.alessandronatilla.preprocessing.lemmatizer.mongo.MorphITDict;
 import org.yaml.snakeyaml.TypeDescription;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
