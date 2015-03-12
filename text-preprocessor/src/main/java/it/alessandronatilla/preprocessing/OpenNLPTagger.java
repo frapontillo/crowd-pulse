@@ -37,7 +37,7 @@ class OpenNLPTagger {
         }
     }
 
-    public static OpenNLPTagger getIstance() {
+    public static OpenNLPTagger getInstance() {
         if (self == null)
             self = new OpenNLPTagger();
         return self;

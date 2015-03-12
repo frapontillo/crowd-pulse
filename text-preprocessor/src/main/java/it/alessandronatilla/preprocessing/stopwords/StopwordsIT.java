@@ -36,7 +36,7 @@ class StopwordsIT {
 			// String[] split = line.split("\\|");
 			String w = line.trim();
 			words.add(w);
-//			words.add(WordStemmer.getIstance().stem(w));
+//			words.add(WordStemmer.getInstance().stem(w));
 		}
 		in.close();
 	}

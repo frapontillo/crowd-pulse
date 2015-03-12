@@ -58,7 +58,7 @@ public class TextPreProcessor {
      * @throws Exception
      */
     public static List<TaggedWord> tag(List<String> tokens) throws Exception {
-        return OpenNLPTagger.getIstance().tag(tokens);
+        return OpenNLPTagger.getInstance().tag(tokens);
     }
 
     /**
@@ -67,7 +67,7 @@ public class TextPreProcessor {
      * @throws Exception
      */
     public static TaggedWord tag(String token) throws Exception {
-        return OpenNLPTagger.getIstance().tag(token);
+        return OpenNLPTagger.getInstance().tag(token);
     }
 
     /**
