@@ -1,5 +1,7 @@
 package it.alessandronatilla.preprocessing;
 
+import it.alessandronatilla.preprocessing.exceptions.UnsupportedLanguageException;
+import it.alessandronatilla.preprocessing.model.Language;
 import it.alessandronatilla.preprocessing.model.TaggedWord;
 import opennlp.tools.postag.POSModel;
 import opennlp.tools.postag.POSTaggerME;
@@ -21,13 +23,23 @@ class OpenNLPTagger {
     private POSModel model;
     private POSTaggerME tagger;
     private static OpenNLPTagger self;
+    private final Language language;
 
-    private OpenNLPTagger() {
+    private OpenNLPTagger(Language language) {
+        this.language = language;
+
         try {
-            modelIn = OpenNLPTagger.class
-                    .getResourceAsStream("/it-pos_perceptron.bin");
-            model = new POSModel(modelIn);
-            tagger = new POSTaggerME(model);
+            if (this.language.equals(Language.IT)) {
+                modelIn = OpenNLPTagger.class
+                        .getResourceAsStream("/it-pos_perceptron.bin");
+                model = new POSModel(modelIn);
+                tagger = new POSTaggerME(model);
+            } else if (this.language.equals(Language.EN)) {
+                modelIn = OpenNLPTagger.class
+                        .getResourceAsStream("/en-pos_perceptron.bin");
+                model = new POSModel(modelIn);
+                tagger = new POSTaggerME(model);
+            } else throw new UnsupportedLanguageException();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (InvalidFormatException e) {
@@ -37,9 +49,9 @@ class OpenNLPTagger {
         }
     }
 
-    public static OpenNLPTagger getInstance() {
+    public static OpenNLPTagger getInstance(Language language) {
         if (self == null)
-            self = new OpenNLPTagger();
+            self = new OpenNLPTagger(language);
         return self;
     }
 
@@ -69,7 +81,7 @@ class OpenNLPTagger {
             throw new Exception("Sorry, there are no tags for this string!");
 
         String tag = tags[0];
-        return new TaggedWord(token, tag, TextPreProcessor.lemmatize(token, tag));
+        return new TaggedWord(token, tag, TextPreProcessor.lemmatize(language, token, tag));
     }
 
     @Override

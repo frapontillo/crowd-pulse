@@ -1,12 +1,15 @@
 package it.alessandronatilla.preprocessing.lemmatizer.mongo;
 
 import com.mongodb.MongoClient;
-import it.alessandronatilla.preprocessing.lemmatizer.exceptions.EmptyEntryException;
+import it.alessandronatilla.preprocessing.lemmatizer.mongo.exceptions.EmptyEntryException;
 import net.frakbot.crowdpulse.data.entity.Lemma;
 import org.mongodb.morphia.Datastore;
 import org.mongodb.morphia.Morphia;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.Charset;
@@ -42,7 +45,6 @@ class MorphItCreator {
             Datastore datastore = morphia.createDatastore(new MongoClient(), "test");
             morphia.map(Lemma.class);
             datastore.ensureIndexes();
-
 
 
             while ((input = reader.readLine()) != null) {
@@ -85,7 +87,7 @@ class MorphItCreator {
 //                out.close();
 //            }
 
-        } catch (ArrayIndexOutOfBoundsException e){
+        } catch (ArrayIndexOutOfBoundsException e) {
             System.out.println("Line err:" + i);
         } catch (URISyntaxException e) {
             e.printStackTrace();

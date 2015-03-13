@@ -14,10 +14,22 @@ import java.util.List;
  * Project: text-preprocessor
  */
 public class TextPreProcessor {
+
+    public static List<String> remove_punctuation(List<String> text) {
+        List<String> result = new LinkedList<>();
+
+        for (String word : text) {
+            String token = word.replaceAll("[^a-zA-Z0-9]", "");
+            if (!token.equalsIgnoreCase(""))
+                result.add(token);
+        }
+        return result;
+    }
+
     /*
-    * Cleans text
+    * removes stopwords
      */
-    public static List<String> clean(Language language, List<String> text) {
+    public static List<String> remove_stopwords(Language language, List<String> text) {
 
         StopwordRemoval removal = new StopwordRemoval(language);
         List<String> tokens = new LinkedList<String>();
@@ -57,8 +69,8 @@ public class TextPreProcessor {
      * @return a list of tagged words
      * @throws Exception
      */
-    public static List<TaggedWord> tag(List<String> tokens) throws Exception {
-        return OpenNLPTagger.getInstance().tag(tokens);
+    public static List<TaggedWord> tag(Language language, List<String> tokens) throws Exception {
+        return OpenNLPTagger.getInstance(language).tag(tokens);
     }
 
     /**
@@ -66,8 +78,8 @@ public class TextPreProcessor {
      * @return a tagged word
      * @throws Exception
      */
-    public static TaggedWord tag(String token) throws Exception {
-        return OpenNLPTagger.getInstance().tag(token);
+    public static TaggedWord tag(Language language, String token) throws Exception {
+        return OpenNLPTagger.getInstance(language).tag(token);
     }
 
     /**
@@ -75,11 +87,9 @@ public class TextPreProcessor {
      * @param posTag
      * @return
      */
-    public static String lemmatize(String token, String posTag) {
+    public static String lemmatize(Language language, String token, String posTag) {
 
-//        Dictionary dictionary = DictionaryFactory.getDictionary();
-//        dictionary.getLemmas(token, posTag);
-        return new Lemmatizer().lemmatize(token, posTag);
+        return new Lemmatizer(language).lemmatize(token, posTag);
 
     }
 
@@ -87,24 +97,24 @@ public class TextPreProcessor {
      * @param taggedWord
      * @return
      */
-    public static String lemmatize(TaggedWord taggedWord) {
-        return new Lemmatizer().lemmatize(taggedWord.getToken(), taggedWord.getPosTag());
+    public static String lemmatize(Language language, TaggedWord taggedWord) {
+        return new Lemmatizer(language).lemmatize(taggedWord.getToken(), taggedWord.getPosTag());
     }
 
     /**
      * @param taggedWords
      * @return a stemmed word
      */
-    public static List<StemmedWord> stem(List<TaggedWord> taggedWords) {
-        return WordStemmer.getIstance().stem(taggedWords);
+    public static List<StemmedWord> stem(Language language, List<TaggedWord> taggedWords) {
+        return WordStemmerSingleton.getIstance(language).stem(taggedWords);
     }
 
-    public static StemmedWord stem(TaggedWord taggedWord) {
-        return WordStemmer.getIstance().stem(taggedWord);
+    public static StemmedWord stem(Language language, TaggedWord taggedWord) {
+        return WordStemmerSingleton.getIstance(language).stem(taggedWord);
     }
 
-    public static String stem(String token) {
-        return WordStemmer.getIstance().stem(token);
+    public static String stem(Language language, String token) {
+        return WordStemmerSingleton.getIstance(language).stem(token);
     }
 
 }

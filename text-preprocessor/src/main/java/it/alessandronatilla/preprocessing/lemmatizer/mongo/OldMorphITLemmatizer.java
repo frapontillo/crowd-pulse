@@ -1,6 +1,6 @@
 package it.alessandronatilla.preprocessing.lemmatizer.mongo;
 
-import it.alessandronatilla.preprocessing.lemmatizer.exceptions.EmptyEntryException;
+import it.alessandronatilla.preprocessing.lemmatizer.mongo.exceptions.EmptyEntryException;
 import it.alessandronatilla.preprocessing.utils.TanlMorphTagsetConvertion;
 
 import java.io.*;

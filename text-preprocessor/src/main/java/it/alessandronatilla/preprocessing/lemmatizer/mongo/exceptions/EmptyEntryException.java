@@ -1,4 +1,4 @@
-package it.alessandronatilla.preprocessing.lemmatizer.exceptions;
+package it.alessandronatilla.preprocessing.lemmatizer.mongo.exceptions;
 
 /**
  * Author: alexander

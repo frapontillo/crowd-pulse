@@ -1,4 +1,4 @@
-package it.alessandronatilla.preprocessing.lemmatizer;
+package it.alessandronatilla.preprocessing.lemmatizer.it;
 
 import java.io.BufferedReader;
 import java.io.File;

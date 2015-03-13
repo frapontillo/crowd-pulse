@@ -1,4 +1,5 @@
-import it.alessandronatilla.preprocessing.TextPreProcessor;
+package it.alessandronatilla.preprocessing;
+
 import it.alessandronatilla.preprocessing.model.Language;
 import it.alessandronatilla.preprocessing.model.StemmedWord;
 import it.alessandronatilla.preprocessing.model.TaggedWord;
@@ -21,7 +22,7 @@ import java.util.List;
  * Project: textpreprocessor
  */
 
-public class TextPreProcessorTest {
+public class TextPreProcessorTestIT {
 
     String text = "";
 
@@ -39,19 +40,6 @@ public class TextPreProcessorTest {
         assert (segments.size() > 0);
     }
 
-    @Test
-    public void token_exists() throws URISyntaxException, IOException {
-        URL resourceURL = getClass().getResource("/it-sent.bin");
-        Path resourcePath = Paths.get(resourceURL.toURI().getPath());
-
-        InputStream modelIn = getClass().getResourceAsStream("/it-sent.bin");
-
-//        System.out.println(resourcePath.toString());
-//        System.out.println(new SentenceDetectorME(new SentenceModel(new FileInputStream("src/main/resources/it-sent.bin"))));
-
-
-        System.out.println(new SentenceDetectorME(new SentenceModel(modelIn)));
-    }
 
     @Test
     public void tokenize() {
@@ -66,7 +54,7 @@ public class TextPreProcessorTest {
     public void tag() throws Exception {
         List<String> segments = TextPreProcessor.segment(Language.IT, text);
         List<String> tokens = TextPreProcessor.tokenize(Language.IT, segments);
-        List<TaggedWord> words = TextPreProcessor.tag(tokens);
+        List<TaggedWord> words = TextPreProcessor.tag(Language.IT, tokens);
 
         assert (words.size() > 0);
     }
@@ -75,8 +63,8 @@ public class TextPreProcessorTest {
     public void stem() throws Exception {
         List<String> segments = TextPreProcessor.segment(Language.IT, text);
         List<String> tokens = TextPreProcessor.tokenize(Language.IT, segments);
-        List<TaggedWord> words = TextPreProcessor.tag(tokens);
-        List<StemmedWord> stemmedWords = TextPreProcessor.stem(words);
+        List<TaggedWord> words = TextPreProcessor.tag(Language.IT, tokens);
+        List<StemmedWord> stemmedWords = TextPreProcessor.stem(Language.IT, words);
         System.out.println(stemmedWords);
 
         assert (stemmedWords.size() > 0);
@@ -88,7 +76,7 @@ public class TextPreProcessorTest {
         String word = "già";
         System.out.println("già");
         String postag = "Bis";
-        String lemma = TextPreProcessor.lemmatize(word, postag);
+        String lemma = TextPreProcessor.lemmatize(Language.IT, word, postag);
         System.out.println("Lemma for " + word + " is: " + lemma);
         assert (lemma != null);
     }
@@ -97,9 +85,9 @@ public class TextPreProcessorTest {
     public void complete_workflow() throws Exception {
         List<String> segments = TextPreProcessor.segment(Language.IT, text);
         List<String> tokens = TextPreProcessor.tokenize(Language.IT, segments);
-        List<String> clean_tokens = TextPreProcessor.clean(Language.IT, tokens);
-        List<TaggedWord> words = TextPreProcessor.tag(clean_tokens);
-        List<StemmedWord> stemmedWords = TextPreProcessor.stem(words);
+        List<String> clean_tokens = TextPreProcessor.remove_stopwords(Language.IT, tokens);
+        List<TaggedWord> words = TextPreProcessor.tag(Language.IT, clean_tokens);
+        List<StemmedWord> stemmedWords = TextPreProcessor.stem(Language.IT, words);
 
         assert (tokens.size() >= clean_tokens.size());
     }

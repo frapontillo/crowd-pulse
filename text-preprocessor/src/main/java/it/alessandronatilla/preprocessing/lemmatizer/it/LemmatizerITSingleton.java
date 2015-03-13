@@ -1,4 +1,4 @@
-package it.alessandronatilla.preprocessing.lemmatizer;
+package it.alessandronatilla.preprocessing.lemmatizer.it;
 
 import java.io.File;
 import java.net.URISyntaxException;
@@ -36,19 +36,6 @@ public class LemmatizerITSingleton {
             e.printStackTrace();
         }
 
-
-/*
-
-        //TODO: if lemma = null then lemma = token
-
-        LemmaRepository lr = new LemmaRepository();
-        String lemma;
-        try {
-            lemma = lr.getLemma(TanlMorphTagsetConvertion.tanl_to_morph_tagset(posTag), token).getLemma();
-        } catch (NullPointerException e) {
-            lemma = null;
-        }
-        */
     }
 
     public static String lemmatizer(String token, String posTag) {
