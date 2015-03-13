@@ -36,7 +36,7 @@ class OpenNLPTagger {
                 tagger = new POSTaggerME(model);
             } else if (this.language.equals(Language.EN)) {
                 modelIn = OpenNLPTagger.class
-                        .getResourceAsStream("/en-pos_perceptron.bin");
+                        .getResourceAsStream("/en-pos-perceptron.bin");
                 model = new POSModel(modelIn);
                 tagger = new POSTaggerME(model);
             } else throw new UnsupportedLanguageException();

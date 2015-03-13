@@ -1,6 +1,8 @@
 package it.alessandronatilla.preprocessing;
 
 import it.alessandronatilla.preprocessing.model.Language;
+import it.alessandronatilla.preprocessing.model.StemmedWord;
+import it.alessandronatilla.preprocessing.model.TaggedWord;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -32,5 +34,24 @@ public class TextPreProcessorTestEN {
 
         assert (nopuct.size() < tokens.size());
     }
+
+    @Test
+    public void testStemming() throws Exception {
+        List<String> sentences = TextPreProcessor.segment(Language.EN, text);
+        List<String> tokens = TextPreProcessor.tokenize(Language.EN, sentences);
+        List<String> no_puct_tokens = TextPreProcessor.remove_punctuation(tokens);
+        List<String> clear_tokens = TextPreProcessor.remove_stopwords(Language.EN, no_puct_tokens);
+        List<TaggedWord> words = TextPreProcessor.tag(Language.EN, clear_tokens);
+        List<StemmedWord> stemmedWords = TextPreProcessor.stem(Language.EN, words);
+
+        assert(stemmedWords.size()>0);
+    }
+
+    @Test
+    public void testLemmatization(){
+
+    }
+
+
 
 }

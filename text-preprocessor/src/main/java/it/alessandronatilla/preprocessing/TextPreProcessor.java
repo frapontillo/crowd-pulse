@@ -88,9 +88,7 @@ public class TextPreProcessor {
      * @return
      */
     public static String lemmatize(Language language, String token, String posTag) {
-
         return new Lemmatizer(language).lemmatize(token, posTag);
-
     }
 
     /**
