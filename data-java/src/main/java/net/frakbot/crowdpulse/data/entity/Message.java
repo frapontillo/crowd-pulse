@@ -16,6 +16,8 @@
 
 package net.frakbot.crowdpulse.data.entity;
 
+import org.mongodb.morphia.annotations.Reference;
+
 import java.util.Date;
 import java.util.List;
 
@@ -35,6 +37,7 @@ public class Message extends Entity {
     private Double longitude;
     private Integer favs;
     private Integer shares;
+    @Reference private List<Tag> tags;
 
     public String getText() {
         return text;
@@ -130,5 +133,13 @@ public class Message extends Entity {
 
     public void setShares(Integer shares) {
         this.shares = shares;
+    }
+
+    public List<Tag> getTags() {
+        return tags;
+    }
+
+    public void setTags(List<Tag> tags) {
+        this.tags = tags;
     }
 }

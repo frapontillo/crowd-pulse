@@ -16,27 +16,15 @@
 
 var mongoose = require('mongoose');
 
-var MessageSchema = new mongoose.Schema({
+var TagSchema = new mongoose.Schema({
   id: mongoose.Schema.ObjectId,
-  text: String,
-  source: String,
-  fromUser: String,
-  toUsers: [String],
-  refUsers: [String],
-  date: Date,
-  customTags: [String],
-  language: String,
-  latitude: Number,
-  longitude: Number,
-  favs: Number,
-  shares: Number,
-  tags: [mongoose.Schema.ObjectId]
+  text: String
 });
 
-var SCHEMA_NAME = 'Message';
+var SCHEMA_NAME = 'Tag';
 
-MessageSchema.statics.getSchemaName = function() {
+TagSchema.statics.getSchemaName = function() {
   return SCHEMA_NAME;
 };
 
-module.exports = MessageSchema;
+module.exports = TagSchema;

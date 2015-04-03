@@ -16,8 +16,8 @@
 
 package net.frakbot.crowdpulse.data.repository;
 
+import net.frakbot.crowdpulse.data.entity.Message;
 import org.bson.types.ObjectId;
-import org.mongodb.morphia.dao.BasicDAO;
 import org.mongodb.morphia.query.Query;
 
 import java.util.List;
@@ -25,23 +25,5 @@ import java.util.List;
 /**
  * @author Francesco Pontillo
  */
-public class Repository<T,K> extends BasicDAO<T,K> {
-    protected Repository() {
-        super(DataLayer.getDataLayer().getDatastore());
-    }
-
-    public Query<T> findBetweenIds(String fromId, String toId) {
-        Query<T> query = createQuery();
-        if (fromId != null) {
-            query.field("_id").greaterThanOrEq(new ObjectId(fromId));
-        }
-        if (toId != null) {
-            query.field("_id").lessThanOrEq(new ObjectId(toId));
-        }
-        return query;
-    }
-
-    public List<T> getBetweenIds(String fromId, String toId) {
-        return findBetweenIds(fromId, toId).asList();
-    }
+public class TagRepository extends Repository<Message, ObjectId> {
 }

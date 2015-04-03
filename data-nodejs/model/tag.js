@@ -14,29 +14,8 @@
  * limitations under the License.
  */
 
-var mongoose = require('mongoose');
+var TagSchema = require('./../schema/tag');
 
-var MessageSchema = new mongoose.Schema({
-  id: mongoose.Schema.ObjectId,
-  text: String,
-  source: String,
-  fromUser: String,
-  toUsers: [String],
-  refUsers: [String],
-  date: Date,
-  customTags: [String],
-  language: String,
-  latitude: Number,
-  longitude: Number,
-  favs: Number,
-  shares: Number,
-  tags: [mongoose.Schema.ObjectId]
-});
-
-var SCHEMA_NAME = 'Message';
-
-MessageSchema.statics.getSchemaName = function() {
-  return SCHEMA_NAME;
+module.exports = function(mongoose) {
+  return mongoose.model(TagSchema.statics.getSchemaName(), TagSchema, TagSchema.statics.getSchemaName());
 };
-
-module.exports = MessageSchema;

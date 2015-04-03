@@ -14,29 +14,21 @@
  * limitations under the License.
  */
 
-var mongoose = require('mongoose');
+package net.frakbot.crowdpulse.data.entity;
 
-var MessageSchema = new mongoose.Schema({
-  id: mongoose.Schema.ObjectId,
-  text: String,
-  source: String,
-  fromUser: String,
-  toUsers: [String],
-  refUsers: [String],
-  date: Date,
-  customTags: [String],
-  language: String,
-  latitude: Number,
-  longitude: Number,
-  favs: Number,
-  shares: Number,
-  tags: [mongoose.Schema.ObjectId]
-});
+/**
+ * @author Francesco Pontillo
+ */
+public class Tag extends Entity {
 
-var SCHEMA_NAME = 'Message';
+    private String text;
 
-MessageSchema.statics.getSchemaName = function() {
-  return SCHEMA_NAME;
-};
+    public String getText() {
+        return text;
+    }
 
-module.exports = MessageSchema;
+    public void setText(String text) {
+        this.text = text;
+    }
+
+}
