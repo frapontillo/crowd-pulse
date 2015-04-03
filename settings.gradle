@@ -34,3 +34,5 @@ include 'admin-cli'
 include 'fix-geo-profile'
 include 'fix-geo-message'
 
+include 'detect-language'
+
