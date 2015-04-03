@@ -128,7 +128,7 @@ public class ExtractionMain {
 
         @Override public void onNext(List<Message> messages) {
             for (Message message : messages) {
-                message.setTags(parameters.getTags());
+                message.setCustomTags(parameters.getTags());
                 messageRepository.save(message);
             }
         }

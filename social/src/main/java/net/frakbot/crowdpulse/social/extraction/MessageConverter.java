@@ -35,7 +35,7 @@ public abstract class MessageConverter<T> {
 
     public Message fromExtractor(T original) {
         Message converted = fromSpecificExtractor(original);
-        converted.setTags(parameters.getTags());
+        converted.setCustomTags(parameters.getTags());
         return converted;
     }
 

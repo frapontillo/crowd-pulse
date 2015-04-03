@@ -29,7 +29,7 @@ public class Message extends Entity {
     private List<String> toUsers;
     private List<String> refUsers;
     private Date date;
-    private List<String> tags;
+    private List<String> customTags;
     private String language;
     private Double latitude;
     private Double longitude;
@@ -84,12 +84,12 @@ public class Message extends Entity {
         this.refUsers = refUsers;
     }
 
-    public List<String> getTags() {
-        return tags;
+    public List<String> getCustomTags() {
+        return customTags;
     }
 
-    public void setTags(List<String> tags) {
-        this.tags = tags;
+    public void setCustomTags(List<String> customTags) {
+        this.customTags = customTags;
     }
 
     public String getLanguage() {

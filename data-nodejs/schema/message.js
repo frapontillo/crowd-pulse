@@ -24,7 +24,7 @@ var MessageSchema = new mongoose.Schema({
   toUsers: [String],
   refUsers: [String],
   date: Date,
-  tags: [String],
+  customTags: [String],
   language: String,
   latitude: Number,
   longitude: Number,
