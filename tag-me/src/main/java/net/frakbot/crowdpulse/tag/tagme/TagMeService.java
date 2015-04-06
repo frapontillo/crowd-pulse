@@ -14,14 +14,15 @@
  * limitations under the License.
  */
 
-apply plugin: 'java'
+package net.frakbot.crowdpulse.tag.tagme;
 
-sourceCompatibility = 1.7
-targetCompatibility = 1.7
+import retrofit.http.GET;
+import retrofit.http.Query;
 
-version = '1.0'
-
-dependencies {
-    compile project(':data-java')
-    compile group: 'io.reactivex', name: 'rxjava', version: '1.0.3'
+/**
+ * @author Francesco Pontillo
+ */
+public interface TagMeService {
+    @GET("/tag")
+    TagMeResponse tag(@Query("text") String text, @Query("lang") String language);
 }

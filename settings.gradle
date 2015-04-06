@@ -35,5 +35,10 @@ include 'fix-geo-profile'
 include 'fix-geo-message'
 
 include 'detect-language'
+
 include 'tag'
+include 'tag-cli'
+include 'tag-zemanta'
+include 'tag-wikipedia-miner'
+include 'tag-me'
 

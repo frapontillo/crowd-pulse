@@ -14,14 +14,24 @@
  * limitations under the License.
  */
 
-apply plugin: 'java'
+package net.frakbot.crowdpulse.tag.zemanta;
 
-sourceCompatibility = 1.7
-targetCompatibility = 1.7
+import net.frakbot.crowdpulse.data.entity.Tag;
+import net.frakbot.crowdpulse.tag.ITagger;
+import rx.observables.ConnectableObservable;
 
-version = '1.0'
+/**
+ * @author Francesco Pontillo
+ */
+public class ZemantaTagger implements ITagger {
+    private final static String TAGGER_NAME = "zemanta";
 
-dependencies {
-    compile project(':data-java')
-    compile group: 'io.reactivex', name: 'rxjava', version: '1.0.3'
+    @Override public String getName() {
+        return TAGGER_NAME;
+    }
+
+    @Override public ConnectableObservable<Tag> getTags(String text, String language) {
+        // TODO: check API availability
+        return null;
+    }
 }

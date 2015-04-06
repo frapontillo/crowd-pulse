@@ -17,32 +17,48 @@
 package net.frakbot.crowdpulse.tag.cli;
 
 import com.beust.jcommander.JCommander;
+import dagger.ObjectGraph;
 import net.frakbot.crowdpulse.common.util.CrowdLogger;
 import net.frakbot.crowdpulse.common.util.GenericAnalysisParameters;
 import net.frakbot.crowdpulse.data.entity.Message;
+import net.frakbot.crowdpulse.data.entity.Tag;
 import net.frakbot.crowdpulse.data.repository.MessageRepository;
+import net.frakbot.crowdpulse.tag.ITagger;
+import net.frakbot.crowdpulse.tag.TaggerModule;
 import org.apache.logging.log4j.Logger;
-import rx.Observable;
 import rx.Observer;
-import rx.Subscription;
 import rx.observables.ConnectableObservable;
-import rx.schedulers.Schedulers;
-import sun.net.www.content.text.Generic;
 
+import javax.inject.Inject;
 import java.io.IOException;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
 
 /**
  * @author Francesco Pontillo
  */
 public class MessageTagMain {
-    private static final CountDownLatch endSignal = new CountDownLatch(2);
-    private static final Logger logger = CrowdLogger.getLogger(MessageTagMain.class);
+    private final CountDownLatch endSignal = new CountDownLatch(2);
+    private final Logger logger = CrowdLogger.getLogger(MessageTagMain.class);
+
+    @Inject Set<ITagger> taggers;
 
     public static void main(String[] args) throws IOException {
-        logger.debug("Geo message consolidation started.");
+        ObjectGraph objectGraph = ObjectGraph.create(new TaggerModule());
+        MessageTagMain main = objectGraph.get(MessageTagMain.class);
+        main.run(args);
+    }
+
+    public void run(String[] args) throws IOException {
+        ITagger tagger = findTagger(taggers, "tagme");
+        ConnectableObservable<Tag> tags = tagger.getTags("At around the size of a domestic chicken", "en");
+
+        tags.subscribe(new TagObserver());
+
+        tags.connect();
+
+        logger.debug("Message tagging started.");
 
         // read parameters
         GenericAnalysisParameters params = new GenericAnalysisParameters();
@@ -54,7 +70,16 @@ public class MessageTagMain {
         logger.debug("Done.");
     }
 
-    private static class MessageObserver implements Observer<Message> {
+    private static ITagger findTagger(Set<ITagger> taggers, String name) {
+        for (ITagger tagger : taggers) {
+            if (tagger.getName().equals(name)) {
+                return tagger;
+            }
+        }
+        return null;
+    }
+
+    private class MessageObserver implements Observer<Message> {
         @Override public void onCompleted() {
             logger.debug("Message Stream ended.");
             endSignal.countDown();
@@ -73,7 +98,7 @@ public class MessageTagMain {
         }
     }
 
-    private static class BufferedMessageListObserver implements Observer<List<Message>> {
+    private class BufferedMessageListObserver implements Observer<List<Message>> {
         private final MessageRepository messageRepository;
 
         public BufferedMessageListObserver() {
@@ -95,6 +120,24 @@ public class MessageTagMain {
             for (Message message : messages) {
                 messageRepository.save(message);
             }
+        }
+    }
+
+    private class TagObserver implements Observer<Tag> {
+
+        @Override public void onCompleted() {
+            logger.debug("Tag Stream ended.");
+            endSignal.countDown();
+        }
+
+        @Override public void onError(Throwable e) {
+            logger.error("Tag Stream errored.");
+            e.printStackTrace();
+            endSignal.countDown();
+        }
+
+        @Override public void onNext(Tag tag) {
+            logger.info(tag.getText());
         }
     }
 }

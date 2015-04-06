@@ -14,14 +14,15 @@
  * limitations under the License.
  */
 
-apply plugin: 'java'
+package net.frakbot.crowdpulse.tag.wikipediaminer;
 
-sourceCompatibility = 1.7
-targetCompatibility = 1.7
+import retrofit.http.GET;
+import retrofit.http.Query;
 
-version = '1.0'
-
-dependencies {
-    compile project(':data-java')
-    compile group: 'io.reactivex', name: 'rxjava', version: '1.0.3'
+/**
+ * @author Francesco Pontillo
+ */
+public interface WikipediaMinerService {
+    @GET("/services/wikify?responseFormat=json")
+    WikifyResponse wikify(@Query("source") String text);
 }

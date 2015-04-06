@@ -23,5 +23,6 @@ version = '1.0'
 
 dependencies {
     compile project(':data-java')
-    compile group: 'io.reactivex', name: 'rxjava', version: '1.0.3'
+    compile project(':tag')
+    compile group: 'com.squareup.retrofit', name: 'retrofit', version: '1.9.0'
 }
