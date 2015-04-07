@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Francesco Pontillo
+ * Copyright 2015 Francesco Pontillo
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,33 +14,15 @@
  * limitations under the License.
  */
 
-rootProject.name = 'crowd-pulse'
+package net.frakbot.crowdpulse.tag.babelfy;
 
-include 'common-util'
+import retrofit.http.GET;
+import retrofit.http.Query;
 
-include 'social'
-include 'social-facebook'
-include 'social-twitter'
-include 'social-cli'
-
-include 'oauth-service'
-include 'web-service'
-
-include 'data-nodejs'
-include 'data-java'
-
-include 'admin-cli'
-
-include 'fix-geo-profile'
-include 'fix-geo-message'
-
-include 'detect-language'
-
-include 'tag'
-include 'tag-cli'
-include 'tag-zemanta'
-include 'tag-wikipedia-miner'
-include 'tag-me'
-include 'tag-open-calais'
-include 'tag-babelfy'
-
+/**
+ * @author Francesco Pontillo
+ */
+public interface BabelfyService {
+    @GET("/rest?format=json&partMatching=false")
+    BabelfyResponse tag(@Query("text") String text, @Query("lang") String language);
+}

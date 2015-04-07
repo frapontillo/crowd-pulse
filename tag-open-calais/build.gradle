@@ -15,9 +15,6 @@
  */
 
 apply plugin: 'java'
-apply plugin: 'application'
-
-mainClassName = 'net.frakbot.crowdpulse.tag.MessageTagMain'
 
 sourceCompatibility = 1.7
 targetCompatibility = 1.7
@@ -25,16 +22,7 @@ targetCompatibility = 1.7
 version = '1.0'
 
 dependencies {
-    compile project(':common-util')
     compile project(':data-java')
     compile project(':tag')
-    compile project(':tag-zemanta')
-    compile project(':tag-wikipedia-miner')
-    compile project(':tag-me')
-    compile project(':tag-open-calais')
-    compile project(':tag-babelfy')
-    compile group: 'com.beust', name: 'jcommander', version: '1.47'
-    compile group: 'io.reactivex', name: 'rxjava', version: '1.0.3'
-    compile group: 'com.squareup.dagger', name: 'dagger-compiler', version: '1.2.2'
-    compile group: 'com.squareup.dagger', name: 'dagger', version: '1.2.2'
+    compile group: 'com.squareup.retrofit', name: 'retrofit', version: '1.9.0'
 }

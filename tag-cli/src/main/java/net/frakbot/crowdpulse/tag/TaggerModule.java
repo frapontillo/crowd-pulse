@@ -18,7 +18,9 @@ package net.frakbot.crowdpulse.tag;
 
 import dagger.Module;
 import dagger.Provides;
+import net.frakbot.crowdpulse.tag.babelfy.BabelfyTagger;
 import net.frakbot.crowdpulse.tag.cli.MessageTagMain;
+import net.frakbot.crowdpulse.tag.opencalais.OpenCalaisTagger;
 import net.frakbot.crowdpulse.tag.tagme.TagMeTagger;
 import net.frakbot.crowdpulse.tag.wikipediaminer.WikipediaMinerTagger;
 import net.frakbot.crowdpulse.tag.zemanta.ZemantaTagger;
@@ -41,7 +43,6 @@ public class TaggerModule {
         return new TagMeTagger();
     }
 
-    /*
     @Provides(type= Provides.Type.SET) ITagger provideOpenCalaisTagger() {
         return new OpenCalaisTagger();
     }
@@ -49,5 +50,4 @@ public class TaggerModule {
     @Provides(type= Provides.Type.SET) ITagger provideBabelfyTagger() {
         return new BabelfyTagger();
     }
-    */
 }

@@ -51,8 +51,10 @@ public class MessageTagMain {
     }
 
     public void run(String[] args) throws IOException {
-        ITagger tagger = findTagger(taggers, "tagme");
-        ConnectableObservable<Tag> tags = tagger.getTags("At around the size of a domestic chicken", "en");
+        ITagger tagger = findTagger(taggers, "babelfy");
+        ConnectableObservable<Tag> tags = tagger.getTags(
+                "Commission of Spain on the first anniversary of the train bombings in Madrid that took 200 lives.",
+                "en");
 
         tags.subscribe(new TagObserver());
 

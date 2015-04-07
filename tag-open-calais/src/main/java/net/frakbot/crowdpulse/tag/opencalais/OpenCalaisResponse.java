@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Francesco Pontillo
+ * Copyright 2015 Francesco Pontillo
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,33 +14,26 @@
  * limitations under the License.
  */
 
-rootProject.name = 'crowd-pulse'
+package net.frakbot.crowdpulse.tag.opencalais;
 
-include 'common-util'
+import java.util.ArrayList;
+import java.util.List;
 
-include 'social'
-include 'social-facebook'
-include 'social-twitter'
-include 'social-cli'
+/**
+ * @author Francesco Pontillo
+ */
+public class OpenCalaisResponse {
+    private List<String> entities;
 
-include 'oauth-service'
-include 'web-service'
+    public OpenCalaisResponse() {
+        entities = new ArrayList<String>();
+    }
 
-include 'data-nodejs'
-include 'data-java'
+    public List<String> getEntities() {
+        return entities;
+    }
 
-include 'admin-cli'
-
-include 'fix-geo-profile'
-include 'fix-geo-message'
-
-include 'detect-language'
-
-include 'tag'
-include 'tag-cli'
-include 'tag-zemanta'
-include 'tag-wikipedia-miner'
-include 'tag-me'
-include 'tag-open-calais'
-include 'tag-babelfy'
-
+    public void setEntities(List<String> entities) {
+        this.entities = entities;
+    }
+}
