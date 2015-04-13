@@ -23,17 +23,12 @@ import net.frakbot.crowdpulse.tag.cli.MessageTagMain;
 import net.frakbot.crowdpulse.tag.opencalais.OpenCalaisTagger;
 import net.frakbot.crowdpulse.tag.tagme.TagMeTagger;
 import net.frakbot.crowdpulse.tag.wikipediaminer.WikipediaMinerTagger;
-import net.frakbot.crowdpulse.tag.zemanta.ZemantaTagger;
 
 /**
  * @author Francesco Pontillo
  */
 @Module(injects = MessageTagMain.class)
 public class TaggerModule {
-
-    @Provides(type= Provides.Type.SET) ITagger provideZemantaTagger() {
-        return new ZemantaTagger();
-    }
 
     @Provides(type= Provides.Type.SET) ITagger provideWikipediaMinerTagger() {
         return new WikipediaMinerTagger();

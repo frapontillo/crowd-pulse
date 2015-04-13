@@ -28,7 +28,6 @@ dependencies {
     compile project(':common-util')
     compile project(':data-java')
     compile project(':tag')
-    compile project(':tag-zemanta')
     compile project(':tag-wikipedia-miner')
     compile project(':tag-me')
     compile project(':tag-open-calais')
