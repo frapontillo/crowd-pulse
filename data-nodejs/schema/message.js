@@ -15,6 +15,7 @@
  */
 
 var mongoose = require('mongoose');
+var TagSchema = require('./tag');
 
 var MessageSchema = new mongoose.Schema({
   id: mongoose.Schema.ObjectId,
@@ -30,7 +31,7 @@ var MessageSchema = new mongoose.Schema({
   longitude: Number,
   favs: Number,
   shares: Number,
-  tags: [mongoose.Schema.ObjectId]
+  tags: [TagSchema]
 });
 
 var SCHEMA_NAME = 'Message';

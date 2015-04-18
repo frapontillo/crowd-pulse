@@ -17,23 +17,12 @@
 package net.frakbot.crowdpulse.data.entity;
 
 import org.bson.types.ObjectId;
-import org.mongodb.morphia.annotations.Id;
 
 /**
  * @author Francesco Pontillo
  */
-public class Entity {
-    @Id private ObjectId id;
-
+public class Entity extends GenericEntity<ObjectId> {
     public Entity() {
-        id = new ObjectId();
-    }
-
-    public ObjectId getId() {
-        return id;
-    }
-
-    public void setId(ObjectId id) {
-        this.id = id;
+        this.setId(new ObjectId());
     }
 }

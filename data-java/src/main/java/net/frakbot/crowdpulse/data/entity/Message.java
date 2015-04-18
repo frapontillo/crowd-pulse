@@ -37,7 +37,7 @@ public class Message extends Entity {
     private Double longitude;
     private Integer favs;
     private Integer shares;
-    @Reference private List<Tag> tags;
+    private List<Tag> tags;
 
     public String getText() {
         return text;

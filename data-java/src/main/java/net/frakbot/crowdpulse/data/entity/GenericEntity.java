@@ -14,12 +14,21 @@
  * limitations under the License.
  */
 
-package net.frakbot.crowdpulse.data.repository;
+package net.frakbot.crowdpulse.data.entity;
 
-import net.frakbot.crowdpulse.data.entity.Tag;
+import org.mongodb.morphia.annotations.Id;
 
 /**
  * @author Francesco Pontillo
  */
-public class TagRepository extends Repository<Tag, String> {
+public class GenericEntity<T> {
+    @Id private T id;
+
+    public T getId() {
+        return id;
+    }
+
+    public void setId(T id) {
+        this.id = id;
+    }
 }

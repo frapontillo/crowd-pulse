@@ -19,16 +19,14 @@ package net.frakbot.crowdpulse.data.entity;
 /**
  * @author Francesco Pontillo
  */
-public class Tag extends Entity {
-
-    private String text;
+public class Tag extends GenericEntity<String> {
 
     public String getText() {
-        return text;
+        return getId();
     }
 
     public void setText(String text) {
-        this.text = text;
+        setId(text);
     }
 
 }
