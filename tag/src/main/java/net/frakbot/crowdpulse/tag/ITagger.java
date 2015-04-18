@@ -20,6 +20,8 @@ package net.frakbot.crowdpulse.tag;
 import net.frakbot.crowdpulse.data.entity.Tag;
 import rx.observables.ConnectableObservable;
 
+import java.util.List;
+
 /**
  * @author Francesco Pontillo
  */
@@ -32,12 +34,12 @@ public interface ITagger {
     String getName();
 
     /**
-     * Starts an asynchronous tagging process loading an {@link rx.Observable} of
+     * Starts an asynchronous tagging process loading an {@link List} of
      * {@link net.frakbot.crowdpulse.data.entity.Tag}.
      *
      * @param text {@link String} text to tag
      * @param language {@link String} language of the text to tag (can be discarded by some implementations)
-     * @return {@link rx.Observable<net.frakbot.crowdpulse.data.entity.Tag>}
+     * @return {@link List <net.frakbot.crowdpulse.data.entity.Tag>}
      */
-    ConnectableObservable<Tag> getTags(String text, String language);
+    List<Tag> getTags(String text, String language);
 }

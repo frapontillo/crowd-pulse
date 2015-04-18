@@ -19,8 +19,6 @@ package net.frakbot.crowdpulse.tag.wikipediaminer;
 import net.frakbot.crowdpulse.data.entity.Tag;
 import net.frakbot.crowdpulse.tag.ITagger;
 import retrofit.RestAdapter;
-import rx.Observable;
-import rx.observables.ConnectableObservable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,7 +36,7 @@ public class WikipediaMinerTagger implements ITagger {
         return TAGGER_NAME;
     }
 
-    @Override public ConnectableObservable<Tag> getTags(String text, String language) {
+    @Override public List<Tag> getTags(String text, String language) {
         // build the REST client
         RestAdapter restAdapter = new RestAdapter.Builder()
                 .setEndpoint(WIKIPEDIA_MINER_ENDPOINT)
@@ -60,6 +58,6 @@ public class WikipediaMinerTagger implements ITagger {
         }
 
         // publish the tags as a connectable observable
-        return Observable.from(tags).publish();
+        return tags;
     }
 }
