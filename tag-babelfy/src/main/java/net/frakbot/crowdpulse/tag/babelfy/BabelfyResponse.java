@@ -16,124 +16,27 @@
 
 package net.frakbot.crowdpulse.tag.babelfy;
 
-import com.google.gson.annotations.SerializedName;
-import net.frakbot.crowdpulse.common.util.StringUtil;
-
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * @author Francesco Pontillo
  */
-public class BabelfyResponse {
+public class BabelfyResponse extends ArrayList<BabelfyTag> {
+    private List<String> tags;
 
-    @SerializedName("taggedText")
-    private List<BabelfyTaggedText> taggedTexts;
-    private List<BabelfyAnnotation> annotations;
-
-    public List<BabelfyTaggedText> getTaggedTexts() {
-        return taggedTexts;
+    public BabelfyResponse() {
+        tags = null;
     }
 
-    public void setTaggedTexts(List<BabelfyTaggedText> tags) {
-        this.taggedTexts = tags;
-    }
-
-    public List<BabelfyAnnotation> getAnnotations() {
-        return annotations;
-    }
-
-    public void setAnnotations(List<BabelfyAnnotation> annotations) {
-        this.annotations = annotations;
-    }
-
-    public List<String> getTags() {
-        List<String> tags = new ArrayList<String>(getAnnotations().size());
-        for (BabelfyAnnotation annotation : getAnnotations()) {
-            tags.add(getTag(annotation.getStart(), annotation.getEnd()));
+    public List<String> getTags(String text) {
+        if (tags == null) {
+            tags = new ArrayList<String>(this.size());
+            for (BabelfyTag babelfyTag : this) {
+                BabelfyTag.BabelfyCharFragment charFragment = babelfyTag.getCharFragment();
+                tags.add(text.substring(charFragment.getStart(), charFragment.getEnd() + 1));
+            }
         }
         return tags;
     }
-
-    private String getTag(int start, int end) {
-        List<BabelfyTaggedText> taggedTexts = getTaggedTexts().subList(start, end);
-        List<String> texts = new ArrayList<String>(taggedTexts.size());
-        for (BabelfyTaggedText taggedText : taggedTexts) {
-            texts.add(taggedText.getLemma());
-        }
-        return StringUtil.join(texts, " ");
-    }
-
-    public class BabelfyTaggedText {
-        private String lemma;
-        private String tag;
-        private String word;
-
-        private final String encoding = "UTF-8";
-
-        public String getLemma() {
-            return decode(lemma);
-        }
-
-        public void setLemma(String lemma) {
-            this.lemma = lemma;
-        }
-
-        public String getTag() {
-            return decode(tag);
-        }
-
-        public void setTag(String tag) {
-            this.tag = tag;
-        }
-
-        public String getWord() {
-            return decode(word);
-        }
-
-        public void setWord(String word) {
-            this.word = word;
-        }
-
-        private String decode(String string) {
-            try {
-                return URLDecoder.decode(string, encoding);
-            } catch (UnsupportedEncodingException e) {
-                return string;
-            }
-        }
-    }
-
-    public class BabelfyAnnotation {
-        private String id;
-        private int start;
-        private int end;
-
-        public String getId() {
-            return id;
-        }
-
-        public void setId(String id) {
-            this.id = id;
-        }
-
-        public int getStart() {
-            return start;
-        }
-
-        public void setStart(int start) {
-            this.start = start;
-        }
-
-        public int getEnd() {
-            return end;
-        }
-
-        public void setEnd(int end) {
-            this.end = end;
-        }
-    }
-
 }

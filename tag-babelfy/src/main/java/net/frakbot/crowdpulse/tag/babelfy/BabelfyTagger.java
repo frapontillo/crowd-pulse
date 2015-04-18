@@ -29,7 +29,7 @@ import java.util.List;
 public class BabelfyTagger extends ITagger {
     private final static String TAGGER_NAME = "babelfy";
 
-    private final String BABELFY_ENDPOINT = "http://babelfy.org";
+    private final String BABELFY_ENDPOINT = "http://babelfy.io/v1";
 
     @Override public String getName() {
         return TAGGER_NAME;
@@ -47,14 +47,15 @@ public class BabelfyTagger extends ITagger {
 
         List<Tag> tags = new ArrayList<Tag>();
         try {
-            response = service.tag(text, language.toUpperCase());
-            for (String annotation : response.getTags()) {
+            response = service.tag(text, language != null ? language.toUpperCase() : null);
+            for (String annotation : response.getTags(text)) {
                 Tag tag = new Tag();
                 tag.setText(annotation);
                 tags.add(tag);
             }
         } catch (Exception e) {
             // ignored
+            System.err.println(e);
         }
 
         // publish the tags as a connectable observable
