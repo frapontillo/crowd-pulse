@@ -19,66 +19,81 @@ package net.frakbot.crowdpulse.tag.cli;
 import com.beust.jcommander.JCommander;
 import dagger.ObjectGraph;
 import net.frakbot.crowdpulse.common.util.CrowdLogger;
-import net.frakbot.crowdpulse.common.util.GenericAnalysisParameters;
+import net.frakbot.crowdpulse.common.util.RxUtil;
+import net.frakbot.crowdpulse.common.util.StringUtil;
 import net.frakbot.crowdpulse.data.entity.Message;
 import net.frakbot.crowdpulse.data.entity.Tag;
 import net.frakbot.crowdpulse.data.repository.MessageRepository;
-import net.frakbot.crowdpulse.tag.ITagger;
+import net.frakbot.crowdpulse.data.repository.TagRepository;
+import net.frakbot.crowdpulse.tag.MessageTagParameters;
+import net.frakbot.crowdpulse.tag.MessageTagger;
 import net.frakbot.crowdpulse.tag.TaggerModule;
 import org.apache.logging.log4j.Logger;
+import rx.Observable;
 import rx.Observer;
+import rx.Subscription;
+import rx.functions.Func1;
 import rx.observables.ConnectableObservable;
+import rx.schedulers.Schedulers;
 
-import javax.inject.Inject;
 import java.io.IOException;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author Francesco Pontillo
  */
 public class MessageTagMain {
-    private final CountDownLatch endSignal = new CountDownLatch(2);
+    private final CountDownLatch endSignal = new CountDownLatch(3);
     private final Logger logger = CrowdLogger.getLogger(MessageTagMain.class);
-
-    @Inject Set<ITagger> taggers;
+    private MessageTagger tagger;
 
     public static void main(String[] args) throws IOException {
         ObjectGraph objectGraph = ObjectGraph.create(new TaggerModule());
-        MessageTagMain main = objectGraph.get(MessageTagMain.class);
+        MessageTagMain main = new MessageTagMain();
+        main.tagger = objectGraph.get(MessageTagger.class);
         main.run(args);
     }
 
     public void run(String[] args) throws IOException {
-        ITagger tagger = findTagger(taggers, "babelfy");
-        ConnectableObservable<Tag> tags = tagger.getTags(
-                "Commission of Spain on the first anniversary of the train bombings in Madrid that took 200 lives.",
-                "en");
-
-        tags.subscribe(new TagObserver());
-
-        tags.connect();
-
         logger.debug("Message tagging started.");
 
         // read parameters
-        GenericAnalysisParameters params = new GenericAnalysisParameters();
+        MessageTagParameters params = new MessageTagParameters();
         new JCommander(params, args);
         logger.debug("Parameters read.");
 
-        // TODO: implement the tag retrieval
+        ConnectableObservable<Message> messages = tagger.tagMessages(params);
+        // save all messages
+        Observable<List<Message>> bufferedMessages = messages.buffer(10, TimeUnit.SECONDS, 3, Schedulers.io());
+        // get all unique tags
+        Observable<Tag> uniqueTags = messages
+                .flatMap(new Func1<Message, Observable<Tag>>() {
+                    @Override public Observable<Tag> call(Message message) {
+                        return Observable.from(message.getTags());
+                    }
+                })
+                .distinct(new Func1<Tag, String>() {
+                    @Override public String call(Tag tag) {
+                        return tag.getText();
+                    }
+                });
+
+        Subscription subscription = messages.subscribe(new MessageObserver());
+        Subscription bufferedSubscription = bufferedMessages.subscribe(new BufferedMessageListObserver());
+        Subscription tagSubscription = uniqueTags.subscribe(new TagObserver());
+
+        messages.connect();
+
+        // the thread can be interrupted while "await"-ing, so we "await" again until the subscription is over
+        while (RxUtil.isSubscribedAtLeastOnce(subscription, bufferedSubscription, tagSubscription)) {
+            try {
+                endSignal.await();
+            } catch (InterruptedException ignore) { }
+        }
 
         logger.debug("Done.");
-    }
-
-    private static ITagger findTagger(Set<ITagger> taggers, String name) {
-        for (ITagger tagger : taggers) {
-            if (tagger.getName().equals(name)) {
-                return tagger;
-            }
-        }
-        return null;
     }
 
     private class MessageObserver implements Observer<Message> {
@@ -96,7 +111,7 @@ public class MessageTagMain {
         @Override public void onNext(Message message) {
             // TODO: print found tags
             logger.info(String.format(
-                    "%s@%s", message.getText(), ""));
+                    "%s", message.getText()));
         }
     }
 
@@ -126,6 +141,7 @@ public class MessageTagMain {
     }
 
     private class TagObserver implements Observer<Tag> {
+        TagRepository tagRepository = new TagRepository();
 
         @Override public void onCompleted() {
             logger.debug("Tag Stream ended.");
@@ -140,6 +156,7 @@ public class MessageTagMain {
 
         @Override public void onNext(Tag tag) {
             logger.info(tag.getText());
+            tagRepository.insertOrUpdate(tag);
         }
     }
 }

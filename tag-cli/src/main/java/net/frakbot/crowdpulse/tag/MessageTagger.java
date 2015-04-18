@@ -16,48 +16,30 @@
 
 package net.frakbot.crowdpulse.tag;
 
-import net.frakbot.crowdpulse.common.util.GenericAnalysisParameters;
 import net.frakbot.crowdpulse.data.entity.Message;
-import net.frakbot.crowdpulse.data.entity.Tag;
 import net.frakbot.crowdpulse.data.repository.MessageRepository;
 import rx.Observable;
 import rx.Subscriber;
 import rx.observables.ConnectableObservable;
 import rx.schedulers.Schedulers;
 
+import javax.inject.Inject;
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author Francesco Pontillo
  */
 public class MessageTagger {
+
     private final MessageRepository messageRepository = new MessageRepository();
+    @Inject Set<ITagger> taggers;
 
-    public ConnectableObservable<Tag> findTagsForMessage(Message message) {
-        Observable<Tag> tags = Observable.create(new Observable.OnSubscribe<Tag>() {
-            @Override public void call(Subscriber<? super Tag> subscriber) {
-
-                // TODO: retrieve tags for the message
-
-                // for each tag
-
-                    // TODO: edit or insert the tag in the database
-
-                    // notify the new tag
-                    // subscriber.onNext(newTag);
-
-                subscriber.onCompleted();
-            }
-        });
-
-        tags = tags.subscribeOn(Schedulers.io());
-        tags = tags.observeOn(Schedulers.io());
-
-        ConnectableObservable connectableTags = tags.publish();
-        return connectableTags;
-    }
-
-    public ConnectableObservable<Message> tagMessages(final GenericAnalysisParameters parameters) {
+    public ConnectableObservable<Message> tagMessages(final MessageTagParameters parameters) {
+        final ITagger tagger = findTagger(taggers, parameters.getTagger());
+        if (tagger == null) {
+            return null;
+        }
 
         Observable<Message> messages = Observable.create(new Observable.OnSubscribe<Message>() {
             @Override public void call(Subscriber<? super Message> subscriber) {
@@ -65,8 +47,11 @@ public class MessageTagger {
                 final List<Message> allMessages = messageRepository.getBetweenIds(
                         parameters.getFrom(), parameters.getTo());
 
+                // for each message, get all tags and add them to the collection
                 for (Message message : allMessages) {
-
+                    message.addTags(
+                            tagger.getTags(message.getText(), message.getLanguage()));
+                    subscriber.onNext(message);
                 }
 
                 subscriber.onCompleted();
@@ -76,7 +61,15 @@ public class MessageTagger {
         messages = messages.subscribeOn(Schedulers.io());
         messages = messages.observeOn(Schedulers.io());
 
-        ConnectableObservable connectableMessages = messages.publish();
-        return connectableMessages;
+        return messages.publish();
+    }
+
+    private static ITagger findTagger(Set<ITagger> taggers, String name) {
+        for (ITagger tagger : taggers) {
+            if (tagger.getName().equals(name)) {
+                return tagger;
+            }
+        }
+        return null;
     }
 }

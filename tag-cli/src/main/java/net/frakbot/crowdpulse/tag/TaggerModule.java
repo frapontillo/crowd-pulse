@@ -27,11 +27,14 @@ import net.frakbot.crowdpulse.tag.wikipediaminer.WikipediaMinerTagger;
 /**
  * @author Francesco Pontillo
  */
-@Module(injects = MessageTagMain.class)
+@Module(
+        injects = MessageTagger.class,
+        library = true
+)
 public class TaggerModule {
 
-    @Provides(type= Provides.Type.SET) ITagger provideWikipediaMinerTagger() {
-        return new WikipediaMinerTagger();
+    @Provides(type= Provides.Type.SET) ITagger provideBabelfyTagger() {
+        return new BabelfyTagger();
     }
 
     @Provides(type= Provides.Type.SET) ITagger provideTagMeTagger() {
@@ -42,7 +45,7 @@ public class TaggerModule {
         return new OpenCalaisTagger();
     }
 
-    @Provides(type= Provides.Type.SET) ITagger provideBabelfyTagger() {
-        return new BabelfyTagger();
+    @Provides(type= Provides.Type.SET) ITagger provideWikipediaMinerTagger() {
+        return new WikipediaMinerTagger();
     }
 }
