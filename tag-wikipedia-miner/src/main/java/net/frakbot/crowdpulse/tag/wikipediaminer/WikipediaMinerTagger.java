@@ -27,7 +27,7 @@ import java.util.List;
  * @see {@link "http://wikipedia-miner.cms.waikato.ac.nz/services/?wikify"}
  * @author Francesco Pontillo
  */
-public class WikipediaMinerTagger implements ITagger {
+public class WikipediaMinerTagger extends ITagger {
     private final static String TAGGER_NAME = "wikipediaminer";
 
     private final String WIKIPEDIA_MINER_ENDPOINT = "http://wikipedia-miner.cms.waikato.ac.nz";
@@ -36,7 +36,7 @@ public class WikipediaMinerTagger implements ITagger {
         return TAGGER_NAME;
     }
 
-    @Override public List<Tag> getTags(String text, String language) {
+    @Override public List<Tag> getTagsImpl(String text, String language) {
         // build the REST client
         RestAdapter restAdapter = new RestAdapter.Builder()
                 .setEndpoint(WIKIPEDIA_MINER_ENDPOINT)

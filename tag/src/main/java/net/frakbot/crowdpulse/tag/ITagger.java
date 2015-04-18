@@ -25,13 +25,13 @@ import java.util.List;
 /**
  * @author Francesco Pontillo
  */
-public interface ITagger {
+public abstract class ITagger {
     /**
      * Returns the name of the tagger implementation.
      *
      * @return {@link java.lang.String} the name of the tagger.
      */
-    String getName();
+    public abstract String getName();
 
     /**
      * Starts an asynchronous tagging process loading an {@link List} of
@@ -41,5 +41,13 @@ public interface ITagger {
      * @param language {@link String} language of the text to tag (can be discarded by some implementations)
      * @return {@link List <net.frakbot.crowdpulse.data.entity.Tag>}
      */
-    List<Tag> getTags(String text, String language);
+    public List<Tag> getTags(String text, String language) {
+        List<Tag> tags = getTagsImpl(text, language);
+        for (Tag tag : tags) {
+            tag.addSource(getName());
+        }
+        return tags;
+    }
+
+    protected abstract List<Tag> getTagsImpl(String text, String language);
 }

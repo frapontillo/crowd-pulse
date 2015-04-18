@@ -30,7 +30,7 @@ import java.util.List;
  * @see {@link "http://www.opencalais.com/documentation/calais-web-service-api/api-invocation/rest"}
  * @author Francesco Pontillo
  */
-public class OpenCalaisTagger implements ITagger {
+public class OpenCalaisTagger extends ITagger {
     private final static String TAGGER_NAME = "opencalais";
 
     private final String OPEN_CALAIS_ENDPOINT = "http://api.opencalais.com/tag/rs";
@@ -39,7 +39,7 @@ public class OpenCalaisTagger implements ITagger {
         return TAGGER_NAME;
     }
 
-    @Override public List<Tag> getTags(String text, String language) {
+    @Override public List<Tag> getTagsImpl(String text, String language) {
 
         Gson gson = new GsonBuilder()
                 .registerTypeAdapter(OpenCalaisResponse.class, new OpenCalaisResponseAdapter())

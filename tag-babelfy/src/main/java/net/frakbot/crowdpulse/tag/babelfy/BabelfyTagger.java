@@ -26,7 +26,7 @@ import java.util.List;
 /**
  * @author Francesco Pontillo
  */
-public class BabelfyTagger implements ITagger {
+public class BabelfyTagger extends ITagger {
     private final static String TAGGER_NAME = "babelfy";
 
     private final String BABELFY_ENDPOINT = "http://babelfy.org";
@@ -35,7 +35,7 @@ public class BabelfyTagger implements ITagger {
         return TAGGER_NAME;
     }
 
-    @Override public List<Tag> getTags(String text, String language) {
+    @Override protected List<Tag> getTagsImpl(String text, String language) {
         // build the REST client
         RestAdapter restAdapter = new RestAdapter.Builder()
                 .setEndpoint(BABELFY_ENDPOINT)

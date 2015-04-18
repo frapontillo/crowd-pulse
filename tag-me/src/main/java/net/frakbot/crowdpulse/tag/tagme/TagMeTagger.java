@@ -27,7 +27,7 @@ import java.util.List;
  * @see {@link "http://tagme.di.unipi.it/tagme_help.html#tagging"}
  * @author Francesco Pontillo
  */
-public class TagMeTagger implements ITagger {
+public class TagMeTagger extends ITagger {
     private final static String TAGGER_NAME = "tagme";
 
     private final String TAG_ME_ENDPOINT = "http://tagme.di.unipi.it";
@@ -36,7 +36,7 @@ public class TagMeTagger implements ITagger {
         return TAGGER_NAME;
     }
 
-    @Override public List<Tag> getTags(String text, String language) {
+    @Override public List<Tag> getTagsImpl(String text, String language) {
         // build the REST client
         RestAdapter restAdapter = new RestAdapter.Builder()
                 .setEndpoint(TAG_ME_ENDPOINT)
