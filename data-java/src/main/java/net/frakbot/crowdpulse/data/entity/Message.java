@@ -142,4 +142,12 @@ public class Message extends Entity {
     public void setTags(List<Tag> tags) {
         this.tags = tags;
     }
+
+    public void addTags(List<Tag> tags) {
+        if (this.tags == null) {
+            this.tags = tags;
+        } else {
+            this.tags.addAll(tags);
+        }
+    }
 }

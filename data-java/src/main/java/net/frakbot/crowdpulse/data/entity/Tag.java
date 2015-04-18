@@ -16,10 +16,15 @@
 
 package net.frakbot.crowdpulse.data.entity;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * @author Francesco Pontillo
  */
 public class Tag extends GenericEntity<String> {
+
+    private List<String> sources;
 
     public String getText() {
         return getId();
@@ -29,4 +34,18 @@ public class Tag extends GenericEntity<String> {
         setId(text);
     }
 
+    public List<String> getSources() {
+        return sources;
+    }
+
+    public void setSources(List<String> sources) {
+        this.sources = sources;
+    }
+
+    public void addSource(String source) {
+        if (this.sources == null) {
+            this.sources = new ArrayList<String>();
+        }
+        this.sources.add(source);
+    }
 }
