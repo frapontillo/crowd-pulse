@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package net.frakbot.crowdpulse.common.util;
+package net.frakbot.crowdpulse.common.util.rx;
 
 import rx.Subscription;
 

@@ -19,8 +19,8 @@ package net.frakbot.crowdpulse.tag.cli;
 import com.beust.jcommander.JCommander;
 import dagger.ObjectGraph;
 import net.frakbot.crowdpulse.common.util.CrowdLogger;
-import net.frakbot.crowdpulse.common.util.RxUtil;
-import net.frakbot.crowdpulse.common.util.StringUtil;
+import net.frakbot.crowdpulse.common.util.rx.CompositeSubscriptionLatch;
+import net.frakbot.crowdpulse.common.util.rx.RxUtil;
 import net.frakbot.crowdpulse.data.entity.Message;
 import net.frakbot.crowdpulse.data.entity.Tag;
 import net.frakbot.crowdpulse.data.repository.MessageRepository;
@@ -38,14 +38,13 @@ import rx.schedulers.Schedulers;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 /**
  * @author Francesco Pontillo
  */
 public class MessageTagMain {
-    private final CountDownLatch endSignal = new CountDownLatch(3);
+    private CompositeSubscriptionLatch allSubscriptions;
     private final Logger logger = CrowdLogger.getLogger(MessageTagMain.class);
     private MessageTagger tagger;
 
@@ -80,39 +79,16 @@ public class MessageTagMain {
                     }
                 });
 
-        Subscription subscription = messages.subscribe(new MessageObserver());
+        allSubscriptions = new CompositeSubscriptionLatch(2);
         Subscription bufferedSubscription = bufferedMessages.subscribe(new BufferedMessageListObserver());
         Subscription tagSubscription = uniqueTags.subscribe(new TagObserver());
+        allSubscriptions.setSubscriptions(bufferedSubscription, tagSubscription);
 
         messages.connect();
 
-        // the thread can be interrupted while "await"-ing, so we "await" again until the subscription is over
-        while (RxUtil.isSubscribedAtLeastOnce(subscription, bufferedSubscription, tagSubscription)) {
-            try {
-                endSignal.await();
-            } catch (InterruptedException ignore) { }
-        }
+        allSubscriptions.waitAllUnsubscribed();
 
         logger.debug("Done.");
-    }
-
-    private class MessageObserver implements Observer<Message> {
-        @Override public void onCompleted() {
-            logger.debug("Message Stream ended.");
-            endSignal.countDown();
-        }
-
-        @Override public void onError(Throwable e) {
-            logger.error("Message Stream errored.");
-            e.printStackTrace();
-            endSignal.countDown();
-        }
-
-        @Override public void onNext(Message message) {
-            // TODO: print found tags
-            logger.info(String.format(
-                    "%s", message.getText()));
-        }
     }
 
     private class BufferedMessageListObserver implements Observer<List<Message>> {
@@ -124,17 +100,18 @@ public class MessageTagMain {
 
         @Override public void onCompleted() {
             logger.debug("Buffered Message stream ended.");
-            endSignal.countDown();
+            allSubscriptions.countDown();
         }
 
         @Override public void onError(Throwable e) {
             logger.error("Buffered Message Stream errored.");
             e.printStackTrace();
-            endSignal.countDown();
+            allSubscriptions.countDown();
         }
 
         @Override public void onNext(List<Message> messages) {
             for (Message message : messages) {
+                logger.info(String.format("%s", message.getText()));
                 messageRepository.save(message);
             }
         }
@@ -145,13 +122,13 @@ public class MessageTagMain {
 
         @Override public void onCompleted() {
             logger.debug("Tag Stream ended.");
-            endSignal.countDown();
+            allSubscriptions.countDown();
         }
 
         @Override public void onError(Throwable e) {
             logger.error("Tag Stream errored.");
             e.printStackTrace();
-            endSignal.countDown();
+            allSubscriptions.countDown();
         }
 
         @Override public void onNext(Tag tag) {

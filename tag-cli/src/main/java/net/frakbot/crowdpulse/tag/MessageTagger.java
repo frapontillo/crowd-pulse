@@ -57,9 +57,10 @@ public class MessageTagger {
                 subscriber.onCompleted();
             }
         });
-        messages = messages.onBackpressureBuffer();
+
         messages = messages.subscribeOn(Schedulers.io());
         messages = messages.observeOn(Schedulers.io());
+        messages = messages.onBackpressureBuffer();
 
         return messages.publish();
     }
