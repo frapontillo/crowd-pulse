@@ -26,6 +26,6 @@ dependencies {
     compile project(':common-util')
     compile project(':data-java')
     compile group: 'com.beust', name: 'jcommander', version: '1.47'
-    compile group: 'io.reactivex', name: 'rxjava', version: '1.0.3'
+    compile group: 'io.reactivex', name: 'rxjava', version: '1.0.9'
     compile group: 'joda-time', name: 'joda-time', version: '2.5'
 }
