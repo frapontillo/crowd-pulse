@@ -19,8 +19,10 @@ package net.frakbot.crowdpulse.tag.tagme;
 import net.frakbot.crowdpulse.data.entity.Tag;
 import net.frakbot.crowdpulse.tag.ITagger;
 import retrofit.RestAdapter;
+import retrofit.RetrofitError;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -31,34 +33,43 @@ public class TagMeTagger extends ITagger {
     private final static String TAGGER_NAME = "tagme";
 
     private final String TAG_ME_ENDPOINT = "http://tagme.di.unipi.it";
+    private final List<String> supportedLangs = Arrays.asList("IT", "EN");
+    private TagMeService service;
+
+    public TagMeTagger() {
+        // build the REST client
+        RestAdapter restAdapter = new RestAdapter.Builder()
+                .setEndpoint(TAG_ME_ENDPOINT)
+                .setRequestInterceptor(new TagMeInterceptor())
+                .build();
+        service = restAdapter.create(TagMeService.class);
+    }
 
     @Override public String getName() {
         return TAGGER_NAME;
     }
 
     @Override public List<Tag> getTagsImpl(String text, String language) {
-        // build the REST client
-        RestAdapter restAdapter = new RestAdapter.Builder()
-                .setEndpoint(TAG_ME_ENDPOINT)
-                .setRequestInterceptor(new TagMeInterceptor())
-                .build();
-        TagMeService service = restAdapter.create(TagMeService.class);
-
         // get the tags
         TagMeResponse response;
         List<Tag> tags = new ArrayList<Tag>();
-        try {
-            response = service.tag(text, language);
-            for (TagMeResponse.TagMeAnnotation annotation : response.getAnnotations()) {
-                Tag tag = new Tag();
-                tag.setText(annotation.getTitle());
-                tags.add(tag);
-            }
-        } catch (Exception e) {
-            // ignored
-            System.err.println(e);
-        }
 
+        if (language != null && supportedLangs.contains(language.toUpperCase())) {
+            try {
+                response = service.tag(text, language);
+                for (TagMeResponse.TagMeAnnotation annotation : response.getAnnotations()) {
+                    Tag tag = new Tag();
+                    tag.setText(annotation.getTitle());
+                    tags.add(tag);
+                }
+            } catch (RetrofitError e) {
+                // ignored
+                System.err.println(String.format("%s returned\n%s: %s", e.getUrl(), e.getResponse().getStatus(), e.getResponse().getReason()));
+            } catch (Exception e) {
+                // ignored
+                e.printStackTrace();
+            }
+        }
         // publish the tags as a connectable observable
         return tags;
     }
