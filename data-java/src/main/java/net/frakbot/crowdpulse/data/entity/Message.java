@@ -19,7 +19,9 @@ package net.frakbot.crowdpulse.data.entity;
 import org.mongodb.morphia.annotations.Reference;
 
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author Francesco Pontillo
@@ -37,7 +39,7 @@ public class Message extends Entity {
     private Double longitude;
     private Integer favs;
     private Integer shares;
-    private List<Tag> tags;
+    private Set<Tag> tags;
 
     public String getText() {
         return text;
@@ -135,19 +137,22 @@ public class Message extends Entity {
         this.shares = shares;
     }
 
-    public List<Tag> getTags() {
+    public Set<Tag> getTags() {
         return tags;
     }
 
-    public void setTags(List<Tag> tags) {
+    public void setTags(Set<Tag> tags) {
         this.tags = tags;
     }
 
-    public void addTags(List<Tag> tags) {
+    public void addTags(Set<Tag> tags) {
         if (this.tags == null) {
             this.tags = tags;
         } else {
             this.tags.addAll(tags);
         }
+    }
+    public void addTags(List<Tag> tags) {
+        addTags(new HashSet<Tag>(tags));
     }
 }

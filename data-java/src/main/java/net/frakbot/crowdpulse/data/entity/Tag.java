@@ -16,8 +16,7 @@
 
 package net.frakbot.crowdpulse.data.entity;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 /**
  * @author Francesco Pontillo
@@ -26,6 +25,19 @@ public class Tag extends GenericEntity<String> {
 
     private List<String> sources;
     private String language;
+
+    @Override public boolean equals(Object other) {
+        try {
+            Tag otherTag = (Tag)other;
+            return Objects.equals(this.getId(), otherTag.getId());
+        } catch (ClassCastException e) {
+            return super.equals(other);
+        }
+    }
+
+    @Override public int hashCode() {
+        return Objects.hashCode(this.getId());
+    }
 
     public String getText() {
         return getId();

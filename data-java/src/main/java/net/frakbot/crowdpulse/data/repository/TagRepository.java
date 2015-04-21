@@ -38,7 +38,10 @@ public class TagRepository extends Repository<Tag, String> {
 
         // if the tag was already inserted, update its sources
         if (originalTag != null) {
-            UpdateOperations<Tag> updateTag = createUpdateOperations().addAll("sources", tag.getSources(), false);
+            UpdateOperations<Tag> updateTag = createUpdateOperations();
+            if (tag.getSources() != null) {
+                updateTag = updateTag.addAll("sources", tag.getSources(), false);
+            }
             UpdateResults res = updateFirst(query, updateTag);
             return findOne(query);
         }
