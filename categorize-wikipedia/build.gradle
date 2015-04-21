@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Francesco Pontillo
+ * Copyright 2015 Francesco Pontillo
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,34 +14,19 @@
  * limitations under the License.
  */
 
-rootProject.name = 'crowd-pulse'
+apply plugin: 'java'
+apply plugin: 'application'
 
-include 'common-util'
+mainClassName = 'net.frakbot.crowdpulse.wikipedia.cli.TagCategorizeMain'
 
-include 'social'
-include 'social-facebook'
-include 'social-twitter'
-include 'social-cli'
+sourceCompatibility = 1.7
+targetCompatibility = 1.7
 
-include 'oauth-service'
-include 'web-service'
+version = '1.0'
 
-include 'data-nodejs'
-include 'data-java'
-
-include 'admin-cli'
-
-include 'fix-geo-profile'
-include 'fix-geo-message'
-
-include 'detect-language'
-
-include 'tag'
-include 'tag-cli'
-include 'tag-wikipedia-miner'
-include 'tag-me'
-include 'tag-open-calais'
-include 'tag-babelfy'
-
-include 'categorize-wikipedia'
-
+dependencies {
+    compile project(':common-util')
+    compile project(':data-java')
+    compile group: 'com.beust', name: 'jcommander', version: '1.47'
+    compile group: 'com.squareup.retrofit', name: 'retrofit', version: '1.9.0'
+}

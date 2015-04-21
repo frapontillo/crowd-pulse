@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Francesco Pontillo
+ * Copyright 2015 Francesco Pontillo
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,34 +14,26 @@
  * limitations under the License.
  */
 
-rootProject.name = 'crowd-pulse'
+package net.frakbot.crowdpulse.wikipedia.rest;
 
-include 'common-util'
+import java.util.ArrayList;
+import java.util.List;
 
-include 'social'
-include 'social-facebook'
-include 'social-twitter'
-include 'social-cli'
+/**
+ * @author Francesco Pontillo
+ */
+public class WikipediaResponse {
+    private List<String> categories;
 
-include 'oauth-service'
-include 'web-service'
+    public WikipediaResponse() {
+        categories = new ArrayList<String>();
+    }
 
-include 'data-nodejs'
-include 'data-java'
+    public List<String> getCategories() {
+        return categories;
+    }
 
-include 'admin-cli'
-
-include 'fix-geo-profile'
-include 'fix-geo-message'
-
-include 'detect-language'
-
-include 'tag'
-include 'tag-cli'
-include 'tag-wikipedia-miner'
-include 'tag-me'
-include 'tag-open-calais'
-include 'tag-babelfy'
-
-include 'categorize-wikipedia'
-
+    public void setCategories(List<String> categories) {
+        this.categories = categories;
+    }
+}
