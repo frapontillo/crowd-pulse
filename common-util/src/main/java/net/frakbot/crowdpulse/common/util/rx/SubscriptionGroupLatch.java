@@ -24,28 +24,35 @@ import java.util.concurrent.CountDownLatch;
 /**
  * @author Francesco Pontillo
  */
-public class CompositeSubscriptionLatch implements Subscription {
-    private CompositeSubscription compositeSubscription;
+public class SubscriptionGroupLatch implements Subscription {
+    private Subscription[] subscriptions;
     private CountDownLatch countDownLatch;
 
-    public CompositeSubscriptionLatch(int count) {
+    public SubscriptionGroupLatch(int count) {
         countDownLatch = new CountDownLatch(count);
     }
 
     public void setSubscriptions(final Subscription... subscriptions) {
-        compositeSubscription = new CompositeSubscription(subscriptions);
+        this.subscriptions = subscriptions;;
     }
 
     @Override public void unsubscribe() {
-        compositeSubscription.unsubscribe();
+        for (Subscription subscription : subscriptions) {
+            subscription.unsubscribe();
+        }
     }
 
     @Override public boolean isUnsubscribed() {
-        return compositeSubscription.isUnsubscribed();
+        for (Subscription subscription : subscriptions) {
+            if (!subscription.isUnsubscribed()) {
+                return false;
+            }
+        }
+        return true;
     }
 
     public boolean hasSubscriptions() {
-        return compositeSubscription.hasSubscriptions();
+        return (subscriptions != null && subscriptions.length > 0);
     }
 
     public void countDown() {
@@ -54,7 +61,7 @@ public class CompositeSubscriptionLatch implements Subscription {
 
     public void waitAllUnsubscribed() {
         // the thread can be interrupted while "await"-ing, so we "await" again until the subscription is over
-        while (!compositeSubscription.isUnsubscribed()) {
+        while (!this.isUnsubscribed()) {
             try {
                 countDownLatch.await();
             } catch (InterruptedException ignore) { }

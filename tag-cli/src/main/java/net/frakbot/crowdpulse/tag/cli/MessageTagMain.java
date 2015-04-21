@@ -19,8 +19,7 @@ package net.frakbot.crowdpulse.tag.cli;
 import com.beust.jcommander.JCommander;
 import dagger.ObjectGraph;
 import net.frakbot.crowdpulse.common.util.CrowdLogger;
-import net.frakbot.crowdpulse.common.util.rx.CompositeSubscriptionLatch;
-import net.frakbot.crowdpulse.common.util.rx.RxUtil;
+import net.frakbot.crowdpulse.common.util.rx.SubscriptionGroupLatch;
 import net.frakbot.crowdpulse.data.entity.Message;
 import net.frakbot.crowdpulse.data.entity.Tag;
 import net.frakbot.crowdpulse.data.repository.MessageRepository;
@@ -44,7 +43,7 @@ import java.util.concurrent.TimeUnit;
  * @author Francesco Pontillo
  */
 public class MessageTagMain {
-    private CompositeSubscriptionLatch allSubscriptions;
+    private SubscriptionGroupLatch allSubscriptions;
     private final Logger logger = CrowdLogger.getLogger(MessageTagMain.class);
     private MessageTagger tagger;
 
@@ -65,7 +64,8 @@ public class MessageTagMain {
 
         ConnectableObservable<Message> messages = tagger.tagMessages(params);
         // save all messages
-        Observable<List<Message>> bufferedMessages = messages.buffer(10, TimeUnit.SECONDS, 3, Schedulers.io());
+        Observable<List<Message>> bufferedMessages =
+                messages.buffer(10, TimeUnit.SECONDS, 3, Schedulers.computation());
         // get all unique tags
         Observable<Tag> uniqueTags = messages
                 .flatMap(new Func1<Message, Observable<Tag>>() {
@@ -79,7 +79,7 @@ public class MessageTagMain {
                     }
                 });
 
-        allSubscriptions = new CompositeSubscriptionLatch(2);
+        allSubscriptions = new SubscriptionGroupLatch(2);
         Subscription bufferedSubscription = bufferedMessages.subscribe(new BufferedMessageListObserver());
         Subscription tagSubscription = uniqueTags.subscribe(new TagObserver());
         allSubscriptions.setSubscriptions(bufferedSubscription, tagSubscription);

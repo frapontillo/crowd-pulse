@@ -16,14 +16,16 @@
 
 package net.frakbot.crowdpulse.tag;
 
+import net.frakbot.crowdpulse.common.util.rx.BackpressureAsyncTransformer;
 import net.frakbot.crowdpulse.data.entity.Message;
+import net.frakbot.crowdpulse.data.entity.Tag;
 import net.frakbot.crowdpulse.data.repository.MessageRepository;
 import rx.Observable;
 import rx.Subscriber;
 import rx.observables.ConnectableObservable;
-import rx.schedulers.Schedulers;
 
 import javax.inject.Inject;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -49,18 +51,13 @@ public class MessageTagger {
 
                 // for each message, get all tags and add them to the collection
                 for (Message message : allMessages) {
-                    message.addTags(
-                            tagger.getTags(message.getText(), message.getLanguage()));
+                    message.addTags(tagger.getTags(message.getText(), message.getLanguage()));
                     subscriber.onNext(message);
                 }
 
                 subscriber.onCompleted();
             }
-        });
-
-        messages = messages.subscribeOn(Schedulers.io());
-        messages = messages.observeOn(Schedulers.io());
-        messages = messages.onBackpressureBuffer();
+        }).compose(new BackpressureAsyncTransformer<Message>());
 
         return messages.publish();
     }
