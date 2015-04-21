@@ -45,6 +45,7 @@ public abstract class ITagger {
         List<Tag> tags = getTagsImpl(text, language);
         for (Tag tag : tags) {
             tag.addSource(getName());
+            tag.setLanguage(language);
         }
         return tags;
     }
