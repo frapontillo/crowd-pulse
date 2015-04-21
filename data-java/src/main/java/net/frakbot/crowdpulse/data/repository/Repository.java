@@ -20,6 +20,8 @@ import org.bson.types.ObjectId;
 import org.mongodb.morphia.dao.BasicDAO;
 import org.mongodb.morphia.query.Query;
 
+import java.util.List;
+
 /**
  * @author Francesco Pontillo
  */
@@ -37,5 +39,24 @@ public class Repository<T,K> extends BasicDAO<T,K> {
             query.field("_id").lessThanOrEq(new ObjectId(toId));
         }
         return query;
+    }
+
+    public Query<T> findBetweenKeys(K from, K to) {
+        Query<T> query = createQuery();
+        if (from != null) {
+            query.field("_id").greaterThanOrEq(from);
+        }
+        if (to != null) {
+            query.field("_id").lessThanOrEq(to);
+        }
+        return query;
+    }
+
+    public List<T> getBetweenIds(String fromId, String toId) {
+        return findBetweenIds(fromId, toId).asList();
+    }
+
+    public List<T> getBetweenKeys(K from, K to) {
+        return findBetweenKeys(from, to).asList();
     }
 }

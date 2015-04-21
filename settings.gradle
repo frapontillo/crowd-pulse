@@ -36,3 +36,10 @@ include 'fix-geo-message'
 
 include 'detect-language'
 
+include 'tag'
+include 'tag-cli'
+include 'tag-wikipedia-miner'
+include 'tag-me'
+include 'tag-open-calais'
+include 'tag-babelfy'
+
