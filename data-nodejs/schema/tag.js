@@ -19,7 +19,8 @@ var mongoose = require('mongoose');
 var TagSchema = new mongoose.Schema({
   id: String,
   language: String,
-  sources: [String]
+  sources: [String],
+  categories: [String]
 });
 
 var SCHEMA_NAME = 'Tag';

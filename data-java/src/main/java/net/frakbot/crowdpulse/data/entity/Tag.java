@@ -25,6 +25,7 @@ public class Tag extends GenericEntity<String> {
 
     private List<String> sources;
     private String language;
+    private Set<String> categories;
 
     @Override public boolean equals(Object other) {
         try {
@@ -68,5 +69,25 @@ public class Tag extends GenericEntity<String> {
 
     public void setLanguage(String language) {
         this.language = language;
+    }
+
+    public Set<String> getCategories() {
+        return categories;
+    }
+
+    public void setCategories(Set<String> categories) {
+        this.categories = categories;
+    }
+
+    public void addCategories(Set<String> categories) {
+        if (this.categories == null) {
+            this.categories = categories;
+        } else {
+            this.categories.addAll(categories);
+        }
+    }
+
+    public void addCategories(List<String> categories) {
+        addCategories(new HashSet<String>(categories));
     }
 }

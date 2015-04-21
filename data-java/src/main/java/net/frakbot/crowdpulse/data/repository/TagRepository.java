@@ -21,6 +21,8 @@ import org.mongodb.morphia.query.Query;
 import org.mongodb.morphia.query.UpdateOperations;
 import org.mongodb.morphia.query.UpdateResults;
 
+import java.util.ArrayList;
+
 /**
  * @author Francesco Pontillo
  */
@@ -39,8 +41,11 @@ public class TagRepository extends Repository<Tag, String> {
         // if the tag was already inserted, update its sources
         if (originalTag != null) {
             UpdateOperations<Tag> updateTag = createUpdateOperations();
-            if (tag.getSources() != null) {
+            if (tag.getSources() != null && tag.getSources().size() > 0) {
                 updateTag = updateTag.addAll("sources", tag.getSources(), false);
+            }
+            if (tag.getCategories() != null && tag.getCategories().size() > 0) {
+                updateTag = updateTag.addAll("categories", new ArrayList<String>(tag.getCategories()), false);
             }
             UpdateResults res = updateFirst(query, updateTag);
             return findOne(query);
