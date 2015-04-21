@@ -25,6 +25,7 @@ import java.util.List;
 public class Tag extends GenericEntity<String> {
 
     private List<String> sources;
+    private String language;
 
     public String getText() {
         return getId();
@@ -47,5 +48,13 @@ public class Tag extends GenericEntity<String> {
             this.sources = new ArrayList<String>();
         }
         this.sources.add(source);
+    }
+
+    public String getLanguage() {
+        return language;
+    }
+
+    public void setLanguage(String language) {
+        this.language = language;
     }
 }
