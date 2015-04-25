@@ -45,3 +45,4 @@ include 'tag-babelfy'
 
 include 'categorize-wikipedia'
 
+include 'tokenize'
