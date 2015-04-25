@@ -46,3 +46,5 @@ include 'tag-babelfy'
 include 'categorize-wikipedia'
 
 include 'tokenize'
+include 'tokenize-open-nlp'
+
