@@ -6,6 +6,11 @@ TODO
 - [X] Add `detect-language` module to detect message language
 - [X] Add `tag` module to find tags for each message (WikipediaMiner, TagMe, OpenCalais, Babelfy)
 - [X] Add `categorize-wikipedia` module to find Wikipedia categories for each tag
+- [ ] Add `tokenize` module to tokenize messages
+- [ ] Add `pos-tag` module to perform the POS tagging step
+- [ ] Add `stop-word-rem` module to remove stop-words
+- [ ] Add `lemmatize` module to perform the lemmatization step
+- [ ] Add `sentiment` module to perform the actual sentiment analysis
 - [ ] Edit `social` module to allow searching for messages by a string location (e.g. "Washington DC, USA")
 - [ ] Add `social-reply` module to fetch and delay-fetch answers to messages (can only be done for Facebook)
 - [ ] Implement a distributed architecture (via [akka.io](www.akka.io))
