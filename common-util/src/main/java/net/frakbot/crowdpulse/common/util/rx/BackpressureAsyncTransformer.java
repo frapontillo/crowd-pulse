@@ -25,8 +25,11 @@ import rx.schedulers.Schedulers;
 public class BackpressureAsyncTransformer<T> implements Observable.Transformer<T, T> {
     @Override public Observable<T> call(Observable<T> rObservable) {
         return rObservable
-                .subscribeOn(Schedulers.io())
+                // don't block waiting on the work in downstream schedulers before generating and processing more values
+                .subscribeOn(Schedulers.computation())
+                // when downstream observers can't keep up, buffer the generated values
                 .onBackpressureBuffer()
+                // observer on an IO thread
                 .observeOn(Schedulers.io());
     }
 }

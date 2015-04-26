@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Francesco Pontillo
+ * Copyright 2015 Francesco Pontillo
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,16 +15,11 @@
  */
 
 apply plugin: 'java'
+apply plugin: 'application'
+
+mainClassName = 'net.frakbot.crowdpulse.tokenize.MessageTokenizeMain'
 
 sourceCompatibility = 1.7
+targetCompatibility = 1.8
+
 version = '1.0'
-
-repositories {
-    mavenCentral()
-}
-
-dependencies {
-    compile project(':common-util')
-    compile group: 'org.mongodb.morphia', name: 'morphia', version: '0.109'
-    compile group: 'io.reactivex', name: 'rxjava', version: '1.0.9'
-}
