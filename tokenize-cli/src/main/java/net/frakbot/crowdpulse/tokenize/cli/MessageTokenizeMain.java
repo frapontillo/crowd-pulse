@@ -68,10 +68,12 @@ public class MessageTokenizeMain {
         Observable<List<Message>> bufferedMessages = messages.buffer(10, TimeUnit.SECONDS, 3);
 
         allSubscriptions = new SubscriptionGroupLatch(2);
-        Subscription subscription = messages.subscribe(message -> {
-            logger.info("READ: \"{}\"", message.getText());
-        });
-        Subscription bufferedSubscription = bufferedMessages.subscribe(new BufferedMessageListObserver(allSubscriptions));
+        Subscription subscription = messages.subscribe(
+                message -> logger.info("READ: \"{}\"", message.getText()),
+                throwable -> allSubscriptions.countDown(),
+                allSubscriptions::countDown);
+        Subscription bufferedSubscription = bufferedMessages.subscribe(new BufferedMessageListObserver
+                (allSubscriptions));
         allSubscriptions.setSubscriptions(subscription, bufferedSubscription);
 
         messages.connect();
