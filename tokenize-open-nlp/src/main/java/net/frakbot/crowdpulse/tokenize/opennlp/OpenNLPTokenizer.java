@@ -62,10 +62,12 @@ public class OpenNLPTokenizer extends ITokenizer {
         if ((model = models.get(language)) == null) {
             InputStream modelIn = null;
             try {
-                modelIn = new FileInputStream(language + "-token.bin");
+                modelIn = getClass().getClassLoader().getResourceAsStream(language + "-token.bin");
                 model = new TokenizerModel(modelIn);
+                models.put(language, model);
             } catch (IOException e) {
                 e.printStackTrace();
+            } catch (IllegalArgumentException ignored) {
             } finally {
                 if (modelIn != null) {
                     try {
@@ -73,7 +75,6 @@ public class OpenNLPTokenizer extends ITokenizer {
                     } catch (IOException ignored) { }
                 }
             }
-            models.put(language, model);
         }
         return model;
     }
