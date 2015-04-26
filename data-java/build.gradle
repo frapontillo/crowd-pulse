@@ -24,6 +24,7 @@ repositories {
 }
 
 dependencies {
-    testCompile group: 'junit', name: 'junit', version: '4.11'
+    compile(':common-util')
     compile group: 'org.mongodb.morphia', name: 'morphia', version: '0.109'
+    compile group: 'io.reactivex', name: 'rxjava', version: '1.0.9'
 }

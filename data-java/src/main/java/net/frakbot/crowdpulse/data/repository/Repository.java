@@ -19,6 +19,7 @@ package net.frakbot.crowdpulse.data.repository;
 import org.bson.types.ObjectId;
 import org.mongodb.morphia.dao.BasicDAO;
 import org.mongodb.morphia.query.Query;
+import rx.Observable;
 
 import java.util.List;
 
@@ -54,6 +55,10 @@ public class Repository<T,K> extends BasicDAO<T,K> {
 
     public List<T> getBetweenIds(String fromId, String toId) {
         return findBetweenIds(fromId, toId).asList();
+    }
+
+    public Observable<T> getBetweenIdsAsObservable(String fromId, String toId) {
+        return Observable.from(findBetweenIds(fromId, toId).fetch());
     }
 
     public List<T> getBetweenKeys(K from, K to) {
