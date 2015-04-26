@@ -50,3 +50,5 @@ include 'tokenize-open-nlp'
 
 include 'tokenize-cli'
 
+include 'pos-tag'
+
