@@ -24,7 +24,7 @@ repositories {
 }
 
 dependencies {
-    compile(':common-util')
+    compile project(':common-util')
     compile group: 'org.mongodb.morphia', name: 'morphia', version: '0.109'
     compile group: 'io.reactivex', name: 'rxjava', version: '1.0.9'
 }
