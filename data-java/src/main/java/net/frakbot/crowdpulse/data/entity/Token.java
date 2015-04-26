@@ -26,6 +26,9 @@ public class Token {
     private String lemma;
     private double score;
 
+    public Token() {
+    }
+
     public Token(String text) {
         this.text = text;
     }
