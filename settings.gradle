@@ -45,8 +45,11 @@ include 'tag-babelfy'
 
 include 'categorize-wikipedia'
 
+include 'playground-cli'
+
 include 'tokenize'
 include 'tokenize-open-nlp'
 
-include 'tokenize-cli'
+include 'pos-tag'
+include 'pos-tag-open-nlp'
 

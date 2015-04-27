@@ -21,5 +21,6 @@ sourceCompatibility = 1.8
 version = '1.0'
 
 dependencies {
-    compile project(':data-java')
+    compile project(':pos-tag')
+    compile group: 'org.apache.opennlp', name: 'opennlp-tools', version: '1.5.3'
 }
