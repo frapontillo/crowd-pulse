@@ -14,19 +14,15 @@
  * limitations under the License.
  */
 
-package net.frakbot.crowdpulse.tokenize.cli;
+package net.frakbot.crowdpulse.playground.cli;
 
-import com.beust.jcommander.JCommander;
-import net.frakbot.crowdpulse.common.util.CrowdLogger;
 import net.frakbot.crowdpulse.common.util.GenericAnalysisParameters;
 import net.frakbot.crowdpulse.common.util.rx.BackpressureAsyncTransformer;
 import net.frakbot.crowdpulse.common.util.rx.SubscriptionGroupLatch;
 import net.frakbot.crowdpulse.data.entity.Message;
-import net.frakbot.crowdpulse.data.repository.MessageRepository;
 import net.frakbot.crowdpulse.data.rx.BufferedMessageListObserver;
 import net.frakbot.crowdpulse.tokenize.ITokenizer;
 import net.frakbot.crowdpulse.tokenize.opennlp.OpenNLPTokenizer;
-import org.apache.logging.log4j.Logger;
 import rx.Observable;
 import rx.Subscription;
 import rx.observables.ConnectableObservable;
@@ -40,7 +36,6 @@ import java.util.concurrent.TimeUnit;
  */
 public class MessageTokenizeMain {
     private SubscriptionGroupLatch allSubscriptions;
-    private final Logger logger = CrowdLogger.getLogger(MessageTokenizeMain.class);
     private ITokenizer tokenizer;
 
     public static void main(String[] args) throws IOException {
@@ -50,16 +45,8 @@ public class MessageTokenizeMain {
     }
 
     public void run(String[] args) throws IOException {
-        logger.info("Message tokenization started.");
-
-        // read parameters
-        GenericAnalysisParameters params = new GenericAnalysisParameters();
-        new JCommander(params, args);
-        logger.info("Parameters read.");
-
-        MessageRepository messageRepository = new MessageRepository();
-        final Observable<Message> candidates = messageRepository.getBetweenIdsAsObservable(
-                params.getFrom(), params.getTo());
+        GenericAnalysisParameters params = MainHelper.start(args);
+        final Observable<Message> candidates = MainHelper.getMessages(params);
 
         ConnectableObservable<Message> messages = candidates
                 .compose(new BackpressureAsyncTransformer<>())
@@ -69,7 +56,7 @@ public class MessageTokenizeMain {
 
         allSubscriptions = new SubscriptionGroupLatch(2);
         Subscription subscription = messages.subscribe(
-                message -> logger.info("READ: \"{}\"", message.getText()),
+                message -> MainHelper.getLogger().info("READ: \"{}\"", message.getText()),
                 throwable -> allSubscriptions.countDown(),
                 allSubscriptions::countDown);
         Subscription bufferedSubscription = bufferedMessages.subscribe(new BufferedMessageListObserver
@@ -80,6 +67,6 @@ public class MessageTokenizeMain {
 
         allSubscriptions.waitAllUnsubscribed();
 
-        logger.info("Done.");
+        MainHelper.getLogger().info("Done.");
     }
 }

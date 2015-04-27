@@ -19,7 +19,14 @@ apply plugin: 'application'
 
 mainClassName = 'net.frakbot.crowdpulse.tokenize.MessageTokenizeMain'
 
-sourceCompatibility = 1.7
-targetCompatibility = 1.8
+sourceCompatibility = 1.8
 
 version = '1.0'
+
+
+dependencies {
+    compile project(':common-util')
+    compile project(':data-java')
+    compile project(':tokenize-open-nlp')
+    compile project(':pos-tag-open-nlp')
+}
