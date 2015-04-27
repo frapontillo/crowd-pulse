@@ -58,3 +58,5 @@ include 'tokenize-open-nlp'
 include 'pos-tag'
 include 'pos-tag-open-nlp'
 
+include 'rem-stop-word'
+
