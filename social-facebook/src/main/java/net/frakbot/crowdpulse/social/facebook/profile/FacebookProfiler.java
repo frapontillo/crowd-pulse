@@ -18,13 +18,13 @@ package net.frakbot.crowdpulse.social.facebook.profile;
 
 import net.frakbot.crowdpulse.data.entity.Profile;
 import net.frakbot.crowdpulse.social.profile.ProfileParameters;
-import net.frakbot.crowdpulse.social.profile.Profiler;
+import net.frakbot.crowdpulse.social.profile.IProfiler;
 import rx.observables.ConnectableObservable;
 
 /**
  * @author Francesco Pontillo
  */
-public class FacebookProfiler extends Profiler {
+public class FacebookProfiler extends IProfiler {
     public static final String PROFILER_NAME = "facebook";
     private static FacebookProfilerRunner runner = null;
 

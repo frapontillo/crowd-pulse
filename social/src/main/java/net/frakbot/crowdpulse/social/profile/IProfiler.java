@@ -16,19 +16,14 @@
 
 package net.frakbot.crowdpulse.social.profile;
 
+import net.frakbot.crowdpulse.common.util.spi.IPlugin;
 import net.frakbot.crowdpulse.data.entity.Profile;
 import rx.observables.ConnectableObservable;
 
 /**
  * @author Francesco Pontillo
  */
-public abstract class Profiler {
-    /**
-     * Returns the name of the profiler implementation.
-     *
-     * @return {@link java.lang.String} the name of the profiler.
-     */
-    public abstract String getName();
+public abstract class IProfiler implements IPlugin {
 
     /**
      * Starts an asynchronous search loading an {@link rx.Observable} of {@link net.frakbot.crowdpulse.data.entity.Profile}

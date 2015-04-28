@@ -18,7 +18,7 @@ package net.frakbot.crowdpulse.social.facebook.extraction;
 
 import net.frakbot.crowdpulse.data.entity.Message;
 import net.frakbot.crowdpulse.social.extraction.ExtractionParameters;
-import net.frakbot.crowdpulse.social.extraction.Extractor;
+import net.frakbot.crowdpulse.social.extraction.IExtractor;
 import net.frakbot.crowdpulse.social.exception.SocialException;
 import net.frakbot.crowdpulse.common.util.CrowdLogger;
 import org.apache.logging.log4j.Logger;
@@ -26,11 +26,11 @@ import rx.Observable;
 import rx.observables.ConnectableObservable;
 
 /**
- * Extractor implementation for Facebook.
+ * IExtractor implementation for Facebook.
  *
  * @author Francesco Pontillo
  */
-public class FacebookExtractor extends Extractor {
+public class FacebookExtractor extends IExtractor {
 
     public static final String EXTRACTOR_NAME = "facebook";
     private static FacebookExtractorRunner runner = null;

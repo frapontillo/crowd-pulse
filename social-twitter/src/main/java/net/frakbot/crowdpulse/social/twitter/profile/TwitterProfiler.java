@@ -18,13 +18,13 @@ package net.frakbot.crowdpulse.social.twitter.profile;
 
 import net.frakbot.crowdpulse.data.entity.Profile;
 import net.frakbot.crowdpulse.social.profile.ProfileParameters;
-import net.frakbot.crowdpulse.social.profile.Profiler;
+import net.frakbot.crowdpulse.social.profile.IProfiler;
 import rx.observables.ConnectableObservable;
 
 /**
  * @author Francesco Pontillo
  */
-public class TwitterProfiler extends Profiler {
+public class TwitterProfiler extends IProfiler {
     public static final String PROFILER_NAME = "twitter";
     private static TwitterProfilerRunner runner = null;
 

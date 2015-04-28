@@ -14,19 +14,22 @@
  * limitations under the License.
  */
 
-apply plugin: 'java'
-apply plugin: 'application'
+package net.frakbot.crowdpulse.social.spi;
 
-mainClassName = 'net.frakbot.crowdpulse.social.cli.extraction.ExtractionMain'
+import net.frakbot.crowdpulse.common.util.spi.PluginProvider;
+import net.frakbot.crowdpulse.social.profile.IProfiler;
 
-sourceCompatibility = 1.8
+/**
+ * @author Francesco Pontillo
+ */
+public class ProfilerProvider extends PluginProvider<IProfiler> {
+    private static ProfilerProvider provider = new ProfilerProvider(IProfiler.class);
 
-version = '1.0'
+    protected ProfilerProvider(Class<IProfiler> clazz) {
+        super(clazz);
+    }
 
-dependencies {
-    compile project(':common-util')
-    compile project(':data-java')
-    compile project(':social')
-    compile project(':social-facebook')
-    compile project(':social-twitter')
+    public static IProfiler getPluginByName(String name) {
+        return provider.getPlugin(name);
+    }
 }

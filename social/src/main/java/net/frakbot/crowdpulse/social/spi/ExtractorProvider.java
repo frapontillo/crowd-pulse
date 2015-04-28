@@ -14,19 +14,22 @@
  * limitations under the License.
  */
 
-apply plugin: 'java'
-apply plugin: 'application'
+package net.frakbot.crowdpulse.social.spi;
 
-mainClassName = 'net.frakbot.crowdpulse.social.cli.extraction.ExtractionMain'
+import net.frakbot.crowdpulse.common.util.spi.PluginProvider;
+import net.frakbot.crowdpulse.social.extraction.IExtractor;
 
-sourceCompatibility = 1.8
+/**
+ * @author Francesco Pontillo
+ */
+public class ExtractorProvider extends PluginProvider<IExtractor> {
+    private static ExtractorProvider provider = new ExtractorProvider(IExtractor.class);
 
-version = '1.0'
+    protected ExtractorProvider(Class<IExtractor> clazz) {
+        super(clazz);
+    }
 
-dependencies {
-    compile project(':common-util')
-    compile project(':data-java')
-    compile project(':social')
-    compile project(':social-facebook')
-    compile project(':social-twitter')
+    public static IExtractor getPluginByName(String name) {
+        return provider.getPlugin(name);
+    }
 }

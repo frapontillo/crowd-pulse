@@ -23,6 +23,7 @@ import net.frakbot.crowdpulse.social.exception.SocialException;
 import net.frakbot.crowdpulse.social.exception.InvalidParametersSocialException;
 import net.frakbot.crowdpulse.social.exception.TooComplexParametersSocialException;
 import net.frakbot.crowdpulse.common.util.CrowdLogger;
+import net.frakbot.crowdpulse.social.extraction.IExtractor;
 import org.apache.logging.log4j.Logger;
 import rx.Observable;
 import rx.observables.ConnectableObservable;
@@ -30,7 +31,7 @@ import rx.observables.ConnectableObservable;
 /**
  * @author Francesco Pontillo
  */
-public class TwitterExtractor extends Extractor {
+public class TwitterExtractor extends IExtractor {
 
     public static final String EXTRACTOR_NAME = "twitter";
     private static TwitterExtractorRunner runner = null;

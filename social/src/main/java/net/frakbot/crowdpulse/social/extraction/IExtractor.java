@@ -16,6 +16,7 @@
 
 package net.frakbot.crowdpulse.social.extraction;
 
+import net.frakbot.crowdpulse.common.util.spi.IPlugin;
 import net.frakbot.crowdpulse.data.entity.Message;
 import net.frakbot.crowdpulse.social.exception.SocialException;
 import net.frakbot.crowdpulse.social.exception.InvalidParametersSocialException;
@@ -28,14 +29,7 @@ import java.util.List;
 /**
  * @author Francesco
  */
-public abstract class Extractor {
-    /**
-     * Returns the name of the extractor implementation.
-     *
-     * @return {@link java.lang.String} the name of the extractor.
-     */
-    public abstract String getName();
-
+public abstract class IExtractor implements IPlugin {
     /**
      * Returns the maximum number of parameters that this extractor supports per each query.
      *
@@ -122,7 +116,7 @@ public abstract class Extractor {
 
     /**
      * Validate some extraction parameters, returning true if they are valid for the current implementation of
-     * {@link Extractor}, or throwing an
+     * {@link IExtractor}, or throwing an
      * {@link net.frakbot.crowdpulse.social.exception.SocialException}.
      * IMPORTANT: this is a pre-validation technique, it may rely on obsolete information.
      *
