@@ -17,7 +17,6 @@
 package net.frakbot.crowdpulse.tag.cli;
 
 import com.beust.jcommander.JCommander;
-import dagger.ObjectGraph;
 import net.frakbot.crowdpulse.common.util.CrowdLogger;
 import net.frakbot.crowdpulse.common.util.rx.SubscriptionGroupLatch;
 import net.frakbot.crowdpulse.data.entity.Message;
@@ -26,7 +25,6 @@ import net.frakbot.crowdpulse.data.repository.MessageRepository;
 import net.frakbot.crowdpulse.data.repository.TagRepository;
 import net.frakbot.crowdpulse.tag.MessageTagParameters;
 import net.frakbot.crowdpulse.tag.MessageTagger;
-import net.frakbot.crowdpulse.tag.TaggerModule;
 import org.apache.logging.log4j.Logger;
 import rx.Observable;
 import rx.Observer;
@@ -48,9 +46,8 @@ public class MessageTagMain {
     private MessageTagger tagger;
 
     public static void main(String[] args) throws IOException {
-        ObjectGraph objectGraph = ObjectGraph.create(new TaggerModule());
         MessageTagMain main = new MessageTagMain();
-        main.tagger = objectGraph.get(MessageTagger.class);
+        main.tagger = new MessageTagger();
         main.run(args);
     }
 

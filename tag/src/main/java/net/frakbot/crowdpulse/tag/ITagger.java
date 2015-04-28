@@ -17,6 +17,7 @@
 package net.frakbot.crowdpulse.tag;
 
 
+import net.frakbot.crowdpulse.common.util.spi.IPlugin;
 import net.frakbot.crowdpulse.data.entity.Tag;
 import rx.observables.ConnectableObservable;
 
@@ -25,14 +26,7 @@ import java.util.List;
 /**
  * @author Francesco Pontillo
  */
-public abstract class ITagger {
-    /**
-     * Returns the name of the tagger implementation.
-     *
-     * @return {@link java.lang.String} the name of the tagger.
-     */
-    public abstract String getName();
-
+public abstract class ITagger implements IPlugin {
     /**
      * Starts an asynchronous tagging process loading an {@link List} of
      * {@link net.frakbot.crowdpulse.data.entity.Tag}.

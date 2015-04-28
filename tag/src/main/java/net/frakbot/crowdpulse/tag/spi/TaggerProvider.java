@@ -14,23 +14,22 @@
  * limitations under the License.
  */
 
-apply plugin: 'java'
-apply plugin: 'application'
+package net.frakbot.crowdpulse.tag.spi;
 
-mainClassName = 'net.frakbot.crowdpulse.tag.MessageTagMain'
+import net.frakbot.crowdpulse.common.util.spi.PluginProvider;
+import net.frakbot.crowdpulse.tag.ITagger;
 
-sourceCompatibility = 1.7
-targetCompatibility = 1.7
+/**
+ * @author Francesco Pontillo
+ */
+public class TaggerProvider extends PluginProvider<ITagger> {
+    private static TaggerProvider provider = new TaggerProvider(ITagger.class);
 
-version = '1.0'
+    protected TaggerProvider(Class<ITagger> clazz) {
+        super(clazz);
+    }
 
-dependencies {
-    compile project(':common-util')
-    compile project(':data-java')
-    compile project(':tag')
-    compile project(':tag-wikipedia-miner')
-    compile project(':tag-me')
-    compile project(':tag-open-calais')
-    compile project(':tag-babelfy')
-    compile group: 'com.beust', name: 'jcommander', version: '1.47'
+    public static ITagger getPluginByName(String name) {
+        return provider.getPlugin(name);
+    }
 }
