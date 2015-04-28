@@ -18,7 +18,6 @@ package net.frakbot.crowdpulse.social.twitter.extraction;
 
 import net.frakbot.crowdpulse.data.entity.Message;
 import net.frakbot.crowdpulse.social.extraction.ExtractionParameters;
-import net.frakbot.crowdpulse.social.extraction.Extractor;
 import net.frakbot.crowdpulse.social.exception.SocialException;
 import net.frakbot.crowdpulse.social.exception.InvalidParametersSocialException;
 import net.frakbot.crowdpulse.social.exception.TooComplexParametersSocialException;

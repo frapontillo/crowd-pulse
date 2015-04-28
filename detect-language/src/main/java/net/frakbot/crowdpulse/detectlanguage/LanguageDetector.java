@@ -85,7 +85,6 @@ public class LanguageDetector {
         messages = messages.subscribeOn(Schedulers.io());
         messages = messages.observeOn(Schedulers.io());
 
-        ConnectableObservable connectableMessages = messages.publish();
-        return connectableMessages;
+        return messages.publish();
     }
 }

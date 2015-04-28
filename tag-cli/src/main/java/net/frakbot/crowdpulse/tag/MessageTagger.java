@@ -19,7 +19,6 @@ package net.frakbot.crowdpulse.tag;
 import net.frakbot.crowdpulse.common.util.rx.BackpressureAsyncTransformer;
 import net.frakbot.crowdpulse.data.entity.Message;
 import net.frakbot.crowdpulse.data.repository.MessageRepository;
-import net.frakbot.crowdpulse.tag.spi.TaggerCollection;
 import net.frakbot.crowdpulse.tag.spi.TaggerProvider;
 import rx.Observable;
 import rx.Subscriber;

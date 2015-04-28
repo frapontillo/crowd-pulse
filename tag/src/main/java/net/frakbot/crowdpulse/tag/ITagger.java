@@ -19,7 +19,6 @@ package net.frakbot.crowdpulse.tag;
 
 import net.frakbot.crowdpulse.common.util.spi.IPlugin;
 import net.frakbot.crowdpulse.data.entity.Tag;
-import rx.observables.ConnectableObservable;
 
 import java.util.List;
 

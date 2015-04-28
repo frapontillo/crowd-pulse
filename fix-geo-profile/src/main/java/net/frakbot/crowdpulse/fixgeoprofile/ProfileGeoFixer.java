@@ -71,8 +71,7 @@ public class ProfileGeoFixer {
         profiles = profiles.subscribeOn(Schedulers.io());
         profiles = profiles.observeOn(Schedulers.io());
 
-        ConnectableObservable connectableProfiles = profiles.publish();
-        return connectableProfiles;
+        return profiles.publish();
     }
 
     private String readApiKey() {
