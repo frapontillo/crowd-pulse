@@ -16,6 +16,7 @@
 
 package net.frakbot.crowdpulse.postag;
 
+import net.frakbot.crowdpulse.common.util.spi.IPlugin;
 import net.frakbot.crowdpulse.data.entity.Message;
 import net.frakbot.crowdpulse.data.entity.Token;
 
@@ -24,14 +25,7 @@ import java.util.List;
 /**
  * @author Francesco Pontillo
  */
-public abstract class IPOSTagger {
-    /**
-     * Returns the name of the POS tagger implementation.
-     *
-     * @return {@link java.lang.String} the name of the POS tagger.
-     */
-    public abstract String getName();
-
+public abstract class IPOSTagger implements IPlugin {
     /**
      * Tags the given {@link Token}s with Part-Of-Speech named entities.
      * @param message The {@link Message} whose {@link List} of {@link Token}s will be modified in order to include the
