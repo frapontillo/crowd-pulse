@@ -32,7 +32,9 @@ include 'data-java'
 include 'admin-cli'
 
 include 'fix-geo-profile'
+
 include 'fix-geo-message'
+include 'fix-geo-message-from-profile'
 
 include 'detect-language'
 include 'detect-language-optimaize'
