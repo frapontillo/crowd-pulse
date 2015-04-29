@@ -60,3 +60,5 @@ include 'pos-tag-open-nlp'
 
 include 'rem-stop-word'
 
+include 'rem-stop-word-simple'
+
