@@ -27,12 +27,22 @@ version = '1.0'
 dependencies {
     compile project(':common-util')
     compile project(':data-java')
+
     compile project(':categorize')
     compile project(':categorize-wikipedia')
+
     compile project(':detect-language')
     compile project(':detect-language-optimaize')
+
     compile project(':fix-geo-message')
     compile project(':fix-geo-message-from-profile')
+
+    compile project(':tokenize')
     compile project(':tokenize-open-nlp')
+
+    compile project(':pos-tag')
     compile project(':pos-tag-open-nlp')
+
+    compile project(':rem-stop-word')
+    compile project(':rem-stop-word-simple')
 }

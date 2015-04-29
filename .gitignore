@@ -8,3 +8,4 @@ gradle/
 temp/
 */src/main/resources/*.properties
 */src/main/resources/*.bin
+playground-cli/src/main/resources/stop-words-*
