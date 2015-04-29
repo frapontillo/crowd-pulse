@@ -16,33 +16,17 @@
 
 package net.frakbot.crowdpulse.detectlanguage;
 
-import com.beust.jcommander.Parameter;
-import com.beust.jcommander.Parameters;
+import net.frakbot.crowdpulse.common.util.spi.IPlugin;
+import net.frakbot.crowdpulse.data.entity.Message;
 
 /**
  * @author Francesco Pontillo
  */
-@Parameters(separators = "=")
-public class LanguageDetectParameters {
-    @Parameter(names = "-from", description = "Message ID to start detecting messages' language from (ascending order)")
-    private String from;
+public abstract class ILanguageDetector implements IPlugin {
+    public abstract String getLanguage(Message message);
 
-    @Parameter(names = "-to", description = "Message ID to stop detecting messages' language at (ascending order)")
-    private String to;
-
-    public String getFrom() {
-        return from;
-    }
-
-    public void setFrom(String from) {
-        this.from = from;
-    }
-
-    public String getTo() {
-        return to;
-    }
-
-    public void setTo(String to) {
-        this.to = to;
+    public Message setLanguage(Message message) {
+        message.setLanguage(getLanguage(message));
+        return message;
     }
 }
