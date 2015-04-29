@@ -43,6 +43,7 @@ include 'tag-me'
 include 'tag-open-calais'
 include 'tag-babelfy'
 
+include 'categorize'
 include 'categorize-wikipedia'
 
 include 'playground-cli'
