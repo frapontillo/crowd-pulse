@@ -19,18 +19,11 @@ package net.frakbot.crowdpulse.fixgeoprofile.googlemaps;
 import com.google.maps.GeoApiContext;
 import com.google.maps.GeocodingApi;
 import com.google.maps.model.GeocodingResult;
-import net.frakbot.crowdpulse.common.util.GenericAnalysisParameters;
 import net.frakbot.crowdpulse.data.entity.Profile;
-import net.frakbot.crowdpulse.data.repository.ProfileRepository;
 import net.frakbot.crowdpulse.fixgeoprofile.IProfileGeoFixer;
-import rx.Observable;
-import rx.Subscriber;
-import rx.observables.ConnectableObservable;
-import rx.schedulers.Schedulers;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.List;
 import java.util.Properties;
 
 /**
@@ -39,7 +32,6 @@ import java.util.Properties;
 public class GoogleMapsProfileGeoFixer extends IProfileGeoFixer {
     private final String GEOFIXER_IMPL = "googlemaps";
     private final String PROP_GEOCODING_APIKEY = "geocoding.apiKey";
-    private final ProfileRepository profileRepository = new ProfileRepository();
     private final GeoApiContext context;
 
     public GoogleMapsProfileGeoFixer() {
