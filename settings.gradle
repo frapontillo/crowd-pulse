@@ -35,6 +35,7 @@ include 'fix-geo-profile'
 include 'fix-geo-message'
 
 include 'detect-language'
+include 'detect-language-optimaize'
 
 include 'tag'
 include 'tag-cli'
