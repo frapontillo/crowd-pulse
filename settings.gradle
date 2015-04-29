@@ -16,6 +16,8 @@
 
 rootProject.name = 'crowd-pulse'
 
+include 'playground-cli'
+
 include 'common-util'
 
 include 'social'
@@ -32,9 +34,13 @@ include 'data-java'
 include 'admin-cli'
 
 include 'fix-geo-profile'
+include 'fix-geo-profile-google-maps'
+
 include 'fix-geo-message'
+include 'fix-geo-message-from-profile'
 
 include 'detect-language'
+include 'detect-language-optimaize'
 
 include 'tag'
 include 'tag-cli'
@@ -43,9 +49,8 @@ include 'tag-me'
 include 'tag-open-calais'
 include 'tag-babelfy'
 
+include 'categorize'
 include 'categorize-wikipedia'
-
-include 'playground-cli'
 
 include 'tokenize'
 include 'tokenize-open-nlp'

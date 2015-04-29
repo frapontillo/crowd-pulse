@@ -16,6 +16,7 @@
 
 package net.frakbot.crowdpulse.tokenize;
 
+import net.frakbot.crowdpulse.common.util.spi.IPlugin;
 import net.frakbot.crowdpulse.data.entity.Message;
 import net.frakbot.crowdpulse.data.entity.Token;
 
@@ -24,14 +25,7 @@ import java.util.List;
 /**
  * @author Francesco Pontillo
  */
-public abstract class ITokenizer {
-    /**
-     * Returns the name of the tokenizer implementation.
-     *
-     * @return {@link java.lang.String} the name of the tokenizer.
-     */
-    public abstract String getName();
-
+public abstract class ITokenizer implements IPlugin {
     /**
      * Tokenize the input {@link Message} into chunks represented by {@link Token}s.
      * No extra information will be stored into the retrieved elements except for the {@link Token#text}.

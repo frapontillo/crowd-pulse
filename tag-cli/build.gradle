@@ -19,8 +19,7 @@ apply plugin: 'application'
 
 mainClassName = 'net.frakbot.crowdpulse.tag.MessageTagMain'
 
-sourceCompatibility = 1.7
-targetCompatibility = 1.7
+sourceCompatibility = 1.8
 
 version = '1.0'
 
@@ -33,6 +32,4 @@ dependencies {
     compile project(':tag-open-calais')
     compile project(':tag-babelfy')
     compile group: 'com.beust', name: 'jcommander', version: '1.47'
-    compile group: 'com.squareup.dagger', name: 'dagger-compiler', version: '1.2.2'
-    compile group: 'com.squareup.dagger', name: 'dagger', version: '1.2.2'
 }

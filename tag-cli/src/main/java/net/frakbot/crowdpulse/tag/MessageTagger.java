@@ -18,16 +18,13 @@ package net.frakbot.crowdpulse.tag;
 
 import net.frakbot.crowdpulse.common.util.rx.BackpressureAsyncTransformer;
 import net.frakbot.crowdpulse.data.entity.Message;
-import net.frakbot.crowdpulse.data.entity.Tag;
 import net.frakbot.crowdpulse.data.repository.MessageRepository;
+import net.frakbot.crowdpulse.tag.spi.TaggerProvider;
 import rx.Observable;
 import rx.Subscriber;
 import rx.observables.ConnectableObservable;
 
-import javax.inject.Inject;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 /**
  * @author Francesco Pontillo
@@ -35,10 +32,9 @@ import java.util.Set;
 public class MessageTagger {
 
     private final MessageRepository messageRepository = new MessageRepository();
-    @Inject Set<ITagger> taggers;
 
     public ConnectableObservable<Message> tagMessages(final MessageTagParameters parameters) {
-        final ITagger tagger = findTagger(taggers, parameters.getTagger());
+        final ITagger tagger = TaggerProvider.getPluginByName(parameters.getTagger());
         if (tagger == null) {
             return null;
         }
@@ -60,14 +56,5 @@ public class MessageTagger {
         }).compose(new BackpressureAsyncTransformer<Message>());
 
         return messages.publish();
-    }
-
-    private static ITagger findTagger(Set<ITagger> taggers, String name) {
-        for (ITagger tagger : taggers) {
-            if (tagger.getName().equals(name)) {
-                return tagger;
-            }
-        }
-        return null;
     }
 }

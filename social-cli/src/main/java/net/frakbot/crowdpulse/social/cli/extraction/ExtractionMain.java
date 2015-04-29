@@ -19,11 +19,9 @@ package net.frakbot.crowdpulse.social.cli.extraction;
 import com.beust.jcommander.JCommander;
 import net.frakbot.crowdpulse.data.entity.Message;
 import net.frakbot.crowdpulse.data.repository.MessageRepository;
-import net.frakbot.crowdpulse.social.cli.ExtractorCollection;
+import net.frakbot.crowdpulse.social.extraction.IExtractor;
+import net.frakbot.crowdpulse.social.spi.ExtractorProvider;
 import net.frakbot.crowdpulse.social.extraction.ExtractionParameters;
-import net.frakbot.crowdpulse.social.extraction.Extractor;
-import net.frakbot.crowdpulse.social.facebook.extraction.FacebookExtractor;
-import net.frakbot.crowdpulse.social.twitter.extraction.TwitterExtractor;
 import net.frakbot.crowdpulse.common.util.CrowdLogger;
 import net.frakbot.crowdpulse.common.util.StringUtil;
 import org.apache.logging.log4j.Logger;
@@ -43,11 +41,6 @@ import java.util.concurrent.TimeUnit;
  */
 public class ExtractionMain {
 
-    static {
-        ExtractorCollection.registerExtractor(new TwitterExtractor());
-        ExtractorCollection.registerExtractor(new FacebookExtractor());
-    }
-
     private static final CountDownLatch endSignal = new CountDownLatch(2);
     private static final Logger logger = CrowdLogger.getLogger(ExtractionMain.class);
 
@@ -58,7 +51,7 @@ public class ExtractionMain {
         ExtractionParameters params = new ExtractionParameters();
         new JCommander(params, args);
         logger.debug("Parameters read.");
-        Extractor extractor = ExtractorCollection.getExtractorImplByParams(params);
+        IExtractor extractor = ExtractorProvider.getPluginByName(params.getSource());
 
         ConnectableObservable<Message> messages = extractor.getMessages(params);
         Observable<List<Message>> bufferedMessages = messages.buffer(1, TimeUnit.SECONDS, 3, Schedulers.io());

@@ -17,15 +17,13 @@
 package net.frakbot.crowdpulse.social.cli.profile;
 
 import com.beust.jcommander.JCommander;
-import net.frakbot.crowdpulse.data.entity.Profile;
-import net.frakbot.crowdpulse.data.repository.ProfileRepository;
-import net.frakbot.crowdpulse.social.facebook.profile.FacebookProfiler;
-import net.frakbot.crowdpulse.social.profile.ProfileParameters;
-import net.frakbot.crowdpulse.social.profile.Profiler;
-import net.frakbot.crowdpulse.social.cli.ProfilerCollection;
-import net.frakbot.crowdpulse.social.twitter.profile.TwitterProfiler;
 import net.frakbot.crowdpulse.common.util.CrowdLogger;
 import net.frakbot.crowdpulse.common.util.StringUtil;
+import net.frakbot.crowdpulse.data.entity.Profile;
+import net.frakbot.crowdpulse.data.repository.ProfileRepository;
+import net.frakbot.crowdpulse.social.profile.ProfileParameters;
+import net.frakbot.crowdpulse.social.profile.IProfiler;
+import net.frakbot.crowdpulse.social.spi.ProfilerProvider;
 import org.apache.logging.log4j.Logger;
 import rx.Observer;
 import rx.Subscription;
@@ -39,11 +37,6 @@ import java.util.concurrent.CountDownLatch;
  */
 public class ProfileMain {
 
-    static {
-        ProfilerCollection.registerProfiler(new TwitterProfiler());
-        ProfilerCollection.registerProfiler(new FacebookProfiler());
-    }
-
     private static final CountDownLatch endSignal = new CountDownLatch(1);
     private static final Logger logger = CrowdLogger.getLogger(ProfileMain.class);
 
@@ -54,7 +47,7 @@ public class ProfileMain {
         ProfileParameters params = new ProfileParameters();
         new JCommander(params, args);
         logger.debug("Parameters read.");
-        Profiler profiler = ProfilerCollection.getProfilerImplByParams(params);
+        IProfiler profiler = ProfilerProvider.getPluginByName(params.getSource());
 
         ConnectableObservable<Profile> profiles = profiler.getProfile(params);
         Subscription subscription = profiles.subscribe(new ProfileObserver(params));

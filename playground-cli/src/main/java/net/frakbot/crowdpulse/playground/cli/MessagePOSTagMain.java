@@ -23,7 +23,6 @@ import net.frakbot.crowdpulse.data.entity.Message;
 import net.frakbot.crowdpulse.data.rx.BufferedMessageListObserver;
 import net.frakbot.crowdpulse.postag.IPOSTagger;
 import net.frakbot.crowdpulse.postag.opennlp.OpenNLPPOSTagger;
-import net.frakbot.crowdpulse.tokenize.opennlp.OpenNLPTokenizer;
 import rx.Observable;
 import rx.Subscription;
 import rx.observables.ConnectableObservable;
