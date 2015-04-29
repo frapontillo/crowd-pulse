@@ -32,6 +32,7 @@ include 'data-java'
 include 'admin-cli'
 
 include 'fix-geo-profile'
+include 'fix-geo-profile-google-maps'
 
 include 'fix-geo-message'
 include 'fix-geo-message-from-profile'
