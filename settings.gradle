@@ -63,4 +63,6 @@ include 'rem-stop-word'
 include 'rem-stop-word-simple'
 
 include 'lemmatize'
+include 'lemmatize-multi'
 include 'lemmatize-stanford-corenlp'
+
