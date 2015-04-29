@@ -19,10 +19,10 @@ package net.frakbot.crowdpulse.playground.cli;
 import net.frakbot.crowdpulse.common.util.GenericAnalysisParameters;
 import net.frakbot.crowdpulse.common.util.rx.BackpressureAsyncTransformer;
 import net.frakbot.crowdpulse.common.util.rx.SubscriptionGroupLatch;
-import net.frakbot.crowdpulse.data.entity.Message;
-import net.frakbot.crowdpulse.data.rx.BufferedMessageListObserver;
-import net.frakbot.crowdpulse.postag.IPOSTagger;
-import net.frakbot.crowdpulse.postag.opennlp.OpenNLPPOSTagger;
+import net.frakbot.crowdpulse.data.entity.Profile;
+import net.frakbot.crowdpulse.data.rx.BufferedProfileListObserver;
+import net.frakbot.crowdpulse.fixgeoprofile.IProfileGeoFixer;
+import net.frakbot.crowdpulse.fixgeoprofile.googlemaps.GoogleMapsProfileGeoFixer;
 import rx.Observable;
 import rx.Subscription;
 import rx.observables.ConnectableObservable;
@@ -34,36 +34,36 @@ import java.util.concurrent.TimeUnit;
 /**
  * @author Francesco Pontillo
  */
-public class MessagePOSTagMain {
+public class ProfileGeoFixMain {
     private SubscriptionGroupLatch allSubscriptions;
-    private IPOSTagger posTagger;
+    private IProfileGeoFixer profileGeoFixer;
 
     public static void main(String[] args) throws IOException {
-        MessagePOSTagMain main = new MessagePOSTagMain();
-        main.posTagger = new OpenNLPPOSTagger();
+        ProfileGeoFixMain main = new ProfileGeoFixMain();
+        main.profileGeoFixer = new GoogleMapsProfileGeoFixer();
         main.run(args);
     }
 
     public void run(String[] args) throws IOException {
         GenericAnalysisParameters params = MainHelper.start(args);
-        final Observable<Message> candidates = MainHelper.getMessages(params);
+        final Observable<Profile> candidates = MainHelper.getGeoConsolidationProfileCandidates(params.getFrom(), params.getTo());
 
-        ConnectableObservable<Message> messages = candidates
+        ConnectableObservable<Profile> profiles = candidates
                 .compose(new BackpressureAsyncTransformer<>())
-                .map(posTagger::posTagMessage)
+                .map(profileGeoFixer::geoFixProfile)
                 .publish();
-        Observable<List<Message>> bufferedMessages = messages.buffer(10, TimeUnit.SECONDS, 3);
+        Observable<List<Profile>> bufferedProfiles = profiles.buffer(10, TimeUnit.SECONDS, 3);
 
         allSubscriptions = new SubscriptionGroupLatch(2);
-        Subscription subscription = messages.subscribe(
-                message -> MainHelper.getLogger().info("READ: \"{}\"", message.getText()),
+        Subscription subscription = profiles.subscribe(
+                profile -> MainHelper.getLogger().info("READ: \"{}\"", profile.getUsername()),
                 throwable -> allSubscriptions.countDown(),
                 allSubscriptions::countDown);
-        Subscription bufferedSubscription = bufferedMessages.subscribe(new BufferedMessageListObserver
+        Subscription bufferedSubscription = bufferedProfiles.subscribe(new BufferedProfileListObserver
                 (allSubscriptions));
         allSubscriptions.setSubscriptions(subscription, bufferedSubscription);
 
-        messages.connect();
+        profiles.connect();
 
         allSubscriptions.waitAllUnsubscribed();
 

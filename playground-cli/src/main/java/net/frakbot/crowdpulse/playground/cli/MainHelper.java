@@ -20,7 +20,11 @@ import com.beust.jcommander.JCommander;
 import net.frakbot.crowdpulse.common.util.CrowdLogger;
 import net.frakbot.crowdpulse.common.util.GenericAnalysisParameters;
 import net.frakbot.crowdpulse.data.entity.Message;
+import net.frakbot.crowdpulse.data.entity.Profile;
+import net.frakbot.crowdpulse.data.entity.Tag;
 import net.frakbot.crowdpulse.data.repository.MessageRepository;
+import net.frakbot.crowdpulse.data.repository.ProfileRepository;
+import net.frakbot.crowdpulse.data.repository.TagRepository;
 import org.apache.logging.log4j.Logger;
 import rx.Observable;
 
@@ -47,8 +51,28 @@ public class MainHelper {
 
     public static Observable<Message> getMessages(GenericAnalysisParameters params) {
         MessageRepository messageRepository = new MessageRepository();
-        Observable<Message> candidates = messageRepository.getBetweenIdsAsObservable(
+        return messageRepository.getBetweenIdsAsObservable(
                 params.getFrom(), params.getTo());
-        return candidates;
+    }
+
+    public static Observable<Message> getLanguageDetectionMessageCandidates(String fromId, String toId) {
+        MessageRepository messageRepository = new MessageRepository();
+        return messageRepository.getLanguageDetectionCandidatesObservable(fromId, toId);
+    }
+
+    public static Observable<Message> getGeoConsolidationMessageCandidates(String fromId, String toId) {
+        MessageRepository messageRepository = new MessageRepository();
+        return messageRepository.getGeoConsolidationCandidatesObservable(fromId, toId);
+    }
+
+    public static Observable<Profile> getGeoConsolidationProfileCandidates(String fromId, String toId) {
+        ProfileRepository profileRepository = new ProfileRepository();
+        return profileRepository.getGeoConsolidationCandidatesObservable(fromId, toId);
+    }
+
+    public static Observable<Tag> getTags(GenericAnalysisParameters params) {
+        TagRepository tagRepository = new TagRepository();
+        return tagRepository.getBetweenIdsAsObservable(
+                params.getFrom(), params.getTo());
     }
 }

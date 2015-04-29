@@ -21,8 +21,8 @@ import net.frakbot.crowdpulse.common.util.rx.BackpressureAsyncTransformer;
 import net.frakbot.crowdpulse.common.util.rx.SubscriptionGroupLatch;
 import net.frakbot.crowdpulse.data.entity.Message;
 import net.frakbot.crowdpulse.data.rx.BufferedMessageListObserver;
-import net.frakbot.crowdpulse.postag.IPOSTagger;
-import net.frakbot.crowdpulse.postag.opennlp.OpenNLPPOSTagger;
+import net.frakbot.crowdpulse.detectlanguage.ILanguageDetector;
+import net.frakbot.crowdpulse.detectlanguage.optimaize.OptimaizeLanguageDetector;
 import rx.Observable;
 import rx.Subscription;
 import rx.observables.ConnectableObservable;
@@ -34,23 +34,23 @@ import java.util.concurrent.TimeUnit;
 /**
  * @author Francesco Pontillo
  */
-public class MessagePOSTagMain {
+public class LanguageDetectMain {
     private SubscriptionGroupLatch allSubscriptions;
-    private IPOSTagger posTagger;
+    private ILanguageDetector languageDetector;
 
     public static void main(String[] args) throws IOException {
-        MessagePOSTagMain main = new MessagePOSTagMain();
-        main.posTagger = new OpenNLPPOSTagger();
+        LanguageDetectMain main = new LanguageDetectMain();
+        main.languageDetector = new OptimaizeLanguageDetector();
         main.run(args);
     }
 
     public void run(String[] args) throws IOException {
         GenericAnalysisParameters params = MainHelper.start(args);
-        final Observable<Message> candidates = MainHelper.getMessages(params);
+        final Observable<Message> candidates = MainHelper.getLanguageDetectionMessageCandidates(params.getFrom(), params.getTo());
 
         ConnectableObservable<Message> messages = candidates
                 .compose(new BackpressureAsyncTransformer<>())
-                .map(posTagger::posTagMessage)
+                .map(languageDetector::setLanguage)
                 .publish();
         Observable<List<Message>> bufferedMessages = messages.buffer(10, TimeUnit.SECONDS, 3);
 

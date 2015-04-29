@@ -16,13 +16,13 @@
 
 package net.frakbot.crowdpulse.playground.cli;
 
+import net.frakbot.crowdpulse.categorize.ITagCategorizer;
+import net.frakbot.crowdpulse.categorize.wikipedia.WikipediaTagCategorizer;
 import net.frakbot.crowdpulse.common.util.GenericAnalysisParameters;
 import net.frakbot.crowdpulse.common.util.rx.BackpressureAsyncTransformer;
 import net.frakbot.crowdpulse.common.util.rx.SubscriptionGroupLatch;
-import net.frakbot.crowdpulse.data.entity.Message;
-import net.frakbot.crowdpulse.data.rx.BufferedMessageListObserver;
-import net.frakbot.crowdpulse.postag.IPOSTagger;
-import net.frakbot.crowdpulse.postag.opennlp.OpenNLPPOSTagger;
+import net.frakbot.crowdpulse.data.entity.Tag;
+import net.frakbot.crowdpulse.data.rx.BufferedTagListObserver;
 import rx.Observable;
 import rx.Subscription;
 import rx.observables.ConnectableObservable;
@@ -34,36 +34,36 @@ import java.util.concurrent.TimeUnit;
 /**
  * @author Francesco Pontillo
  */
-public class MessagePOSTagMain {
+public class TagCategorizeMain {
     private SubscriptionGroupLatch allSubscriptions;
-    private IPOSTagger posTagger;
+    private ITagCategorizer tagCategorizer;
 
     public static void main(String[] args) throws IOException {
-        MessagePOSTagMain main = new MessagePOSTagMain();
-        main.posTagger = new OpenNLPPOSTagger();
+        TagCategorizeMain main = new TagCategorizeMain();
+        main.tagCategorizer = new WikipediaTagCategorizer();
         main.run(args);
     }
 
     public void run(String[] args) throws IOException {
         GenericAnalysisParameters params = MainHelper.start(args);
-        final Observable<Message> candidates = MainHelper.getMessages(params);
+        final Observable<Tag> candidates = MainHelper.getTags(params);
 
-        ConnectableObservable<Message> messages = candidates
+        ConnectableObservable<Tag> tags = candidates
                 .compose(new BackpressureAsyncTransformer<>())
-                .map(posTagger::posTagMessage)
+                .map(tagCategorizer::categorizeTag)
                 .publish();
-        Observable<List<Message>> bufferedMessages = messages.buffer(10, TimeUnit.SECONDS, 3);
+        Observable<List<Tag>> bufferedTags = tags.buffer(10, TimeUnit.SECONDS, 3);
 
         allSubscriptions = new SubscriptionGroupLatch(2);
-        Subscription subscription = messages.subscribe(
-                message -> MainHelper.getLogger().info("READ: \"{}\"", message.getText()),
+        Subscription subscription = tags.subscribe(
+                tag -> MainHelper.getLogger().info("READ: \"{}\"", tag.getText()),
                 throwable -> allSubscriptions.countDown(),
                 allSubscriptions::countDown);
-        Subscription bufferedSubscription = bufferedMessages.subscribe(new BufferedMessageListObserver
+        Subscription bufferedSubscription = bufferedTags.subscribe(new BufferedTagListObserver
                 (allSubscriptions));
         allSubscriptions.setSubscriptions(subscription, bufferedSubscription);
 
-        messages.connect();
+        tags.connect();
 
         allSubscriptions.waitAllUnsubscribed();
 

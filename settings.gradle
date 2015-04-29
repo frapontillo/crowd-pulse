@@ -16,6 +16,8 @@
 
 rootProject.name = 'crowd-pulse'
 
+include 'playground-cli'
+
 include 'common-util'
 
 include 'social'
@@ -49,8 +51,6 @@ include 'tag-babelfy'
 
 include 'categorize'
 include 'categorize-wikipedia'
-
-include 'playground-cli'
 
 include 'tokenize'
 include 'tokenize-open-nlp'
