@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package net.frakbot.crowdpulse.wikipedia.rest;
+package net.frakbot.crowdpulse.categorize.wikipedia.rest;
 
 import com.google.gson.*;
 

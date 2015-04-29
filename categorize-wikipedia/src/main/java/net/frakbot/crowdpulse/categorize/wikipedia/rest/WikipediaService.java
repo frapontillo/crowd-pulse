@@ -14,26 +14,15 @@
  * limitations under the License.
  */
 
-package net.frakbot.crowdpulse.wikipedia.rest;
+package net.frakbot.crowdpulse.categorize.wikipedia.rest;
 
-import java.util.ArrayList;
-import java.util.List;
+import retrofit.http.GET;
+import retrofit.http.Query;
 
 /**
  * @author Francesco Pontillo
  */
-public class WikipediaResponse {
-    private List<String> categories;
-
-    public WikipediaResponse() {
-        categories = new ArrayList<String>();
-    }
-
-    public List<String> getCategories() {
-        return categories;
-    }
-
-    public void setCategories(List<String> categories) {
-        this.categories = categories;
-    }
+public interface WikipediaService {
+    @GET("/api.php?action=query&prop=categories&format=json&continue=")
+    WikipediaResponse tag(@Query("titles") String text);
 }

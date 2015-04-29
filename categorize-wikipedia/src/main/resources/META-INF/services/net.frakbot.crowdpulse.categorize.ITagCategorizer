@@ -14,8 +14,4 @@
 # limitations under the License.
 #
 
-database.host=127.0.0.1
-database.port=3000
-database.name=myDb
-database.username=admin
-database.password=notarealpassword
+net.frakbot.crowdpulse.categorize.wikipedia.WikipediaTagCategorizer
