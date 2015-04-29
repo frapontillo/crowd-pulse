@@ -16,34 +16,21 @@
 
 package net.frakbot.crowdpulse.fixgeoprofile;
 
-import com.beust.jcommander.Parameter;
-import com.beust.jcommander.Parameters;
+import net.frakbot.crowdpulse.common.util.spi.IPlugin;
+import net.frakbot.crowdpulse.data.entity.Profile;
 
 /**
  * @author Francesco Pontillo
  */
-@Parameters(separators = "=")
-public class ProfileGeoFixParameters {
+public abstract class IProfileGeoFixer implements IPlugin {
+    public abstract Double[] getCoordinates(Profile profile);
 
-    @Parameter(names = "-from", description = "Profile ID to start fixing profiles from (ascending order)")
-    private String from;
-
-    @Parameter(names = "-to", description = "Profile ID to stop fixing profiles at (ascending order)")
-    private String to;
-
-    public String getFrom() {
-        return from;
-    }
-
-    public void setFrom(String from) {
-        this.from = from;
-    }
-
-    public String getTo() {
-        return to;
-    }
-
-    public void setTo(String to) {
-        this.to = to;
+    public Profile geoFixProfile(Profile profile) {
+        Double[] coordinates = getCoordinates(profile);
+        if (coordinates != null && coordinates.length == 2) {
+            profile.setLatitude(coordinates[0]);
+            profile.setLongitude(coordinates[1]);
+        }
+        return profile;
     }
 }
