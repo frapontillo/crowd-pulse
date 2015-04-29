@@ -16,6 +16,7 @@
 
 package net.frakbot.crowdpulse.remstopword;
 
+import net.frakbot.crowdpulse.common.util.spi.IPlugin;
 import net.frakbot.crowdpulse.data.entity.Message;
 import net.frakbot.crowdpulse.data.entity.Token;
 
@@ -24,7 +25,7 @@ import java.util.List;
 /**
  * @author Francesco Pontillo
  */
-public abstract class IStopWordRemover {
+public abstract class IStopWordRemover implements IPlugin {
     /**
      * Returns the name of the stop word remover implementation.
      *
@@ -49,7 +50,7 @@ public abstract class IStopWordRemover {
      * @return the {@link Message} with optionally marked-as-stop-word {@link Token}s.
      */
     public Message stopWordRemoveMessage(Message message) {
-        stopWordRemoveMessageTokens(message);
+        message.setTokens(stopWordRemoveMessageTokens(message));
         return message;
     }
 }
