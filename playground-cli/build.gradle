@@ -45,4 +45,8 @@ dependencies {
 
     compile project(':rem-stop-word')
     compile project(':rem-stop-word-simple')
+
+    compile project(':lemmatize')
+    compile project(':lemmatize-multi')
+    compile project(':lemmatize-stanford-corenlp')
 }
