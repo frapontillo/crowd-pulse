@@ -15,9 +15,6 @@
  */
 
 apply plugin: 'java'
-apply plugin: 'application'
-
-mainClassName = 'net.frakbot.crowdpulse.fixgeomessage.MessageGeoFixMain'
 
 sourceCompatibility = 1.8
 
@@ -26,6 +23,4 @@ version = '1.0'
 dependencies {
     compile project(':common-util')
     compile project(':data-java')
-    compile group: 'com.beust', name: 'jcommander', version: '1.47'
-    compile group: 'io.reactivex', name: 'rxjava', version: '1.0.9'
 }

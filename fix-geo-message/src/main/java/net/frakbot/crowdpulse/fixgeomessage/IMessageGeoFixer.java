@@ -16,33 +16,21 @@
 
 package net.frakbot.crowdpulse.fixgeomessage;
 
-import com.beust.jcommander.Parameter;
-import com.beust.jcommander.Parameters;
+import net.frakbot.crowdpulse.common.util.spi.IPlugin;
+import net.frakbot.crowdpulse.data.entity.Message;
 
 /**
  * @author Francesco Pontillo
  */
-@Parameters(separators = "=")
-public class MessageGeoFixParameters {
-    @Parameter(names = "-from", description = "Message ID to start fixing messages from (ascending order)")
-    private String from;
+public abstract class IMessageGeoFixer implements IPlugin {
+    public abstract Double[] getCoordinates(Message message);
 
-    @Parameter(names = "-to", description = "Message ID to stop fixing messages at (ascending order)")
-    private String to;
-
-    public String getFrom() {
-        return from;
-    }
-
-    public void setFrom(String from) {
-        this.from = from;
-    }
-
-    public String getTo() {
-        return to;
-    }
-
-    public void setTo(String to) {
-        this.to = to;
+    public Message geoFixMessage(Message message) {
+        Double[] coordinates = getCoordinates(message);
+        if (coordinates != null && coordinates.length == 2) {
+            message.setLatitude(coordinates[0]);
+            message.setLongitude(coordinates[1]);
+        }
+        return message;
     }
 }
