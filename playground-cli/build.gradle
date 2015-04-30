@@ -28,6 +28,12 @@ dependencies {
     compile project(':common-util')
     compile project(':data-java')
 
+    compile project(':tag')
+    compile project(':tag-babelfy')
+    compile project(':tag-me')
+    compile project(':tag-open-calais')
+    compile project(':tag-wikipedia-miner')
+
     compile project(':categorize')
     compile project(':categorize-wikipedia')
 

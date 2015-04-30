@@ -18,6 +18,7 @@ package net.frakbot.crowdpulse.tag;
 
 
 import net.frakbot.crowdpulse.common.util.spi.IPlugin;
+import net.frakbot.crowdpulse.data.entity.Message;
 import net.frakbot.crowdpulse.data.entity.Tag;
 
 import java.util.List;
@@ -41,6 +42,12 @@ public abstract class ITagger implements IPlugin {
             tag.setLanguage(language);
         }
         return tags;
+    }
+
+    public Message tagMessage(Message message) {
+        List<Tag> tags = getTags(message.getText(), message.getLanguage());
+        message.addTags(tags);
+        return message;
     }
 
     protected abstract List<Tag> getTagsImpl(String text, String language);

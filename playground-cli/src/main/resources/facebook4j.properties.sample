@@ -1,5 +1,5 @@
 #
-# Copyright 2015 Francesco Pontillo
+# Copyright 2014 Francesco Pontillo
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,8 +14,5 @@
 # limitations under the License.
 #
 
-database.host=127.0.0.1
-database.port=3000
-database.name=myDb
-database.username=admin
-database.password=notarealpassword
+oauth.appId=***************
+oauth.appSecret=********************************

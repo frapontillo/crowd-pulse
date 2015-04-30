@@ -43,7 +43,6 @@ include 'detect-language'
 include 'detect-language-optimaize'
 
 include 'tag'
-include 'tag-cli'
 include 'tag-wikipedia-miner'
 include 'tag-me'
 include 'tag-open-calais'
