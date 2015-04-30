@@ -23,8 +23,6 @@ import net.frakbot.crowdpulse.data.entity.Message;
 import net.frakbot.crowdpulse.data.rx.BufferedMessageListObserver;
 import net.frakbot.crowdpulse.lemmatize.ILemmatizer;
 import net.frakbot.crowdpulse.lemmatize.multi.MultiLanguageLemmatizer;
-import net.frakbot.crowdpulse.tokenize.ITokenizer;
-import net.frakbot.crowdpulse.tokenize.opennlp.OpenNLPTokenizer;
 import rx.Observable;
 import rx.Subscription;
 import rx.observables.ConnectableObservable;

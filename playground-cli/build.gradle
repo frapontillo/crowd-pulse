@@ -49,4 +49,5 @@ dependencies {
     compile project(':lemmatize')
     compile project(':lemmatize-multi')
     compile project(':lemmatize-stanford-corenlp')
+    compile project(':lemmatize-morphit')
 }
