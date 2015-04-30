@@ -66,3 +66,5 @@ include 'lemmatize'
 include 'lemmatize-multi'
 include 'lemmatize-stanford-corenlp'
 
+include 'lemmatize-morphit'
+

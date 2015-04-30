@@ -1,0 +1,90 @@
+B ADV
+BN ADV
+CC CON
+CS CON
+DD DET-DEMO
+DI DET-INDEF
+DQ DET-WH
+E PRE
+EA ARTPRE
+FB PON
+FC PON
+FF PON
+FS SENT
+I INT
+PC CI CE
+PD PRO-DEMO
+PE PRO-PERS
+PI PRO-INDEF
+PP PRO-POSS
+PQ PRO-WH
+PR WH-CHE
+RD ART
+RI ART
+SA ABL
+SP NPR
+Ss NOUN-F:s
+Ss NOUN-M:s
+Sp NOUN-F:p NOUN-M:p
+As ADJ:pos+f+s ADJ:comp+f+s ADJ:sup+f+s ADJ:pos+m+s ADJ:comp+m+s ADJ:sup+m+s
+Ap ADJ:pos+f+p ADJ:comp+f+p ADJ:sup+f+p ADJ:pos+m+p ADJ:comp+m+p ADJ:sup+m+p
+APs ADJ
+APp ADJ
+NOs ADJ:pos+f+s ADJ:sup+f+s ADJ:pos+m+s ADJ:sup+m+s
+NOp ADJ:pos+f+p ADJ:sup+f+p ADJ:pos+m+p ADJ:sup+m+p
+SWs NOUN-F:s NOUN-M:s
+SWp NOUN-F:p NOUN-M:p
+Vip VER:ind+pre+1 VER:ind+pre+2
+Vip3 VER:ind+pre+3 VER:impr
+Vii VER:ind+impf+1 VER:ind+impf+2
+Vii3 VER:ind+impf+3
+Vis VER:ind+past+1 VER:ind+past+2
+Vis3 VER:ind+past+3
+Vif VER:ind+fut+1 VER:ind+fut+2
+Vif3 VER:ind+fut+3
+Vcp VER:sub+pre+1 VER:sub+pre+2
+Vcp3 VER:sub+pre+3
+Vci VER:sub+impf+1 VER:sub+impf+2
+Vci3 VER:sub+impf+3
+Vdp VER:cond+pre+1 VER:cond+pre+2
+Vdp3 VER:cond+pre+3
+Vg VER:ger
+Vp VER:part
+Vf VER:inf
+Vm VER:impr
+VAip AUX:ind+pre+1 VER:ind+pre+2
+VAip3 AUX:ind+pre+3
+VAii AUX:ind+impf+1 VER:ind+impf+2
+VAii3 AUX:ind+impf+3
+VAis AUX:ind+past+1 VER:ind+past+2
+Vis3 AUX:ind+past+3
+VAif AUX:ind+fut+1 VER:ind+fut+2
+VAif3 AUX:ind+fut+3
+VAcp AUX:sub+pre+1 VER:sub+pre+2
+VAcp3 AUX:sub+pre+3
+VAci AUX:sub+impf+1 VER:sub+impf+2
+VAci3 AUX:sub+impf+3
+VAdp AUX:cond+pre+1 VER:cond+pre+2
+VAdp3 AUX:cond+pre+3
+VAg AUX:ger
+VAp AUX:part
+VAf AUX:inf
+VAm AUX:impr
+VMip MOD:ind+pre+1 VER:ind+pre+2
+VMip3 MOD:ind+pre+3
+VMii MOD:ind+impf+1 VER:ind+impf+2
+VMii3 MOD:ind+impf+3
+VMis MOD:ind+past+1 VER:ind+past+2
+VMis3 MOD:ind+past+3
+VMif MOD:ind+fut+1 VER:ind+fut+2
+VMif3 MOD:ind+fut+3
+VMcp MOD:sub+pre+1 VER:sub+pre+2
+VMcp3 MOD:sub+pre+3
+VMci MOD:sub+impf+1 VER:sub+impf+2
+VMci3 MOD:sub+impf+3
+VMdp MOD:cond+pre+1 VER:cond+pre+2
+VMdp3 MOD:cond+pre+3
+VMg MOD:ger
+VMp MOD:part
+VMf MOD:inf
+VMm MOD:impr
