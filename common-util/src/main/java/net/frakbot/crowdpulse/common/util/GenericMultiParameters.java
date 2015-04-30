@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package net.frakbot.crowdpulse.social.cli;
+package net.frakbot.crowdpulse.common.util;
 
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;

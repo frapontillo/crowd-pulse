@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package net.frakbot.crowdpulse.social.cli.profile;
+package net.frakbot.crowdpulse.playground.cli;
 
 import com.beust.jcommander.JCommander;
-import net.frakbot.crowdpulse.social.cli.GenericMultiParameters;
+import net.frakbot.crowdpulse.common.util.GenericMultiParameters;
 import net.frakbot.crowdpulse.common.util.CrowdLogger;
 import org.apache.logging.log4j.Logger;
 
@@ -30,13 +30,13 @@ import java.util.List;
 /**
  * @author Francesco Pontillo
  */
-public class ProfileMultiMain {
-    private static final Logger logger = CrowdLogger.getLogger(ProfileMultiMain.class);
-
+public class ExtractionMultiMain {
+    private static final Logger logger = CrowdLogger.getLogger(ExtractionMultiMain.class);
+    
     public static void main(String[] args) throws IOException {
 
         long startTime = System.nanoTime();
-        logger.debug("Multiple profiling started.");
+        logger.debug("Multiple extraction started.");
 
         GenericMultiParameters params = new GenericMultiParameters();
         new JCommander(params, args);
@@ -45,13 +45,13 @@ public class ProfileMultiMain {
         List<String> lines = Files.readAllLines(Paths.get(params.getFile().getAbsolutePath()), Charset.forName("UTF-8"));
         if (lines != null) {
             for (String line : lines) {
-                ProfileMain.main(line.split(" "));
+                ExtractionMain.main(line.split(" "));
             }
         }
 
         long endTime = System.nanoTime();
         double durationSeconds = ((endTime - startTime) * Math.pow(10, -9));
 
-        logger.info("Multiple profiling completed in {} seconds.", durationSeconds);
+        logger.info("Multiple extraction completed in {} seconds.", durationSeconds);
     }
 }

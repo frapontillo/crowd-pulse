@@ -17,7 +17,7 @@
 apply plugin: 'java'
 apply plugin: 'application'
 
-mainClassName = 'net.frakbot.crowdpulse.tokenize.MessageTokenizeMain'
+mainClassName = 'net.frakbot.crowdpulse.tokenize.ExtractionMain'
 
 sourceCompatibility = 1.8
 
@@ -27,6 +27,10 @@ version = '1.0'
 dependencies {
     compile project(':common-util')
     compile project(':data-java')
+
+    compile project(':social')
+    compile project(':social-facebook')
+    compile project(':social-twitter')
 
     compile project(':tag')
     compile project(':tag-babelfy')
