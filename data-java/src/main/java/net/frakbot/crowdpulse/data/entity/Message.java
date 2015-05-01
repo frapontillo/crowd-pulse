@@ -39,6 +39,7 @@ public class Message extends Entity {
     private Integer shares;
     private Set<Tag> tags;
     private List<Token> tokens;
+    private double sentiment;
 
     public String getText() {
         return text;
@@ -161,5 +162,13 @@ public class Message extends Entity {
 
     public void setTokens(List<Token> tokens) {
         this.tokens = tokens;
+    }
+
+    public double getSentiment() {
+        return sentiment;
+    }
+
+    public void setSentiment(double sentiment) {
+        this.sentiment = sentiment;
     }
 }
