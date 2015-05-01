@@ -66,4 +66,7 @@ dependencies {
     compile project(':lemmatize-multi')
     compile project(':lemmatize-stanford-corenlp')
     compile project(':lemmatize-morphit')
+
+    compile project(':sentiment')
+    compile project(':sentiment-sentit')
 }
