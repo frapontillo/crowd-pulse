@@ -32,6 +32,12 @@ dependencies {
     compile project(':social-facebook')
     compile project(':social-twitter')
 
+    compile project(':fix-geo-profile')
+    compile project(':fix-geo-profile-google-maps')
+
+    compile project(':fix-geo-message')
+    compile project(':fix-geo-message-from-profile')
+
     compile project(':tag')
     compile project(':tag-babelfy')
     compile project(':tag-me')
