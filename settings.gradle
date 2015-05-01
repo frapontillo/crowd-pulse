@@ -66,3 +66,4 @@ include 'lemmatize-stanford-corenlp'
 
 include 'lemmatize-morphit'
 
+include 'sentiment'
