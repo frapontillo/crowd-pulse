@@ -57,6 +57,7 @@ include 'pos-tag'
 include 'pos-tag-open-nlp'
 
 include 'pos-tag-simple'
+include 'pos-tag-simple-multi'
 
 include 'rem-stop-word'
 include 'rem-stop-word-simple'
