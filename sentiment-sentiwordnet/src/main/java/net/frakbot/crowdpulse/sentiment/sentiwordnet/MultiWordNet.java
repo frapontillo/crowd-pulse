@@ -75,7 +75,7 @@ public class MultiWordNet {
         HashMap<String, String[]> dict = getDictionary(language);
         if (dict != null) {
             String[] synsets = dict.get(lemma);
-            if (!StringUtil.isNullOrEmpty(simplePos)) {
+            if (!StringUtil.isNullOrEmpty(simplePos) && synsets != null) {
                 List<String> synsetList = Arrays.asList(synsets);
                 synsetList = synsetList.stream().filter(s -> s.startsWith(simplePos)).collect(Collectors.toList());
                 synsets = synsetList.toArray(new String[synsetList.size()]);
@@ -94,7 +94,7 @@ public class MultiWordNet {
     private HashMap<String, String[]> loadDictionary(String language) {
         HashMap<String, String[]> dict = new HashMap<>();
         InputStream model = getClass().getClassLoader().getResourceAsStream(language + "_index");
-        try {
+        if (model != null) {try {
             List<String> lines = IOUtils.readLines(model, Charset.forName("UTF-8"));
             lines.forEach(s -> {
                 String[] components = mainDivider.split(s);
@@ -107,6 +107,8 @@ public class MultiWordNet {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        }
+
         return dict;
     }
 }

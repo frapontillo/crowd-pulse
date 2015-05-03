@@ -26,6 +26,24 @@ import rx.functions.Func1;
 import rx.observers.SafeSubscriber;
 
 /**
+ * Sentiment Analyzer based on MultiWordNet and SentiWordNet.
+ * Each message is processed as follows:
+ *
+ * <ol>
+ *     <li>Tokens are extracted.</li>
+ *     <li>Each token has a lemma, a language and a generic simple POS tag ("n", "v", "a", "r"), so a collection
+ *     of synsets is extracted from MultiWordNet according to those token features.</li>
+ *     <li>For every synsets, sentiment scores are extracted from SentiWordNet (language-independent) and an average
+ *     is calculated on those scores.</li>
+ *     <li>When the sentiment analysis is done for every token, a sentiment average is computed on the whole token
+ *     list.</li>
+ * </ol>
+ *
+ * TODO: this algorithm can be improved in multiple ways:
+ * TODO: abstract the logic of sentiment computation for each Token (multiple synsets/sentiments for each Token)
+ * TODO: abstract the logic of sentiment computation for each Message (average of Token sentiment)
+ * TODO: add configurations to the analyzer to weight some simple POS tags more than others
+ *
  * @author Francesco Pontillo
  */
 public class SentiWordNetSentimentAnalyzer extends ISentimentAnalyzer {
@@ -49,11 +67,14 @@ public class SentiWordNetSentimentAnalyzer extends ISentimentAnalyzer {
 
     private Message processMessage(Message message) {
         double totalScore = 0;
+        if (message.getTokens() == null) {
+            return message;
+        }
         for (Token token : message.getTokens()) {
             if (!StringUtil.isNullOrEmpty(token.getLemma())) {
                 // retrieve and optionally filter the synsets according to WordNet POS tags
                 String[] synsets = multiWordNet.getSynsets(token.getLemma(), message.getLanguage(), token.getSimplePos());
-                // TODO: add configuration-specific weights for POS
+                // TODO: add weights for simple POS according to some specific configuration
                 double synsetScore = sentiWordNet.getScore(synsets);
                 totalScore += synsetScore;
                 token.setScore(synsetScore);
