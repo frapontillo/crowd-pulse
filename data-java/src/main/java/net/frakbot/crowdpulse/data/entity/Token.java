@@ -22,6 +22,7 @@ package net.frakbot.crowdpulse.data.entity;
 public class Token {
     private String text;
     private String pos;
+    private String simplePos;
     private boolean stopWord;
     private String lemma;
     private double score;
@@ -47,6 +48,14 @@ public class Token {
 
     public void setPos(String pos) {
         this.pos = pos;
+    }
+
+    public String getSimplePos() {
+        return simplePos;
+    }
+
+    public void setSimplePos(String simplePos) {
+        this.simplePos = simplePos;
     }
 
     public boolean isStopWord() {
