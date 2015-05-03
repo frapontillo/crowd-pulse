@@ -73,4 +73,5 @@ dependencies {
 
     compile project(':sentiment')
     compile project(':sentiment-sentit')
+    compile project(':sentiment-sentiwordnet')
 }

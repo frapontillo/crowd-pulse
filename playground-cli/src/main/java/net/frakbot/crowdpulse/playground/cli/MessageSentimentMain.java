@@ -23,6 +23,7 @@ import net.frakbot.crowdpulse.data.entity.Message;
 import net.frakbot.crowdpulse.data.rx.BufferedMessageListObserver;
 import net.frakbot.crowdpulse.sentiment.ISentimentAnalyzer;
 import net.frakbot.crowdpulse.sentiment.sentit.SentitSentimentAnalyzer;
+import net.frakbot.crowdpulse.sentiment.sentiwordnet.SentiWordNetSentimentAnalyzer;
 import rx.Observable;
 import rx.Subscription;
 import rx.observables.ConnectableObservable;
@@ -40,7 +41,7 @@ public class MessageSentimentMain {
 
     public static void main(String[] args) throws IOException {
         MessageSentimentMain main = new MessageSentimentMain();
-        main.analyzer = new SentitSentimentAnalyzer();
+        main.analyzer = new SentiWordNetSentimentAnalyzer();
         main.run(args);
     }
 
