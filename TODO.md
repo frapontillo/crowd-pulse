@@ -10,7 +10,8 @@ TODO
 - [X] Add `pos-tag` modules to perform the POS tagging step
 - [X] Add `rem-stop-word` modules to remove stop-words
 - [X] Add `lemmatize` modules to perform the lemmatization step
-- [ ] Add `sentiment` modules to perform the actual sentiment analysis
+- [X] Add `pos-tag-simple` modules to perform the simple POS tagging step
+- [X] Add `sentiment` modules to perform the actual sentiment analysis
 - [ ] Edit `social` module to allow searching for messages by a string location (e.g. "Washington DC, USA")
 - [ ] Add `social-reply` module to fetch and delay-fetch answers to messages (can only be done for Facebook)
 - [ ] Edit `social` module to enable profiling of users' graph connections

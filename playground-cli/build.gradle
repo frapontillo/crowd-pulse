@@ -23,7 +23,6 @@ sourceCompatibility = 1.8
 
 version = '1.0'
 
-
 dependencies {
     compile project(':common-util')
     compile project(':data-java')
@@ -31,6 +30,12 @@ dependencies {
     compile project(':social')
     compile project(':social-facebook')
     compile project(':social-twitter')
+
+    compile project(':fix-geo-profile')
+    compile project(':fix-geo-profile-google-maps')
+
+    compile project(':fix-geo-message')
+    compile project(':fix-geo-message-from-profile')
 
     compile project(':tag')
     compile project(':tag-babelfy')
@@ -53,6 +58,11 @@ dependencies {
     compile project(':pos-tag')
     compile project(':pos-tag-open-nlp')
 
+    compile project(':pos-tag-simple')
+    compile project(':pos-tag-simple-multi')
+    compile project(':pos-tag-simple-it')
+    compile project(':pos-tag-simple-en')
+
     compile project(':rem-stop-word')
     compile project(':rem-stop-word-simple')
 
@@ -60,4 +70,8 @@ dependencies {
     compile project(':lemmatize-multi')
     compile project(':lemmatize-stanford-corenlp')
     compile project(':lemmatize-morphit')
+
+    compile project(':sentiment')
+    compile project(':sentiment-sentit')
+    compile project(':sentiment-sentiwordnet')
 }
