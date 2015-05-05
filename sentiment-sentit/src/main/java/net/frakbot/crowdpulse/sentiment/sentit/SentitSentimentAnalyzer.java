@@ -23,6 +23,7 @@ import net.frakbot.crowdpulse.data.entity.Message;
 import net.frakbot.crowdpulse.sentiment.ISentimentAnalyzer;
 import net.frakbot.crowdpulse.sentiment.sentit.rest.*;
 import retrofit.RestAdapter;
+import retrofit.RetrofitError;
 import retrofit.converter.GsonConverter;
 import rx.Observable;
 import rx.Subscriber;
@@ -79,9 +80,18 @@ public class SentitSentimentAnalyzer extends ISentimentAnalyzer {
                 @Override public void onNext(List<Message> messages) {
                     // make the request
                     SentitRequest request = new SentitRequest(messages);
-                    SentitResponse response = service.classify(request);
-                    // for each message, set the result
-                    messages.forEach(message -> message.setSentiment(response.getSentimentForMessage(message)));
+                    SentitResponse response;
+                    try {
+                        response = service.classify(request);
+                        // for each message, set the result
+                        for (Message message : messages) {
+                            message.setSentiment(response.getSentimentForMessage(message));
+                        }
+                    } catch (RetrofitError error) {
+                        if (error.getResponse().getStatus() == 401) {
+                            // TODO: implement some wait-until features (must be async!)
+                        }
+                    }
                     subscriber.onNext(messages);
                 }
             });

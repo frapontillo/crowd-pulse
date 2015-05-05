@@ -31,10 +31,9 @@ public class SentitResultMapDeserializer implements JsonDeserializer<SentitRespo
         JsonArray array = json.getAsJsonArray();
         array.forEach(elem -> {
             JsonObject obj = elem.getAsJsonObject();
-            map.put("", null);
-            map.put(obj.getAsJsonObject("id").getAsString(), new SentitResponse.SentitResult(
-                    obj.getAsJsonObject("subjectivity").getAsString(),
-                    obj.getAsJsonObject("polarity").getAsString()));
+            map.put(obj.get("id").getAsString(), new SentitResponse.SentitResult(
+                    obj.get("subjectivity").getAsString(),
+                    obj.get("polarity").getAsString()));
         });
         return map;
     }
