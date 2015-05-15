@@ -54,7 +54,7 @@ public class SentitSentimentAnalyzer extends ISentimentAnalyzer {
         service = restAdapter.create(SentitService.class);
     }
 
-    @Override public Observable<Message> sentimentAnalyze(Observable<Message> messages) {
+    @Override public Observable<Message> process(Observable<Message> messages) {
         // split the messages into processable bundles (Sentit imposes limits on messages-per-request)
         Observable<List<Message>> bufferedMessages = messages.buffer(MAX_MESSAGES_PER_REQ);
         bufferedMessages = bufferedMessages.lift(new SentitOperator());

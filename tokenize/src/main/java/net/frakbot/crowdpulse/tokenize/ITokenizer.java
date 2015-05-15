@@ -19,6 +19,7 @@ package net.frakbot.crowdpulse.tokenize;
 import net.frakbot.crowdpulse.common.util.spi.IPlugin;
 import net.frakbot.crowdpulse.data.entity.Message;
 import net.frakbot.crowdpulse.data.entity.Token;
+import rx.Observable;
 
 import java.util.List;
 
@@ -44,5 +45,15 @@ public abstract class ITokenizer implements IPlugin {
     public Message tokenize(Message message) {
         message.setTokens(getTokens(message));
         return message;
+    }
+
+    /**
+     * Process a stream of {@link Message} and extracts tokens from each of them.
+     *
+     * @param messages The stream of {@link Message}s to process, as {@link Observable}.
+     * @return A new {@link Observable} emitting the same items once the processing has happened.
+     */
+    public Observable<Message> process(Observable<Message> messages) {
+        return messages.lift(new TokenizerOperator(this));
     }
 }

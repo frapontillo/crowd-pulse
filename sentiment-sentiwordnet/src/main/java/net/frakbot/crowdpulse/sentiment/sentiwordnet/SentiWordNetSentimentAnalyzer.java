@@ -60,7 +60,7 @@ public class SentiWordNetSentimentAnalyzer extends ISentimentAnalyzer {
         return SENTIMENT_IMPL;
     }
 
-    @Override public Observable<Message> sentimentAnalyze(Observable<Message> messages) {
+    @Override public Observable<Message> process(Observable<Message> messages) {
         messages = messages.lift(new SimpleMessageOperator(this::processMessage));
         return messages;
     }

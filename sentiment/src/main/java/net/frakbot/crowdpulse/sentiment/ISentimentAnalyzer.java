@@ -31,5 +31,5 @@ public abstract class ISentimentAnalyzer implements IPlugin {
      * @param messages The {@link Observable<Message>} to process.
      * @return the input {@link Observable<Message>} with the sentiment optionally set.
      */
-    public abstract Observable<Message> sentimentAnalyze(Observable<Message> messages);
+    public abstract Observable<Message> process(Observable<Message> messages);
 }

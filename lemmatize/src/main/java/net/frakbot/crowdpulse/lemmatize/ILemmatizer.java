@@ -19,6 +19,7 @@ package net.frakbot.crowdpulse.lemmatize;
 import net.frakbot.crowdpulse.common.util.spi.IPlugin;
 import net.frakbot.crowdpulse.data.entity.Message;
 import net.frakbot.crowdpulse.data.entity.Token;
+import rx.Observable;
 
 import java.util.List;
 
@@ -43,5 +44,15 @@ public abstract class ILemmatizer implements IPlugin {
     public Message lemmatizeMessage(Message message) {
         message.setTokens(lemmatizeMessageTokens(message));
         return message;
+    }
+
+    /**
+     * Process a stream of {@link Message} and enrich each {@link Message} with found lemmas.
+     *
+     * @param messages The stream of {@link Message}s to process, as {@link Observable}.
+     * @return A new {@link Observable} emitting the same items once the processing has happened.
+     */
+    public Observable<Message> process(Observable<Message> messages) {
+        return messages.lift(new LemmatizerOperator(this));
     }
 }

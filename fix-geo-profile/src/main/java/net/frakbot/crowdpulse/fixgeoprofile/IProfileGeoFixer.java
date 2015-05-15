@@ -18,6 +18,7 @@ package net.frakbot.crowdpulse.fixgeoprofile;
 
 import net.frakbot.crowdpulse.common.util.spi.IPlugin;
 import net.frakbot.crowdpulse.data.entity.Profile;
+import rx.Observable;
 
 /**
  * @author Francesco Pontillo
@@ -32,5 +33,16 @@ public abstract class IProfileGeoFixer implements IPlugin {
             profile.setLongitude(coordinates[1]);
         }
         return profile;
+    }
+
+    /**
+     * Process a stream of {@link Profile} and enrich each {@link Profile} with some kind
+     * of geo-location information.
+     *
+     * @param profiles The stream of {@link Profile}s to process, as {@link Observable}.
+     * @return A new {@link Observable} emitting the same items once the processing has happened.
+     */
+    public Observable<Profile> process(Observable<Profile> profiles) {
+        return profiles.lift(new ProfileGeoFixerOperator(this));
     }
 }

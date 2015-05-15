@@ -22,7 +22,6 @@ import net.frakbot.crowdpulse.common.util.rx.SubscriptionGroupLatch;
 import net.frakbot.crowdpulse.data.entity.Message;
 import net.frakbot.crowdpulse.data.rx.BufferedMessageListObserver;
 import net.frakbot.crowdpulse.sentiment.ISentimentAnalyzer;
-import net.frakbot.crowdpulse.sentiment.sentit.SentitSentimentAnalyzer;
 import net.frakbot.crowdpulse.sentiment.sentiwordnet.SentiWordNetSentimentAnalyzer;
 import rx.Observable;
 import rx.Subscription;
@@ -50,7 +49,7 @@ public class MessageSentimentMain {
         final Observable<Message> candidates = MainHelper.getMessages(params);
 
         ConnectableObservable<Message> messages =
-                analyzer.sentimentAnalyze(candidates)
+                analyzer.process(candidates)
                 .compose(new BackpressureAsyncTransformer<>())
                 .publish();
 
