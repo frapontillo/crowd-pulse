@@ -18,11 +18,11 @@ package net.frakbot.crowdpulse.playground.cli;
 
 import com.beust.jcommander.JCommander;
 import net.frakbot.crowdpulse.common.util.rx.SubscriptionGroupLatch;
+import net.frakbot.crowdpulse.common.util.spi.PluginProvider;
 import net.frakbot.crowdpulse.data.entity.Profile;
 import net.frakbot.crowdpulse.data.rx.BufferedProfileListObserver;
 import net.frakbot.crowdpulse.social.profile.IProfiler;
 import net.frakbot.crowdpulse.social.profile.ProfileParameters;
-import net.frakbot.crowdpulse.social.spi.ProfilerProvider;
 import rx.Observable;
 import rx.Subscription;
 import rx.observables.ConnectableObservable;
@@ -37,15 +37,15 @@ import java.util.concurrent.TimeUnit;
  */
 public class ProfileMain {
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, ClassNotFoundException {
         ProfileMain main = new ProfileMain();
         main.run(args);
     }
 
-    public void run(String[] args) throws IOException {
+    public void run(String[] args) throws IOException, ClassNotFoundException {
         ProfileParameters params = new ProfileParameters();
         new JCommander(params, args);
-        IProfiler profiler = ProfilerProvider.getPluginByName(params.getSource());
+        IProfiler profiler = PluginProvider.getPlugin(params.getSource());
 
         ConnectableObservable<Profile> profiles = profiler.getProfile(params);
         Observable<List<Profile>> bufferedMessages = profiles.buffer(10, TimeUnit.SECONDS, 3, Schedulers.io());

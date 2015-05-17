@@ -16,32 +16,38 @@
 
 package net.frakbot.crowdpulse.fixgeomessage.fromprofile;
 
+import net.frakbot.crowdpulse.common.util.spi.IPlugin;
 import net.frakbot.crowdpulse.data.entity.Message;
 import net.frakbot.crowdpulse.data.entity.Profile;
 import net.frakbot.crowdpulse.data.repository.ProfileRepository;
-import net.frakbot.crowdpulse.fixgeomessage.IMessageGeoFixer;
+import net.frakbot.crowdpulse.fixgeomessage.IMessageGeoFixerOperator;
+import rx.Observable;
 
 /**
  * @author Francesco Pontillo
  */
-public class FromProfileMessageGeoFixer extends IMessageGeoFixer {
-    private final String GEOFIXER_IMPL = "fromprofile";
+public class FromProfileMessageGeoFixer extends IPlugin<Message> {
+    private final static String GEOFIXER_IMPL = "fromprofile";
     private final ProfileRepository profileRepository;
 
     public FromProfileMessageGeoFixer() {
         profileRepository = new ProfileRepository();
     }
 
-    @Override public Double[] getCoordinates(Message message) {
-        Profile user = profileRepository.getByUsername(message.getFromUser());
-        Double[] coordinates = null;
-        if (user != null && user.getLatitude() != null && user.getLongitude() != null) {
-            coordinates = new Double[] { user.getLatitude(), user.getLongitude() };
-        }
-        return coordinates;
-    }
-
     @Override public String getName() {
         return GEOFIXER_IMPL;
+    }
+
+    @Override public Observable.Operator<Message, Message> getOperator() {
+        return new IMessageGeoFixerOperator() {
+            @Override public Double[] getCoordinates(Message message) {
+                Profile user = profileRepository.getByUsername(message.getFromUser());
+                Double[] coordinates = null;
+                if (user != null && user.getLatitude() != null && user.getLongitude() != null) {
+                    coordinates = new Double[] { user.getLatitude(), user.getLongitude() };
+                }
+                return coordinates;
+            }
+        };
     }
 }

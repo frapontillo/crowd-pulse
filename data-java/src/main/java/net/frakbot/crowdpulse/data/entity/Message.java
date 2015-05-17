@@ -171,4 +171,11 @@ public class Message extends Entity {
     public void setSentiment(double sentiment) {
         this.sentiment = sentiment;
     }
+
+    @Override public String toString() {
+        return getId().toString() + ":"
+                + getSource() + ":"
+                + getText().substring(0, Math.min(getText().length()-1, 20))
+                + "...";
+    }
 }

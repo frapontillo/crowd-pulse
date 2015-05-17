@@ -18,11 +18,11 @@ package net.frakbot.crowdpulse.playground.cli;
 
 import com.beust.jcommander.JCommander;
 import net.frakbot.crowdpulse.common.util.rx.SubscriptionGroupLatch;
+import net.frakbot.crowdpulse.common.util.spi.PluginProvider;
 import net.frakbot.crowdpulse.data.entity.Message;
 import net.frakbot.crowdpulse.data.rx.BufferedMessageListObserver;
 import net.frakbot.crowdpulse.social.extraction.ExtractionParameters;
 import net.frakbot.crowdpulse.social.extraction.IExtractor;
-import net.frakbot.crowdpulse.social.spi.ExtractorProvider;
 import rx.Observable;
 import rx.Subscription;
 import rx.observables.ConnectableObservable;
@@ -37,15 +37,15 @@ import java.util.concurrent.TimeUnit;
  */
 public class ExtractionMain {
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, ClassNotFoundException {
         ExtractionMain main = new ExtractionMain();
         main.run(args);
     }
 
-    public void run(String[] args) throws IOException {
+    public void run(String[] args) throws IOException, ClassNotFoundException {
         ExtractionParameters params = new ExtractionParameters();
         new JCommander(params, args);
-        IExtractor extractor = ExtractorProvider.getPluginByName(params.getSource());
+        IExtractor extractor = PluginProvider.getPlugin(params.getSource());
 
         ConnectableObservable<Message> messages = extractor.getMessages(params);
         Observable<List<Message>> bufferedMessages = messages.buffer(10, TimeUnit.SECONDS, 3, Schedulers.io());

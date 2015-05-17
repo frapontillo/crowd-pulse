@@ -16,9 +16,12 @@
 
 package net.frakbot.crowdpulse.tag.wikipediaminer;
 
+import net.frakbot.crowdpulse.common.util.spi.IPlugin;
+import net.frakbot.crowdpulse.data.entity.Message;
 import net.frakbot.crowdpulse.data.entity.Tag;
-import net.frakbot.crowdpulse.tag.ITagger;
+import net.frakbot.crowdpulse.tag.ITaggerOperator;
 import retrofit.RestAdapter;
+import rx.Observable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,37 +30,41 @@ import java.util.List;
  * @see {@link "http://wikipedia-miner.cms.waikato.ac.nz/services/?wikify"}
  * @author Francesco Pontillo
  */
-public class WikipediaMinerTagger extends ITagger {
+public class WikipediaMinerTagger extends IPlugin<Message> {
     private final static String TAGGER_NAME = "wikipediaminer";
+    private final static String WIKIPEDIA_MINER_ENDPOINT = "http://wikipedia-miner.cms.waikato.ac.nz";
+    private final static WikipediaMinerService service;
 
-    private final String WIKIPEDIA_MINER_ENDPOINT = "http://wikipedia-miner.cms.waikato.ac.nz";
+    static {
+        // build the REST client
+        RestAdapter restAdapter = new RestAdapter.Builder()
+                .setEndpoint(WIKIPEDIA_MINER_ENDPOINT)
+                .build();
+        service = restAdapter.create(WikipediaMinerService.class);
+    }
 
     @Override public String getName() {
         return TAGGER_NAME;
     }
 
-    @Override public List<Tag> getTagsImpl(String text, String language) {
-        // build the REST client
-        RestAdapter restAdapter = new RestAdapter.Builder()
-                .setEndpoint(WIKIPEDIA_MINER_ENDPOINT)
-                .build();
-        WikipediaMinerService service = restAdapter.create(WikipediaMinerService.class);
+    @Override protected Observable.Operator<Message, Message> getOperator() {
+        return new ITaggerOperator() {
+            @Override protected List<Tag> getTagsImpl(String text, String language) {
+                // get the tags
+                WikifyResponse response;
+                List<Tag> tags = new ArrayList<>();
+                try {
+                    response = service.wikify(text);
+                    for (WikifyResponse.DetectedTopic topic : response.getDetectedTopics()) {
+                        Tag tag = new Tag();
+                        tag.setText(topic.getTitle());
+                        tags.add(tag);
+                    }
+                } catch (Exception ignored) {}
 
-        // get the tags
-        WikifyResponse response;
-        List<Tag> tags = new ArrayList<Tag>();
-        try {
-            response = service.wikify(text);
-            for (WikifyResponse.DetectedTopic topic : response.getDetectedTopics()) {
-                Tag tag = new Tag();
-                tag.setText(topic.getTitle());
-                tags.add(tag);
+                // publish the tags as a connectable observable
+                return tags;
             }
-        } catch (Exception e) {
-            // ignored
-        }
-
-        // publish the tags as a connectable observable
-        return tags;
+        };
     }
 }

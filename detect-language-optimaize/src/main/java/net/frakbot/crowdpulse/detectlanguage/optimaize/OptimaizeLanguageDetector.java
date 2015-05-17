@@ -25,8 +25,10 @@ import com.optimaize.langdetect.profiles.LanguageProfileReader;
 import com.optimaize.langdetect.text.CommonTextObjectFactories;
 import com.optimaize.langdetect.text.TextObject;
 import com.optimaize.langdetect.text.TextObjectFactory;
+import net.frakbot.crowdpulse.common.util.spi.IPlugin;
 import net.frakbot.crowdpulse.data.entity.Message;
-import net.frakbot.crowdpulse.detectlanguage.ILanguageDetector;
+import net.frakbot.crowdpulse.detectlanguage.ILanguageDetectorOperator;
+import rx.Observable;
 
 import java.io.IOException;
 import java.util.List;
@@ -34,8 +36,8 @@ import java.util.List;
 /**
  * @author Francesco Pontillo
  */
-public class OptimaizeLanguageDetector extends ILanguageDetector {
-    private final String LANGUAGEDETECTOR_IMPL = "optimaize";
+public class OptimaizeLanguageDetector extends IPlugin<Message> {
+    private final static String LANGUAGEDETECTOR_IMPL = "optimaize";
     private final LanguageDetector languageDetector;
     private final TextObjectFactory textObjectFactory;
 
@@ -55,16 +57,20 @@ public class OptimaizeLanguageDetector extends ILanguageDetector {
         textObjectFactory = CommonTextObjectFactories.forDetectingOnLargeText();
     }
 
-    @Override public String getLanguage(Message message) {
-        TextObject textObject = textObjectFactory.forText(message.getText());
-        Optional<String> lang = languageDetector.detect(textObject);
-        if (lang.isPresent() && !lang.get().equals("und")) {
-            return lang.get();
-        }
-        return null;
-    }
-
     @Override public String getName() {
         return LANGUAGEDETECTOR_IMPL;
+    }
+
+    @Override public Observable.Operator<Message, Message> getOperator() {
+        return new ILanguageDetectorOperator() {
+            @Override public String getLanguage(Message message) {
+                TextObject textObject = textObjectFactory.forText(message.getText());
+                Optional<String> lang = languageDetector.detect(textObject);
+                if (lang.isPresent() && !lang.get().equals("und")) {
+                    return lang.get();
+                }
+                return null;
+            }
+        };
     }
 }

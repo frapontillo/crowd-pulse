@@ -23,14 +23,14 @@ import rx.observables.ConnectableObservable;
 /**
  * @author Francesco Pontillo
  */
-public abstract class IProfiler implements IPlugin {
+public abstract class IProfiler extends IPlugin<Profile> {
 
     /**
      * Starts an asynchronous search loading an {@link rx.Observable} of {@link net.frakbot.crowdpulse.data.entity.Profile}
      * that will be populated as results come in.
      *
      * @param parameters {@link net.frakbot.crowdpulse.social.profile.ProfileParameters} to search for.
-     * @return {@link rx.Observable< net.frakbot.crowdpulse.data.entity.Profile >}
+     * @return {@link rx.Observable<net.frakbot.crowdpulse.data.entity.Profile>}
      */
     public abstract ConnectableObservable<Profile> getProfile(ProfileParameters parameters);
 }

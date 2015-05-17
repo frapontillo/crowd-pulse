@@ -19,6 +19,7 @@ package net.frakbot.crowdpulse.social.twitter.profile;
 import net.frakbot.crowdpulse.data.entity.Profile;
 import net.frakbot.crowdpulse.social.profile.ProfileParameters;
 import net.frakbot.crowdpulse.social.profile.IProfiler;
+import rx.Observable;
 import rx.observables.ConnectableObservable;
 
 /**
@@ -30,6 +31,11 @@ public class TwitterProfiler extends IProfiler {
 
     @Override public String getName() {
         return PROFILER_NAME;
+    }
+
+    @Override protected Observable.Operator<Profile, Profile> getOperator() {
+        // TODO: URGENT, FIX THIS!
+        return null;
     }
 
     private TwitterProfilerRunner getRunnerInstance() {

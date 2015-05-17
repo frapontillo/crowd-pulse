@@ -19,9 +19,9 @@ package net.frakbot.crowdpulse.playground.cli;
 import net.frakbot.crowdpulse.common.util.GenericAnalysisParameters;
 import net.frakbot.crowdpulse.common.util.rx.BackpressureAsyncTransformer;
 import net.frakbot.crowdpulse.common.util.rx.SubscriptionGroupLatch;
+import net.frakbot.crowdpulse.common.util.spi.IPlugin;
 import net.frakbot.crowdpulse.data.entity.Profile;
 import net.frakbot.crowdpulse.data.rx.BufferedProfileListObserver;
-import net.frakbot.crowdpulse.fixgeoprofile.IProfileGeoFixer;
 import net.frakbot.crowdpulse.fixgeoprofile.googlemaps.GoogleMapsProfileGeoFixer;
 import rx.Observable;
 import rx.Subscription;
@@ -36,7 +36,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class ProfileGeoFixMain {
     private SubscriptionGroupLatch allSubscriptions;
-    private IProfileGeoFixer profileGeoFixer;
+    private IPlugin<Profile> profileGeoFixer;
 
     public static void main(String[] args) throws IOException {
         ProfileGeoFixMain main = new ProfileGeoFixMain();
@@ -50,7 +50,7 @@ public class ProfileGeoFixMain {
 
         ConnectableObservable<Profile> profiles = candidates
                 .compose(new BackpressureAsyncTransformer<>())
-                .map(profileGeoFixer::geoFixProfile)
+                .compose(profileGeoFixer.transform())
                 .publish();
         Observable<List<Profile>> bufferedProfiles = profiles.buffer(10, TimeUnit.SECONDS, 3);
 

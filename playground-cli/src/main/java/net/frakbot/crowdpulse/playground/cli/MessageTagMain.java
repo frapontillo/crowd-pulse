@@ -19,11 +19,11 @@ package net.frakbot.crowdpulse.playground.cli;
 import net.frakbot.crowdpulse.common.util.GenericAnalysisParameters;
 import net.frakbot.crowdpulse.common.util.rx.BackpressureAsyncTransformer;
 import net.frakbot.crowdpulse.common.util.rx.SubscriptionGroupLatch;
+import net.frakbot.crowdpulse.common.util.spi.IPlugin;
 import net.frakbot.crowdpulse.data.entity.Message;
 import net.frakbot.crowdpulse.data.entity.Tag;
 import net.frakbot.crowdpulse.data.rx.BufferedMessageListObserver;
 import net.frakbot.crowdpulse.data.rx.BufferedTagListObserver;
-import net.frakbot.crowdpulse.tag.ITagger;
 import net.frakbot.crowdpulse.tag.babelfy.BabelfyTagger;
 import rx.Observable;
 import rx.Subscription;
@@ -38,7 +38,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class MessageTagMain {
     private SubscriptionGroupLatch allSubscriptions;
-    private ITagger tagger;
+    private IPlugin<Message> tagger;
 
     public static void main(String[] args) throws IOException {
         MessageTagMain main = new MessageTagMain();
@@ -52,7 +52,7 @@ public class MessageTagMain {
 
         ConnectableObservable<Message> messages = candidates
                 .compose(new BackpressureAsyncTransformer<>())
-                .map(tagger::tagMessage)
+                .compose(tagger.transform())
                 .publish();
         Observable<List<Message>> bufferedMessages = messages.buffer(10, TimeUnit.SECONDS, 3);
 

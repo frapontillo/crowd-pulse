@@ -19,10 +19,10 @@ package net.frakbot.crowdpulse.playground.cli;
 import net.frakbot.crowdpulse.common.util.GenericAnalysisParameters;
 import net.frakbot.crowdpulse.common.util.rx.BackpressureAsyncTransformer;
 import net.frakbot.crowdpulse.common.util.rx.SubscriptionGroupLatch;
+import net.frakbot.crowdpulse.common.util.spi.IPlugin;
 import net.frakbot.crowdpulse.data.entity.Message;
 import net.frakbot.crowdpulse.data.rx.BufferedMessageListObserver;
 import net.frakbot.crowdpulse.fixgeomessage.fromprofile.FromProfileMessageGeoFixer;
-import net.frakbot.crowdpulse.fixgeomessage.IMessageGeoFixer;
 import rx.Observable;
 import rx.Subscription;
 import rx.observables.ConnectableObservable;
@@ -36,7 +36,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class MessageGeoFixMain {
     private SubscriptionGroupLatch allSubscriptions;
-    private IMessageGeoFixer messageGeoFixer;
+    private IPlugin<Message> messageGeoFixer;
 
     public static void main(String[] args) throws IOException {
         MessageGeoFixMain main = new MessageGeoFixMain();
@@ -50,7 +50,7 @@ public class MessageGeoFixMain {
 
         ConnectableObservable<Message> messages = candidates
                 .compose(new BackpressureAsyncTransformer<>())
-                .map(messageGeoFixer::geoFixMessage)
+                .compose(messageGeoFixer.transform())
                 .publish();
         Observable<List<Message>> bufferedMessages = messages.buffer(10, TimeUnit.SECONDS, 3);
 

@@ -16,16 +16,19 @@
 
 package net.frakbot.crowdpulse.lemmatize.multi;
 
+import net.frakbot.crowdpulse.common.util.spi.IPlugin;
+import net.frakbot.crowdpulse.common.util.spi.ISingleablePlugin;
+import net.frakbot.crowdpulse.common.util.spi.PluginProvider;
 import net.frakbot.crowdpulse.data.entity.Message;
 import net.frakbot.crowdpulse.data.entity.Token;
-import net.frakbot.crowdpulse.lemmatize.ILemmatizer;
-import net.frakbot.crowdpulse.lemmatize.spi.LemmatizerProvider;
+import net.frakbot.crowdpulse.lemmatize.ILemmatizerOperator;
+import rx.Observable;
 
 import java.util.HashMap;
 import java.util.List;
 
 /**
- * A multi-language implementation for {@link ILemmatizer}.
+ * A multi-language implementation for {@link IPlugin<Message>}.
  *
  * When a {@link Message} goes through the lemmatization process, the concrete implementation is searched for in the
  * following (ordered) locations:
@@ -43,11 +46,11 @@ import java.util.List;
  *
  * @author Francesco Pontillo
  */
-public class MultiLanguageLemmatizer extends ILemmatizer {
-    private final String LEMMATIZER_IMPL = "multi";
-    private final String LEMMATIZER_WILDCARD = "*";
+public class MultiLanguageLemmatizer extends IPlugin<Message> {
+    private final static String LEMMATIZER_IMPL = "multi";
+    private final static String LEMMATIZER_WILDCARD = "*";
     private final HashMap<String, String> lemmatizerMap;
-    private final HashMap<String, ILemmatizer> lemmatizers;
+    private final HashMap<String, IPlugin<Message>> lemmatizers;
 
     public MultiLanguageLemmatizer() {
         lemmatizerMap = new HashMap<>();
@@ -64,18 +67,25 @@ public class MultiLanguageLemmatizer extends ILemmatizer {
         lemmatizers = new HashMap<>();
     }
 
-    @Override public List<Token> lemmatizeMessageTokens(Message message) {
-        // find or instantiate the lemmatizer
-        ILemmatizer lemmatizer = getLemmatizerForMessage(message);
-        return lemmatizer.lemmatizeMessageTokens(message);
-    }
-
     @Override public String getName() {
         return LEMMATIZER_IMPL;
     }
 
-    private ILemmatizer getLemmatizerForMessage(Message message) {
-        ILemmatizer lemmatizer;
+    @Override public Observable.Operator<Message, Message> getOperator() {
+        return new ILemmatizerOperator() {
+            @Override public List<Token> lemmatizeMessageTokens(Message message) {
+                // find or instantiate the lemmatizer
+                IPlugin<Message> lemmatizer = getLemmatizerForMessage(message);
+                if (lemmatizer instanceof ISingleablePlugin) {
+                    return ((ISingleablePlugin<Message>) lemmatizer).singleProcess(message).getTokens();
+                }
+                return null;
+            }
+        };
+    }
+
+    private IPlugin<Message> getLemmatizerForMessage(Message message) {
+        IPlugin<Message> lemmatizer;
         String lang = message.getLanguage();
         // find or instantiate the lemmatizer
         if ((lemmatizer = lemmatizers.get(lang)) == null) {
@@ -86,10 +96,14 @@ public class MultiLanguageLemmatizer extends ILemmatizer {
                 lemmatizerIdentifier = "lemmatizer-" + lang;
             }
             // look for the lemmatizer implementation in the SPI
-            lemmatizer = LemmatizerProvider.getPluginByName(lemmatizerIdentifier);
+            try {
+                lemmatizer = PluginProvider.getPlugin(lemmatizerIdentifier);
+            } catch (ClassNotFoundException ignored) {}
             // if the lemmatizer isn't provided by the SPI, use the one provided for every language, as "*"
             if (lemmatizer == null) {
-                lemmatizer = LemmatizerProvider.getPluginByName(lemmatizerMap.get(LEMMATIZER_WILDCARD));
+                try {
+                    lemmatizer = PluginProvider.getPlugin(lemmatizerMap.get(LEMMATIZER_WILDCARD));
+                } catch (ClassNotFoundException ignored) {}
             }
             lemmatizers.put(lang, lemmatizer);
         }

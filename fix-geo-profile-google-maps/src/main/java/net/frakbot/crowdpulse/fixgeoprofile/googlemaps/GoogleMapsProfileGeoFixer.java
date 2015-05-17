@@ -19,8 +19,10 @@ package net.frakbot.crowdpulse.fixgeoprofile.googlemaps;
 import com.google.maps.GeoApiContext;
 import com.google.maps.GeocodingApi;
 import com.google.maps.model.GeocodingResult;
+import net.frakbot.crowdpulse.common.util.spi.IPlugin;
 import net.frakbot.crowdpulse.data.entity.Profile;
-import net.frakbot.crowdpulse.fixgeoprofile.IProfileGeoFixer;
+import net.frakbot.crowdpulse.fixgeoprofile.IProfileGeoFixerOperator;
+import rx.Observable;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -29,33 +31,37 @@ import java.util.Properties;
 /**
  * @author Francesco Pontillo
  */
-public class GoogleMapsProfileGeoFixer extends IProfileGeoFixer {
-    private final String GEOFIXER_IMPL = "googlemaps";
-    private final String PROP_GEOCODING_APIKEY = "geocoding.apiKey";
+public class GoogleMapsProfileGeoFixer extends IPlugin<Profile> {
+    private final static String GEOFIXER_IMPL = "googlemaps";
+    private final static String PROP_GEOCODING_APIKEY = "geocoding.apiKey";
     private final GeoApiContext context;
 
     public GoogleMapsProfileGeoFixer() {
         context = new GeoApiContext().setApiKey(readApiKey());
     }
 
-    @Override public Double[] getCoordinates(Profile profile) {
-        GeocodingResult[] results = null;
-        Double[] coordinates = null;
-        // attempt a forward geocoding (from address to lat-lng)
-        try {
-            results = GeocodingApi.newRequest(context).address(profile.getLocation()).await();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        // edit and notify the profile only if lat-lng coordinates were found
-        if (results != null && results.length > 0) {
-            coordinates = new Double[] { results[0].geometry.location.lat, results[0].geometry.location.lng };
-        }
-        return coordinates;
-    }
-
     @Override public String getName() {
         return GEOFIXER_IMPL;
+    }
+
+    @Override public Observable.Operator<Profile, Profile> getOperator() {
+        return new IProfileGeoFixerOperator() {
+            @Override public Double[] getCoordinates(Profile profile) {
+                GeocodingResult[] results = null;
+                Double[] coordinates = null;
+                // attempt a forward geocoding (from address to lat-lng)
+                try {
+                    results = GeocodingApi.newRequest(context).address(profile.getLocation()).await();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                // edit and notify the profile only if lat-lng coordinates were found
+                if (results != null && results.length > 0) {
+                    coordinates = new Double[] { results[0].geometry.location.lat, results[0].geometry.location.lng };
+                }
+                return coordinates;
+            }
+        };
     }
 
     private String readApiKey() {

@@ -19,9 +19,9 @@ package net.frakbot.crowdpulse.playground.cli;
 import net.frakbot.crowdpulse.common.util.GenericAnalysisParameters;
 import net.frakbot.crowdpulse.common.util.rx.BackpressureAsyncTransformer;
 import net.frakbot.crowdpulse.common.util.rx.SubscriptionGroupLatch;
+import net.frakbot.crowdpulse.common.util.spi.IPlugin;
 import net.frakbot.crowdpulse.data.entity.Message;
 import net.frakbot.crowdpulse.data.rx.BufferedMessageListObserver;
-import net.frakbot.crowdpulse.lemmatize.ILemmatizer;
 import net.frakbot.crowdpulse.lemmatize.multi.MultiLanguageLemmatizer;
 import rx.Observable;
 import rx.Subscription;
@@ -36,7 +36,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class MessageLemmatizeMain {
     private SubscriptionGroupLatch allSubscriptions;
-    private ILemmatizer lemmatizer;
+    private IPlugin<Message> lemmatizer;
 
     public static void main(String[] args) throws IOException {
         MessageLemmatizeMain main = new MessageLemmatizeMain();
@@ -50,7 +50,7 @@ public class MessageLemmatizeMain {
 
         ConnectableObservable<Message> messages = candidates
                 .compose(new BackpressureAsyncTransformer<>())
-                .map(lemmatizer::lemmatizeMessage)
+                .compose(lemmatizer.transform())
                 .publish();
         Observable<List<Message>> bufferedMessages = messages.buffer(10, TimeUnit.SECONDS, 3);
 

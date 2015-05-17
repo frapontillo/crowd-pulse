@@ -17,24 +17,39 @@
 package net.frakbot.crowdpulse.lemmatize.corenlp;
 
 import edu.stanford.nlp.process.Morphology;
+import net.frakbot.crowdpulse.common.util.spi.ISingleablePlugin;
 import net.frakbot.crowdpulse.data.entity.Message;
 import net.frakbot.crowdpulse.data.entity.Token;
-import net.frakbot.crowdpulse.lemmatize.ILemmatizer;
+import net.frakbot.crowdpulse.lemmatize.ILemmatizerOperator;
+import rx.Observable;
 
 import java.util.List;
 
 /**
  * @author Francesco Pontillo
  */
-public class CoreNLPLemmatizer extends ILemmatizer {
-    private final String LEMMATIZER_IMPL = "stanford";
+public class CoreNLPLemmatizer extends ISingleablePlugin<Message> {
+    private final static String LEMMATIZER_IMPL = "stanford";
     private final Morphology morphology;
 
     public CoreNLPLemmatizer() {
         morphology = new Morphology();
     }
 
-    @Override public List<Token> lemmatizeMessageTokens(Message message) {
+    @Override public String getName() {
+        return LEMMATIZER_IMPL;
+    }
+
+    @Override public Observable.Operator<Message, Message> getOperator() {
+        CoreNLPLemmatizer currentLemmatizer = this;
+        return new ILemmatizerOperator() {
+            @Override public List<Token> lemmatizeMessageTokens(Message message) {
+                return currentLemmatizer.singleProcess(message).getTokens();
+            }
+        };
+    }
+
+    @Override public Message singleProcess(Message message) {
         if (message.getTokens() != null) {
             message.getTokens().forEach(token -> {
                 if (!token.isStopWord()) {
@@ -43,10 +58,6 @@ public class CoreNLPLemmatizer extends ILemmatizer {
                 }
             });
         }
-        return message.getTokens();
-    }
-
-    @Override public String getName() {
-        return LEMMATIZER_IMPL;
+        return message;
     }
 }

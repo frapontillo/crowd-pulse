@@ -17,13 +17,11 @@
 package net.frakbot.crowdpulse.sentiment.sentiwordnet;
 
 import net.frakbot.crowdpulse.common.util.StringUtil;
+import net.frakbot.crowdpulse.common.util.spi.IPlugin;
 import net.frakbot.crowdpulse.data.entity.Message;
 import net.frakbot.crowdpulse.data.entity.Token;
-import net.frakbot.crowdpulse.sentiment.ISentimentAnalyzer;
+import net.frakbot.crowdpulse.sentiment.ISentimentAnalyzerOperator;
 import rx.Observable;
-import rx.Subscriber;
-import rx.functions.Func1;
-import rx.observers.SafeSubscriber;
 
 /**
  * Sentiment Analyzer based on MultiWordNet and SentiWordNet.
@@ -46,7 +44,7 @@ import rx.observers.SafeSubscriber;
  *
  * @author Francesco Pontillo
  */
-public class SentiWordNetSentimentAnalyzer extends ISentimentAnalyzer {
+public class SentiWordNetSentimentAnalyzer extends IPlugin<Message> {
     private final static String SENTIMENT_IMPL = "sentiwordnet";
     private final MultiWordNet multiWordNet;
     private final SentiWordNet sentiWordNet;
@@ -60,52 +58,27 @@ public class SentiWordNetSentimentAnalyzer extends ISentimentAnalyzer {
         return SENTIMENT_IMPL;
     }
 
-    @Override public Observable<Message> process(Observable<Message> messages) {
-        messages = messages.lift(new SimpleMessageOperator(this::processMessage));
-        return messages;
-    }
-
-    private Message processMessage(Message message) {
-        double totalScore = 0;
-        if (message.getTokens() == null) {
-            return message;
-        }
-        for (Token token : message.getTokens()) {
-            if (!StringUtil.isNullOrEmpty(token.getLemma())) {
-                // retrieve and optionally filter the synsets according to WordNet POS tags
-                String[] synsets = multiWordNet.getSynsets(token.getLemma(), message.getLanguage(), token.getSimplePos());
-                // TODO: add weights for simple POS according to some specific configuration
-                double synsetScore = sentiWordNet.getScore(synsets);
-                totalScore += synsetScore;
-                token.setScore(synsetScore);
+    @Override protected Observable.Operator<Message, Message> getOperator() {
+        return new ISentimentAnalyzerOperator() {
+            @Override public Message sentimentAnalyze(Message message) {
+                double totalScore = 0;
+                if (message.getTokens() == null) {
+                    return message;
+                }
+                for (Token token : message.getTokens()) {
+                    if (!StringUtil.isNullOrEmpty(token.getLemma())) {
+                        // retrieve and optionally filter the synsets according to WordNet POS tags
+                        String[] synsets = multiWordNet.getSynsets(token.getLemma(), message.getLanguage(), token.getSimplePos());
+                        // TODO: add weights for simple POS according to some specific configuration
+                        double synsetScore = sentiWordNet.getScore(synsets);
+                        totalScore += synsetScore;
+                        token.setScore(synsetScore);
+                    }
+                }
+                message.setSentiment(totalScore / message.getTokens().size());
+                return message;
             }
-        }
-        message.setSentiment(totalScore / message.getTokens().size());
-        return message;
-    }
-
-    public class SimpleMessageOperator implements Observable.Operator<Message, Message> {
-        private Func1<Message, Message> transformFn;
-
-        public SimpleMessageOperator(Func1<Message, Message> transformFn) {
-            this.transformFn = transformFn;
-        }
-
-        @Override public Subscriber<? super Message> call(Subscriber<? super Message> subscriber) {
-            return new SafeSubscriber<>(new Subscriber<Message>() {
-                @Override public void onCompleted() {
-                    subscriber.onCompleted();
-                }
-
-                @Override public void onError(Throwable e) {
-                    subscriber.onError(e);
-                }
-
-                @Override public void onNext(Message message) {
-                    subscriber.onNext(transformFn.call(message));
-                }
-            });
-        }
+        };
     }
 
 }

@@ -16,9 +16,12 @@
 
 package net.frakbot.crowdpulse.tag.babelfy;
 
+import net.frakbot.crowdpulse.common.util.spi.IPlugin;
+import net.frakbot.crowdpulse.data.entity.Message;
 import net.frakbot.crowdpulse.data.entity.Tag;
-import net.frakbot.crowdpulse.tag.ITagger;
+import net.frakbot.crowdpulse.tag.ITaggerOperator;
 import retrofit.RestAdapter;
+import rx.Observable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,39 +29,45 @@ import java.util.List;
 /**
  * @author Francesco Pontillo
  */
-public class BabelfyTagger extends ITagger {
+public class BabelfyTagger extends IPlugin<Message> {
     private final static String TAGGER_NAME = "babelfy";
+    private final static String BABELFY_ENDPOINT = "http://babelfy.io/v1";
+    private final static BabelfyService service;
 
-    private final String BABELFY_ENDPOINT = "http://babelfy.io/v1";
-
-    @Override public String getName() {
-        return TAGGER_NAME;
-    }
-
-    @Override protected List<Tag> getTagsImpl(String text, String language) {
+    static {
         // build the REST client
         RestAdapter restAdapter = new RestAdapter.Builder()
                 .setEndpoint(BABELFY_ENDPOINT)
                 .setRequestInterceptor(new BabelfyInterceptor())
                 .build();
-        BabelfyService service = restAdapter.create(BabelfyService.class);
+        service = restAdapter.create(BabelfyService.class);
+    }
 
-        BabelfyResponse response;
+    @Override public String getName() {
+        return TAGGER_NAME;
+    }
 
-        List<Tag> tags = new ArrayList<Tag>();
-        try {
-            response = service.tag(text, language != null ? language.toUpperCase() : null);
-            for (String annotation : response.getTags(text)) {
-                Tag tag = new Tag();
-                tag.setText(annotation);
-                tags.add(tag);
+    @Override protected Observable.Operator<Message, Message> getOperator() {
+        return new ITaggerOperator() {
+            @Override protected List<Tag> getTagsImpl(String text, String language) {
+                BabelfyResponse response;
+                List<Tag> tags = new ArrayList<>();
+                try {
+                    response = service.tag(text, language != null ? language.toUpperCase() : null);
+                    for (String annotation : response.getTags(text)) {
+                        Tag tag = new Tag();
+                        tag.setText(annotation);
+                        tag.addSource(getName());
+                        tags.add(tag);
+                    }
+                } catch (Exception e) {
+                    // ignored
+                    System.err.println(e);
+                }
+
+                // publish the tags as a connectable observable
+                return tags;
             }
-        } catch (Exception e) {
-            // ignored
-            System.err.println(e);
-        }
-
-        // publish the tags as a connectable observable
-        return tags;
+        };
     }
 }

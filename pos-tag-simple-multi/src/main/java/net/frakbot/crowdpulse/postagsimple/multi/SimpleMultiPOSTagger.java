@@ -16,10 +16,13 @@
 
 package net.frakbot.crowdpulse.postagsimple.multi;
 
+import net.frakbot.crowdpulse.common.util.spi.IPlugin;
+import net.frakbot.crowdpulse.common.util.spi.ISingleablePlugin;
+import net.frakbot.crowdpulse.common.util.spi.PluginProvider;
 import net.frakbot.crowdpulse.data.entity.Message;
 import net.frakbot.crowdpulse.data.entity.Token;
-import net.frakbot.crowdpulse.postagsimple.ISimplePOSTagger;
-import net.frakbot.crowdpulse.postagsimple.spi.SimplePOSTaggerProvider;
+import net.frakbot.crowdpulse.postagsimple.ISimplePOSTaggerOperator;
+import rx.Observable;
 
 import java.util.List;
 
@@ -29,22 +32,36 @@ import java.util.List;
  *
  * @author Francesco Pontillo
  */
-public class SimpleMultiPOSTagger extends ISimplePOSTagger {
-    private final String SIMPLEPOSTAGGER_IMPL = "simplepostagger-multi";
+public class SimpleMultiPOSTagger extends IPlugin<Message> {
+    private static final String SIMPLEPOSTAGGER_IMPL = "simplepostagger-multi";
 
     @Override public String getName() {
         return SIMPLEPOSTAGGER_IMPL;
     }
 
-    @Override public List<Token> simplePosTagMessageTokens(Message message) {
+    @Override public Observable.Operator<Message, Message> getOperator() {
+        SimpleMultiPOSTagger actualTagger = this;
+        return new ISimplePOSTaggerOperator() {
+            @Override public List<Token> posTagMessageTokens(Message message) {
+                return actualTagger.simplePosTagMessageTokens(message);
+            }
+        };
+    }
+
+    private List<Token> simplePosTagMessageTokens(Message message) {
         if (message.getTokens() == null) {
             return null;
         }
         String language = message.getLanguage();
-        ISimplePOSTagger actualTagger = SimplePOSTaggerProvider.getPluginByName("simplepostagger-" + language);
-        if (actualTagger == null) {
-            return message.getTokens();
+        IPlugin<Message> actualTagger = null;
+        try {
+            actualTagger = PluginProvider.getPlugin("simplepostagger-" + language);
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
         }
-        return actualTagger.simplePosTagMessageTokens(message);
+        if (actualTagger != null && actualTagger instanceof ISingleablePlugin) {
+            return ((ISingleablePlugin<Message>) actualTagger).singleProcess(message).getTokens();
+        }
+        return message.getTokens();
     }
 }

@@ -212,6 +212,7 @@ public class TwitterExtractorRunner {
                     // "since" threshold, all following tweets are too, so we can exit the loop and complete
                     if (!Checker.checkSinceDate(parameters).call(message)) {
                         paging = null;
+                        break;
                     }
                 }
 

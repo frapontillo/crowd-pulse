@@ -19,9 +19,9 @@ package net.frakbot.crowdpulse.playground.cli;
 import net.frakbot.crowdpulse.common.util.GenericAnalysisParameters;
 import net.frakbot.crowdpulse.common.util.rx.BackpressureAsyncTransformer;
 import net.frakbot.crowdpulse.common.util.rx.SubscriptionGroupLatch;
+import net.frakbot.crowdpulse.common.util.spi.IPlugin;
 import net.frakbot.crowdpulse.data.entity.Message;
 import net.frakbot.crowdpulse.data.rx.BufferedMessageListObserver;
-import net.frakbot.crowdpulse.postag.IPOSTagger;
 import net.frakbot.crowdpulse.postag.opennlp.OpenNLPPOSTagger;
 import rx.Observable;
 import rx.Subscription;
@@ -36,7 +36,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class MessagePOSTagMain {
     private SubscriptionGroupLatch allSubscriptions;
-    private IPOSTagger posTagger;
+    private IPlugin<Message> posTagger;
 
     public static void main(String[] args) throws IOException {
         MessagePOSTagMain main = new MessagePOSTagMain();
@@ -50,7 +50,7 @@ public class MessagePOSTagMain {
 
         ConnectableObservable<Message> messages = candidates
                 .compose(new BackpressureAsyncTransformer<>())
-                .map(posTagger::posTagMessage)
+                .compose(posTagger.transform())
                 .publish();
         Observable<List<Message>> bufferedMessages = messages.buffer(10, TimeUnit.SECONDS, 3);
 

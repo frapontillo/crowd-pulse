@@ -16,19 +16,34 @@
 
 package net.frakbot.crowdpulse.postagsimple.it;
 
+import net.frakbot.crowdpulse.common.util.spi.ISingleablePlugin;
 import net.frakbot.crowdpulse.data.entity.Message;
 import net.frakbot.crowdpulse.data.entity.Token;
-import net.frakbot.crowdpulse.postagsimple.ISimplePOSTagger;
+import net.frakbot.crowdpulse.postagsimple.ISimplePOSTaggerOperator;
+import rx.Observable;
 
 import java.util.List;
 
 /**
  * @author Francesco Pontillo
  */
-public class ItalianSimplePOSTagger extends ISimplePOSTagger {
+public class ItalianSimplePOSTagger extends ISingleablePlugin<Message> {
     private final static String SIMPLEPOSTAGGER_IMPL = "simplepostagger-it";
 
-    @Override public List<Token> simplePosTagMessageTokens(Message message) {
+    @Override public String getName() {
+        return SIMPLEPOSTAGGER_IMPL;
+    }
+
+    @Override public Observable.Operator<Message, Message> getOperator() {
+        ItalianSimplePOSTagger actualTagger = this;
+        return new ISimplePOSTaggerOperator() {
+            @Override public List<Token> posTagMessageTokens(Message message) {
+                return actualTagger.singleProcess(message).getTokens();
+            }
+        };
+    }
+
+    @Override public Message singleProcess(Message message) {
         if (message.getTokens() == null) {
             return null;
         }
@@ -48,10 +63,6 @@ public class ItalianSimplePOSTagger extends ISimplePOSTagger {
             token.setSimplePos(simplePos);
         }
 
-        return message.getTokens();
-    }
-
-    @Override public String getName() {
-        return SIMPLEPOSTAGGER_IMPL;
+        return message;
     }
 }

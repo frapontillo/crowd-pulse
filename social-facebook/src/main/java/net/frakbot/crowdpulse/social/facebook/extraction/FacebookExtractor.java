@@ -89,7 +89,7 @@ public class FacebookExtractor extends IExtractor {
     }
 
     @Override public ConnectableObservable<Message> getMessages(ExtractionParameters parameters) {
-        Observable<Message> messages = null;
+        Observable<Message> messages;
 
         // validate parameters
         try {
@@ -109,5 +109,10 @@ public class FacebookExtractor extends IExtractor {
             runner = new FacebookExtractorRunner();
         }
         return runner;
+    }
+
+    @Override protected Observable.Operator<Message, Message> getOperator() {
+        // TODO: URGENT, FIX THIS!
+        return null;
     }
 }

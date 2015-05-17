@@ -29,7 +29,7 @@ import java.util.List;
 /**
  * @author Francesco
  */
-public abstract class IExtractor implements IPlugin {
+public abstract class IExtractor extends IPlugin<Message> {
     /**
      * Returns the maximum number of parameters that this extractor supports per each query.
      *

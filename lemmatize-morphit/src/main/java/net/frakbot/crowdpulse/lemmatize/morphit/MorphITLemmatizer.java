@@ -16,10 +16,12 @@
 
 package net.frakbot.crowdpulse.lemmatize.morphit;
 
+import net.frakbot.crowdpulse.common.util.spi.ISingleablePlugin;
 import net.frakbot.crowdpulse.data.entity.Message;
 import net.frakbot.crowdpulse.data.entity.Token;
-import net.frakbot.crowdpulse.lemmatize.ILemmatizer;
+import net.frakbot.crowdpulse.lemmatize.ILemmatizerOperator;
 import org.apache.commons.io.IOUtils;
+import rx.Observable;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -42,7 +44,7 @@ import java.util.regex.Pattern;
  *
  * @author Francesco Pontillo
  */
-public class MorphITLemmatizer extends ILemmatizer {
+public class MorphITLemmatizer extends ISingleablePlugin<Message> {
     private static final Pattern spacePattern = Pattern.compile("\\s+");
     private static final String LEMMATIZER_IMPL = "lemmatizer-it";
 
@@ -101,10 +103,19 @@ public class MorphITLemmatizer extends ILemmatizer {
         return LEMMATIZER_IMPL;
     }
 
-    @Override public List<Token> lemmatizeMessageTokens(Message message) {
+    @Override public Observable.Operator<Message, Message> getOperator() {
+        MorphITLemmatizer currentLemmatizer = this;
+        return new ILemmatizerOperator() {
+            @Override public List<Token> lemmatizeMessageTokens(Message message) {
+                return currentLemmatizer.singleProcess(message).getTokens();
+            }
+        };
+    }
+
+    @Override public Message singleProcess(Message message) {
         List<Token> tokens = message.getTokens();
         tokens.forEach(this::lemmatizeToken);
-        return tokens;
+        return message;
     }
 
     private void lemmatizeToken(Token token) {
@@ -139,7 +150,5 @@ public class MorphITLemmatizer extends ILemmatizer {
         }
 
         token.setLemma(lemma);
-
     }
-
 }

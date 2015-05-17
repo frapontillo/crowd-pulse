@@ -21,19 +21,20 @@ import java.util.ServiceLoader;
 /**
  * @author Francesco Pontillo
  */
-public abstract class PluginProvider<T extends IPlugin> {
-    protected ServiceLoader<T> serviceLoader;
+public class PluginProvider {
+    private final static ServiceLoader<IPlugin> serviceLoader;
 
-    protected PluginProvider(Class<T> clazz) {
-        serviceLoader = ServiceLoader.load(clazz);
+    static {
+        serviceLoader = ServiceLoader.load(IPlugin.class);
     }
 
-    protected T getPlugin(String name) {
-        for (T implementation : serviceLoader) {
+    public static <E, T extends IPlugin<E>> T getPlugin(String name) throws ClassNotFoundException {
+        for (IPlugin implementation : serviceLoader) {
+            // TODO: implement a better criteria-based loading logic
             if (implementation.getName().equals(name)) {
-                return implementation;
+                return (T) implementation;
             }
         }
-        return null;
+        throw new ClassNotFoundException("Can't found a valid implementation for plugin named \"" + name + "\"");
     }
 }

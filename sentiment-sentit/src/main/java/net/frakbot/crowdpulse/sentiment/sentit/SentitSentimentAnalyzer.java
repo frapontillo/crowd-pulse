@@ -19,8 +19,8 @@ package net.frakbot.crowdpulse.sentiment.sentit;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import net.frakbot.crowdpulse.common.util.rx.Transformers;
+import net.frakbot.crowdpulse.common.util.spi.IPlugin;
 import net.frakbot.crowdpulse.data.entity.Message;
-import net.frakbot.crowdpulse.sentiment.ISentimentAnalyzer;
 import net.frakbot.crowdpulse.sentiment.sentit.rest.*;
 import retrofit.RestAdapter;
 import retrofit.RetrofitError;
@@ -34,13 +34,13 @@ import java.util.List;
 /**
  * @author Francesco Pontillo
  */
-public class SentitSentimentAnalyzer extends ISentimentAnalyzer {
+public class SentitSentimentAnalyzer extends IPlugin<Message> {
     private final static String SENTIMENT_IMPL = "sentit";
     private final static String SENTIT_ENDPOINT = "http://sentit.cloudapp.net:9100/sentit/v2";
-    private final int MAX_MESSAGES_PER_REQ = 10;
-    private final SentitService service;
+    private final static int MAX_MESSAGES_PER_REQ = 10;
+    private final static SentitService service;
 
-    public SentitSentimentAnalyzer() {
+    static {
         // build the Gson deserializers collection
         Gson gson = new GsonBuilder()
                 .registerTypeAdapter(SentitResponse.SentitResultMap.class, new SentitResultMapDeserializer())
@@ -54,16 +54,26 @@ public class SentitSentimentAnalyzer extends ISentimentAnalyzer {
         service = restAdapter.create(SentitService.class);
     }
 
-    @Override public Observable<Message> process(Observable<Message> messages) {
-        // split the messages into processable bundles (Sentit imposes limits on messages-per-request)
-        Observable<List<Message>> bufferedMessages = messages.buffer(MAX_MESSAGES_PER_REQ);
-        bufferedMessages = bufferedMessages.lift(new SentitOperator());
-        // flatten the sequence of Observables back into one single Observable
-        return bufferedMessages.compose(Transformers.flatten());
-    }
-
     @Override public String getName() {
         return SENTIMENT_IMPL;
+    }
+
+    /**
+     * This plugin doesn't give any {@link rx.Observable.Operator} as output, as it will only expose a custom
+     * {@link rx.Observable.Transformer} that has to be applied to a stream of {@link Message}s.
+     *
+     * @return Always {@code null}.
+     */
+    @Override public Observable.Operator<Message, Message> getOperator() {
+        return null;
+    }
+
+    @Override public Observable.Transformer<Message, Message> transform() {
+        return messages -> messages
+                .buffer(MAX_MESSAGES_PER_REQ)
+                .lift(new SentitOperator())
+                // flatten the sequence of Observables back into one single Observable
+                .compose(Transformers.flatten());
     }
 
     private class SentitOperator implements Observable.Operator<List<Message>, List<Message>> {

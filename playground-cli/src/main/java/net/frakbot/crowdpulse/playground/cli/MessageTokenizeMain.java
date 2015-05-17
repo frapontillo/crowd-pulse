@@ -19,9 +19,9 @@ package net.frakbot.crowdpulse.playground.cli;
 import net.frakbot.crowdpulse.common.util.GenericAnalysisParameters;
 import net.frakbot.crowdpulse.common.util.rx.BackpressureAsyncTransformer;
 import net.frakbot.crowdpulse.common.util.rx.SubscriptionGroupLatch;
+import net.frakbot.crowdpulse.common.util.spi.IPlugin;
 import net.frakbot.crowdpulse.data.entity.Message;
 import net.frakbot.crowdpulse.data.rx.BufferedMessageListObserver;
-import net.frakbot.crowdpulse.tokenize.ITokenizer;
 import net.frakbot.crowdpulse.tokenize.opennlp.OpenNLPTokenizer;
 import rx.Observable;
 import rx.Subscription;
@@ -36,7 +36,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class MessageTokenizeMain {
     private SubscriptionGroupLatch allSubscriptions;
-    private ITokenizer tokenizer;
+    private IPlugin<Message> tokenizer;
 
     public static void main(String[] args) throws IOException {
         MessageTokenizeMain main = new MessageTokenizeMain();
@@ -50,7 +50,7 @@ public class MessageTokenizeMain {
 
         ConnectableObservable<Message> messages = candidates
                 .compose(new BackpressureAsyncTransformer<>())
-                .map(tokenizer::tokenize)
+                .compose(tokenizer.transform())
                 .publish();
         Observable<List<Message>> bufferedMessages = messages.buffer(10, TimeUnit.SECONDS, 3);
 

@@ -36,6 +36,7 @@ public class CrowdLogger {
     }
 
     public static org.apache.logging.log4j.Logger getLogger(String loggerName) {
+        System.setProperty("log4j.configurationFile", "log4j2.json");
         org.apache.logging.log4j.Logger logger = LogManager.getLogger(loggerName);
         LoggerContext ctx = (LoggerContext) LogManager.getContext(false);
         Configuration config = ctx.getConfiguration();

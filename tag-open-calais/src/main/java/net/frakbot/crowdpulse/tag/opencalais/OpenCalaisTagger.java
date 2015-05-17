@@ -18,10 +18,13 @@ package net.frakbot.crowdpulse.tag.opencalais;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import net.frakbot.crowdpulse.common.util.spi.IPlugin;
+import net.frakbot.crowdpulse.data.entity.Message;
 import net.frakbot.crowdpulse.data.entity.Tag;
-import net.frakbot.crowdpulse.tag.ITagger;
+import net.frakbot.crowdpulse.tag.ITaggerOperator;
 import retrofit.RestAdapter;
 import retrofit.converter.GsonConverter;
+import rx.Observable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,17 +33,12 @@ import java.util.List;
  * @see {@link "http://www.opencalais.com/documentation/calais-web-service-api/api-invocation/rest"}
  * @author Francesco Pontillo
  */
-public class OpenCalaisTagger extends ITagger {
+public class OpenCalaisTagger extends IPlugin<Message> {
     private final static String TAGGER_NAME = "opencalais";
+    private final static String OPEN_CALAIS_ENDPOINT = "http://api.opencalais.com/tag/rs";
+    private final static OpenCalaisService service;
 
-    private final String OPEN_CALAIS_ENDPOINT = "http://api.opencalais.com/tag/rs";
-
-    @Override public String getName() {
-        return TAGGER_NAME;
-    }
-
-    @Override public List<Tag> getTagsImpl(String text, String language) {
-
+    static {
         Gson gson = new GsonBuilder()
                 .registerTypeAdapter(OpenCalaisResponse.class, new OpenCalaisResponseAdapter())
                 .create();
@@ -50,23 +48,30 @@ public class OpenCalaisTagger extends ITagger {
                 .setRequestInterceptor(new OpenCalaisInterceptor())
                 .setConverter(new GsonConverter(gson))
                 .build();
-        OpenCalaisService service = restAdapter.create(OpenCalaisService.class);
+        service = restAdapter.create(OpenCalaisService.class);
+    }
 
-        OpenCalaisResponse response;
+    @Override public String getName() {
+        return TAGGER_NAME;
+    }
 
-        List<Tag> tags = new ArrayList<Tag>();
-        try {
-            response = service.tag(text);
-            for (String entity : response.getEntities()) {
-                Tag tag = new Tag();
-                tag.setText(entity);
-                tags.add(tag);
+    @Override protected Observable.Operator<Message, Message> getOperator() {
+        return new ITaggerOperator() {
+            @Override protected List<Tag> getTagsImpl(String text, String language) {
+                OpenCalaisResponse response;
+                List<Tag> tags = new ArrayList<>();
+                try {
+                    response = service.tag(text);
+                    for (String entity : response.getEntities()) {
+                        Tag tag = new Tag();
+                        tag.setText(entity);
+                        tags.add(tag);
+                    }
+                } catch (Exception ignored) {}
+
+                // publish the tags as a connectable observable
+                return tags;
             }
-        } catch (Exception e) {
-            // ignored
-        }
-
-        // publish the tags as a connectable observable
-        return tags;
+        };
     }
 }

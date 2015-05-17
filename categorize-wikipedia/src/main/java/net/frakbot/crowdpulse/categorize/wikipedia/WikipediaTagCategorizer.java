@@ -18,13 +18,15 @@ package net.frakbot.crowdpulse.categorize.wikipedia;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import net.frakbot.crowdpulse.categorize.ITagCategorizer;
+import net.frakbot.crowdpulse.categorize.ITagCategorizerOperator;
 import net.frakbot.crowdpulse.categorize.wikipedia.rest.WikipediaResponse;
 import net.frakbot.crowdpulse.categorize.wikipedia.rest.WikipediaResponseDeserializer;
 import net.frakbot.crowdpulse.categorize.wikipedia.rest.WikipediaService;
+import net.frakbot.crowdpulse.common.util.spi.IPlugin;
 import net.frakbot.crowdpulse.data.entity.Tag;
 import retrofit.RestAdapter;
 import retrofit.converter.GsonConverter;
+import rx.Observable;
 
 import java.util.HashMap;
 import java.util.List;
@@ -33,10 +35,10 @@ import java.util.Map;
 /**
  * @author Francesco Pontillo
  */
-public class WikipediaTagCategorizer extends ITagCategorizer {
-    private final String TAGCATEGORIZER_IMPL = "wikipedia";
-    private final String WIKIPEDIA_ENDPOINT_1 = "http://";
-    private final String WIKIPEDIA_ENDPOINT_2 = ".wikipedia.org/w";
+public class WikipediaTagCategorizer extends IPlugin<Tag> {
+    public static final String TAGCATEGORIZER_IMPL = "wikipedia";
+    private static final String WIKIPEDIA_ENDPOINT_1 = "http://";
+    private static final String WIKIPEDIA_ENDPOINT_2 = ".wikipedia.org/w";
 
     private Gson gson;
     private Map<String, WikipediaService> wikipediaServiceMap;
@@ -46,7 +48,20 @@ public class WikipediaTagCategorizer extends ITagCategorizer {
         gson = new GsonBuilder()
                 .registerTypeAdapter(WikipediaResponse.class, new WikipediaResponseDeserializer())
                 .create();
-        wikipediaServiceMap = new HashMap<String, WikipediaService>();
+        wikipediaServiceMap = new HashMap<>();
+    }
+
+    @Override public String getName() {
+        return TAGCATEGORIZER_IMPL;
+    }
+
+    @Override public Observable.Operator<Tag, Tag> getOperator() {
+        return new ITagCategorizerOperator() {
+            @Override public List<String> getCategories(Tag tag) {
+                WikipediaService wikipediaService = getService(tag.getLanguage());
+                return wikipediaService.tag(tag.getText()).getCategories();
+            }
+        };
     }
 
     private WikipediaService getService(String language) {
@@ -61,14 +76,5 @@ public class WikipediaTagCategorizer extends ITagCategorizer {
             wikipediaServiceMap.put(language, wikipediaService);
         }
         return wikipediaService;
-    }
-
-    @Override public List<String> getCategories(Tag tag) {
-        WikipediaService wikipediaService = getService(tag.getLanguage());
-        return wikipediaService.tag(tag.getText()).getCategories();
-    }
-
-    @Override public String getName() {
-        return TAGCATEGORIZER_IMPL;
     }
 }

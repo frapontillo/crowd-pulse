@@ -113,4 +113,10 @@ public class Profile extends Entity {
     public void setLongitude(Double longitude) {
         this.longitude = longitude;
     }
+
+    @Override public String toString() {
+        return getId().toString() + ":"
+                + getSource() + ":"
+                + getUsername();
+    }
 }

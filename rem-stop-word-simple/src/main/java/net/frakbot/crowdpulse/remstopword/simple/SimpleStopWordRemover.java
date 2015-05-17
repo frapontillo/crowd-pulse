@@ -16,10 +16,12 @@
 
 package net.frakbot.crowdpulse.remstopword.simple;
 
+import net.frakbot.crowdpulse.common.util.spi.IPlugin;
 import net.frakbot.crowdpulse.data.entity.Message;
 import net.frakbot.crowdpulse.data.entity.Token;
-import net.frakbot.crowdpulse.remstopword.IStopWordRemover;
+import net.frakbot.crowdpulse.remstopword.IStopWordRemoverOperator;
 import org.apache.commons.io.IOUtils;
+import rx.Observable;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -30,8 +32,8 @@ import java.util.List;
 /**
  * @author Francesco Pontillo
  */
-public class SimpleStopWordRemover extends IStopWordRemover {
-    private final String STOPWORDREMOVER_IMPL = "simple";
+public class SimpleStopWordRemover extends IPlugin<Message> {
+    private final static String STOPWORDREMOVER_IMPL = "simple";
     private final HashMap<String, HashSet<String>> dictionaries;
     private final List<String> punctuation = Arrays.asList(".",",",":",";","?","!","(",")","[","]","{","}");
 
@@ -43,13 +45,17 @@ public class SimpleStopWordRemover extends IStopWordRemover {
         return STOPWORDREMOVER_IMPL;
     }
 
-    @Override public List<Token> stopWordRemoveMessageTokens(Message message) {
-        List<Token> tokens = message.getTokens();
-        if (tokens != null) {
-            // for each token, reset the "stop word" property by looking up the word in the proper dictionary
-            tokens.forEach(token -> token.setStopWord(isStopWord(token.getText(), message.getLanguage())));
-        }
-        return tokens;
+    @Override public Observable.Operator<Message, Message> getOperator() {
+        return new IStopWordRemoverOperator() {
+            @Override public List<Token> stopWordRemoveMessageTokens(Message message) {
+                List<Token> tokens = message.getTokens();
+                if (tokens != null) {
+                    // for each token, reset the "stop word" property by looking up the word in the proper dictionary
+                    tokens.forEach(token -> token.setStopWord(isStopWord(token.getText(), message.getLanguage())));
+                }
+                return tokens;
+            }
+        };
     }
 
     /**

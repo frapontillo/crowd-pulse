@@ -16,11 +16,13 @@
 
 package net.frakbot.crowdpulse.postag.opennlp;
 
+import net.frakbot.crowdpulse.common.util.spi.IPlugin;
 import net.frakbot.crowdpulse.data.entity.Message;
 import net.frakbot.crowdpulse.data.entity.Token;
-import net.frakbot.crowdpulse.postag.IPOSTagger;
+import net.frakbot.crowdpulse.postag.IPOSTaggerOperator;
 import opennlp.tools.postag.POSModel;
 import opennlp.tools.postag.POSTaggerME;
+import rx.Observable;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -32,8 +34,8 @@ import java.util.stream.Collectors;
 /**
  * @author Francesco Pontillo
  */
-public class OpenNLPPOSTagger extends IPOSTagger {
-    private final String POSTAGGER_IMPL = "opennlp";
+public class OpenNLPPOSTagger extends IPlugin<Message> {
+    private final static String POSTAGGER_IMPL = "opennlp";
     private Map<String, POSModel> models;
 
     public OpenNLPPOSTagger() {
@@ -44,28 +46,32 @@ public class OpenNLPPOSTagger extends IPOSTagger {
         return POSTAGGER_IMPL;
     }
 
-    @Override public List<Token> posTagMessageTokens(Message message) {
-        if (message.getTokens() == null) {
-            return null;
-        }
-        POSModel posModel = getModel(message.getLanguage());
-        if (posModel == null) {
-            return null;
-        }
-        POSTaggerME posTagger = new POSTaggerME(posModel);
+    @Override public Observable.Operator<Message, Message> getOperator() {
+        return new IPOSTaggerOperator() {
+            @Override public List<Token> posTagMessageTokens(Message message) {
+                if (message.getTokens() == null) {
+                    return null;
+                }
+                POSModel posModel = getModel(message.getLanguage());
+                if (posModel == null) {
+                    return null;
+                }
+                POSTaggerME posTagger = new POSTaggerME(posModel);
 
-        // transform the List of Tokens to an Array of Strings
-        List<String> posTagsList = message.getTokens().stream().map(Token::getText).collect(Collectors.toList());
-        String[] posTags = posTagsList.toArray(new String[posTagsList.size()]);
-        // fire up the POS-tagging, get the Token POS tags
-        posTags = posTagger.tag(posTags);
+                // transform the List of Tokens to an Array of Strings
+                List<String> posTagsList = message.getTokens().stream().map(Token::getText).collect(Collectors.toList());
+                String[] posTags = posTagsList.toArray(new String[posTagsList.size()]);
+                // fire up the POS-tagging, get the Token POS tags
+                posTags = posTagger.tag(posTags);
 
-        // associate each POS with the corresponding Token
-        for (int i = 0; i < message.getTokens().size(); i++) {
-            message.getTokens().get(i).setPos(posTags[i]);
-        }
+                // associate each POS with the corresponding Token
+                for (int i = 0; i < message.getTokens().size(); i++) {
+                    message.getTokens().get(i).setPos(posTags[i]);
+                }
 
-        return message.getTokens();
+                return message.getTokens();
+            }
+        };
     }
 
     private POSModel getModel(String language) {

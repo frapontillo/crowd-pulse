@@ -16,11 +16,11 @@
 
 package net.frakbot.crowdpulse.playground.cli;
 
-import net.frakbot.crowdpulse.categorize.ITagCategorizer;
 import net.frakbot.crowdpulse.categorize.wikipedia.WikipediaTagCategorizer;
 import net.frakbot.crowdpulse.common.util.GenericAnalysisParameters;
 import net.frakbot.crowdpulse.common.util.rx.BackpressureAsyncTransformer;
 import net.frakbot.crowdpulse.common.util.rx.SubscriptionGroupLatch;
+import net.frakbot.crowdpulse.common.util.spi.IPlugin;
 import net.frakbot.crowdpulse.data.entity.Tag;
 import net.frakbot.crowdpulse.data.rx.BufferedTagListObserver;
 import rx.Observable;
@@ -36,7 +36,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class TagCategorizeMain {
     private SubscriptionGroupLatch allSubscriptions;
-    private ITagCategorizer tagCategorizer;
+    private IPlugin<Tag> tagCategorizer;
 
     public static void main(String[] args) throws IOException {
         TagCategorizeMain main = new TagCategorizeMain();
@@ -50,7 +50,7 @@ public class TagCategorizeMain {
 
         ConnectableObservable<Tag> tags = candidates
                 .compose(new BackpressureAsyncTransformer<>())
-                .map(tagCategorizer::categorizeTag)
+                .compose(tagCategorizer.transform())
                 .publish();
         Observable<List<Tag>> bufferedTags = tags.buffer(10, TimeUnit.SECONDS, 3);
 

@@ -16,14 +16,15 @@
 
 package net.frakbot.crowdpulse.tokenize.opennlp;
 
+import net.frakbot.crowdpulse.common.util.spi.IPlugin;
 import net.frakbot.crowdpulse.data.entity.Message;
 import net.frakbot.crowdpulse.data.entity.Token;
-import net.frakbot.crowdpulse.tokenize.ITokenizer;
+import net.frakbot.crowdpulse.tokenize.ITokenizerOperator;
 import opennlp.tools.tokenize.Tokenizer;
 import opennlp.tools.tokenize.TokenizerME;
 import opennlp.tools.tokenize.TokenizerModel;
+import rx.Observable;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
@@ -35,8 +36,8 @@ import java.util.stream.Collectors;
 /**
  * @author Francesco Pontillo
  */
-public class OpenNLPTokenizer extends ITokenizer {
-    private final String TOKENIZER_IMPL = "opennlp";
+public class OpenNLPTokenizer extends IPlugin<Message> {
+    private final static String TOKENIZER_IMPL = "opennlp";
     private Map<String, TokenizerModel> models;
 
     public OpenNLPTokenizer() {
@@ -47,14 +48,18 @@ public class OpenNLPTokenizer extends ITokenizer {
         return TOKENIZER_IMPL;
     }
 
-    @Override public List<Token> getTokens(Message message) {
-        TokenizerModel tokenizerModel = getModel(message.getLanguage());
-        if (tokenizerModel == null) {
-            return null;
-        }
-        Tokenizer tokenizer = new TokenizerME(tokenizerModel);
-        List<String> tokenList = Arrays.asList(tokenizer.tokenize(message.getText()));
-        return tokenList.stream().map(Token::new).collect(Collectors.toList());
+    @Override protected Observable.Operator<Message, Message> getOperator() {
+        return new ITokenizerOperator() {
+            @Override public List<Token> getTokens(Message message) {
+                TokenizerModel tokenizerModel = getModel(message.getLanguage());
+                if (tokenizerModel == null) {
+                    return null;
+                }
+                Tokenizer tokenizer = new TokenizerME(tokenizerModel);
+                List<String> tokenList = Arrays.asList(tokenizer.tokenize(message.getText()));
+                return tokenList.stream().map(Token::new).collect(Collectors.toList());
+            }
+        };
     }
 
     private TokenizerModel getModel(String language) {

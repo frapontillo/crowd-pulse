@@ -21,7 +21,6 @@ import net.frakbot.crowdpulse.common.util.rx.BackpressureAsyncTransformer;
 import net.frakbot.crowdpulse.common.util.rx.SubscriptionGroupLatch;
 import net.frakbot.crowdpulse.data.entity.Message;
 import net.frakbot.crowdpulse.data.rx.BufferedMessageListObserver;
-import net.frakbot.crowdpulse.sentiment.ISentimentAnalyzer;
 import net.frakbot.crowdpulse.sentiment.sentiwordnet.SentiWordNetSentimentAnalyzer;
 import rx.Observable;
 import rx.Subscription;
@@ -36,7 +35,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class MessageSentimentMain {
     private SubscriptionGroupLatch allSubscriptions;
-    private ISentimentAnalyzer analyzer;
+    private SentiWordNetSentimentAnalyzer analyzer;
 
     public static void main(String[] args) throws IOException {
         MessageSentimentMain main = new MessageSentimentMain();
@@ -48,9 +47,9 @@ public class MessageSentimentMain {
         GenericAnalysisParameters params = MainHelper.start(args);
         final Observable<Message> candidates = MainHelper.getMessages(params);
 
-        ConnectableObservable<Message> messages =
-                analyzer.process(candidates)
+        ConnectableObservable<Message> messages = candidates
                 .compose(new BackpressureAsyncTransformer<>())
+                .compose(analyzer.transform())
                 .publish();
 
         Observable<List<Message>> bufferedMessages = messages.buffer(10, TimeUnit.SECONDS, 3);

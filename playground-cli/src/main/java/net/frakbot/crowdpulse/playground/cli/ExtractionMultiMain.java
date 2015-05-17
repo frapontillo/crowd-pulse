@@ -33,7 +33,7 @@ import java.util.List;
 public class ExtractionMultiMain {
     private static final Logger logger = CrowdLogger.getLogger(ExtractionMultiMain.class);
     
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, ClassNotFoundException {
 
         long startTime = System.nanoTime();
         logger.debug("Multiple extraction started.");
