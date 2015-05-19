@@ -32,7 +32,7 @@ import java.util.List;
  *
  * @author Francesco Pontillo
  */
-public class SimpleMultiPOSTagger extends IPlugin<Message> {
+public class SimpleMultiPOSTagger extends IPlugin<Message, Void> {
     private static final String SIMPLEPOSTAGGER_IMPL = "simplepostagger-multi";
 
     @Override public String getName() {
@@ -53,14 +53,14 @@ public class SimpleMultiPOSTagger extends IPlugin<Message> {
             return null;
         }
         String language = message.getLanguage();
-        IPlugin<Message> actualTagger = null;
+        IPlugin<Message, Void> actualTagger = null;
         try {
             actualTagger = PluginProvider.getPlugin("simplepostagger-" + language);
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
         if (actualTagger != null && actualTagger instanceof ISingleablePlugin) {
-            return ((ISingleablePlugin<Message>) actualTagger).singleProcess(message).getTokens();
+            return ((ISingleablePlugin<Message, Void>) actualTagger).singleProcess(message).getTokens();
         }
         return message.getTokens();
     }

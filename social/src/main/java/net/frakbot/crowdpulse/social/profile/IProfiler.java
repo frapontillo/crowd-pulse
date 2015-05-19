@@ -23,7 +23,7 @@ import rx.observables.ConnectableObservable;
 /**
  * @author Francesco Pontillo
  */
-public abstract class IProfiler extends IPlugin<Profile> {
+public abstract class IProfiler extends IPlugin<Profile, ProfileParameters> {
 
     /**
      * Starts an asynchronous search loading an {@link rx.Observable} of {@link net.frakbot.crowdpulse.data.entity.Profile}

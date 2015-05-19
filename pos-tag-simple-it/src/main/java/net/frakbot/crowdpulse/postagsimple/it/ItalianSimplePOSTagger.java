@@ -27,7 +27,7 @@ import java.util.List;
 /**
  * @author Francesco Pontillo
  */
-public class ItalianSimplePOSTagger extends ISingleablePlugin<Message> {
+public class ItalianSimplePOSTagger extends ISingleablePlugin<Message, Void> {
     private final static String SIMPLEPOSTAGGER_IMPL = "simplepostagger-it";
 
     @Override public String getName() {

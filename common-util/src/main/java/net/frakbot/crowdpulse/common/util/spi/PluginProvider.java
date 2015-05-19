@@ -28,7 +28,7 @@ public class PluginProvider {
         serviceLoader = ServiceLoader.load(IPlugin.class);
     }
 
-    public static <E, T extends IPlugin<E>> T getPlugin(String name) throws ClassNotFoundException {
+    public static <E, P, T extends IPlugin<E, P>> T getPlugin(String name) throws ClassNotFoundException {
         for (IPlugin implementation : serviceLoader) {
             // TODO: implement a better criteria-based loading logic
             if (implementation.getName().equals(name)) {

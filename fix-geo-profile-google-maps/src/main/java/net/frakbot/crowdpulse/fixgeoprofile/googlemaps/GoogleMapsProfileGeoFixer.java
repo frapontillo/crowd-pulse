@@ -19,6 +19,7 @@ package net.frakbot.crowdpulse.fixgeoprofile.googlemaps;
 import com.google.maps.GeoApiContext;
 import com.google.maps.GeocodingApi;
 import com.google.maps.model.GeocodingResult;
+import net.frakbot.crowdpulse.common.util.CrowdLogger;
 import net.frakbot.crowdpulse.common.util.spi.IPlugin;
 import net.frakbot.crowdpulse.data.entity.Profile;
 import net.frakbot.crowdpulse.fixgeoprofile.IProfileGeoFixerOperator;
@@ -31,7 +32,7 @@ import java.util.Properties;
 /**
  * @author Francesco Pontillo
  */
-public class GoogleMapsProfileGeoFixer extends IPlugin<Profile> {
+public class GoogleMapsProfileGeoFixer extends IPlugin<Profile, Void> {
     private final static String GEOFIXER_IMPL = "googlemaps";
     private final static String PROP_GEOCODING_APIKEY = "geocoding.apiKey";
     private final GeoApiContext context;
@@ -57,7 +58,7 @@ public class GoogleMapsProfileGeoFixer extends IPlugin<Profile> {
                 }
                 // edit and notify the profile only if lat-lng coordinates were found
                 if (results != null && results.length > 0) {
-                    coordinates = new Double[] { results[0].geometry.location.lat, results[0].geometry.location.lng };
+                    coordinates = new Double[]{results[0].geometry.location.lat, results[0].geometry.location.lng};
                 }
                 return coordinates;
             }
@@ -69,7 +70,11 @@ public class GoogleMapsProfileGeoFixer extends IPlugin<Profile> {
         Properties prop = new Properties();
         try {
             prop.load(configInput);
-        } catch (IOException ignored) {}
-        return prop.getProperty(PROP_GEOCODING_APIKEY);
+            return prop.getProperty(PROP_GEOCODING_APIKEY);
+        } catch (Exception exception) {
+            CrowdLogger.getLogger(GoogleMapsProfileGeoFixer.class)
+                    .error("Error while loading Google Maps configuration", exception);
+            return "";
+        }
     }
 }

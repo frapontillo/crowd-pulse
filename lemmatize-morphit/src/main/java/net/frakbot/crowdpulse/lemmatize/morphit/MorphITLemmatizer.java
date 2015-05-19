@@ -44,7 +44,7 @@ import java.util.regex.Pattern;
  *
  * @author Francesco Pontillo
  */
-public class MorphITLemmatizer extends ISingleablePlugin<Message> {
+public class MorphITLemmatizer extends ISingleablePlugin<Message, Void> {
     private static final Pattern spacePattern = Pattern.compile("\\s+");
     private static final String LEMMATIZER_IMPL = "lemmatizer-it";
 

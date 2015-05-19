@@ -29,7 +29,7 @@ import java.util.List;
 /**
  * @author Francesco Pontillo
  */
-public class BabelfyTagger extends IPlugin<Message> {
+public class BabelfyTagger extends IPlugin<Message, Void> {
     private final static String TAGGER_NAME = "babelfy";
     private final static String BABELFY_ENDPOINT = "http://babelfy.io/v1";
     private final static BabelfyService service;

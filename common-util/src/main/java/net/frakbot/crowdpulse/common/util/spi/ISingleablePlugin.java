@@ -25,7 +25,7 @@ package net.frakbot.crowdpulse.common.util.spi;
  *
  * @author Francesco Pontillo
  */
-public abstract class ISingleablePlugin<T> extends IPlugin<T> {
+public abstract class ISingleablePlugin<T, P> extends IPlugin<T, P> {
 
     /**
      * Process a single element according to the task of this {@link IPlugin<T>}.

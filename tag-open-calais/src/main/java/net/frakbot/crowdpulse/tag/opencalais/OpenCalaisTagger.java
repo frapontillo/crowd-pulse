@@ -33,7 +33,7 @@ import java.util.List;
  * @see {@link "http://www.opencalais.com/documentation/calais-web-service-api/api-invocation/rest"}
  * @author Francesco Pontillo
  */
-public class OpenCalaisTagger extends IPlugin<Message> {
+public class OpenCalaisTagger extends IPlugin<Message, Void> {
     private final static String TAGGER_NAME = "opencalais";
     private final static String OPEN_CALAIS_ENDPOINT = "http://api.opencalais.com/tag/rs";
     private final static OpenCalaisService service;

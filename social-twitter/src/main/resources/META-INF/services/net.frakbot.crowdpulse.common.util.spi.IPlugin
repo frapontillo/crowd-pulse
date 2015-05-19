@@ -15,3 +15,4 @@
 #
 
 net.frakbot.crowdpulse.social.twitter.extraction.TwitterExtractor
+net.frakbot.crowdpulse.social.twitter.profile.TwitterProfiler

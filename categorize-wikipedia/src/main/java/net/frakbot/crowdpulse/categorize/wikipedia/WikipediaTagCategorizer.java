@@ -35,7 +35,7 @@ import java.util.Map;
 /**
  * @author Francesco Pontillo
  */
-public class WikipediaTagCategorizer extends IPlugin<Tag> {
+public class WikipediaTagCategorizer extends IPlugin<Tag, Void> {
     public static final String TAGCATEGORIZER_IMPL = "wikipedia";
     private static final String WIKIPEDIA_ENDPOINT_1 = "http://";
     private static final String WIKIPEDIA_ENDPOINT_2 = ".wikipedia.org/w";

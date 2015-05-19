@@ -44,7 +44,7 @@ import rx.Observable;
  *
  * @author Francesco Pontillo
  */
-public class SentiWordNetSentimentAnalyzer extends IPlugin<Message> {
+public class SentiWordNetSentimentAnalyzer extends IPlugin<Message, Void> {
     private final static String SENTIMENT_IMPL = "sentiwordnet";
     private final MultiWordNet multiWordNet;
     private final SentiWordNet sentiWordNet;

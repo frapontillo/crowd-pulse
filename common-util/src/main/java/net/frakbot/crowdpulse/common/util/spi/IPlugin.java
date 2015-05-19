@@ -24,7 +24,7 @@ import rx.Observable;
  *
  * @author Francesco Pontillo
  */
-public abstract class IPlugin<T> {
+public abstract class IPlugin<T, P> {
 
     /**
      * @return the name of the plugin implementation
@@ -43,15 +43,46 @@ public abstract class IPlugin<T> {
      * Default implementation to transform a stream of generic type {@link T} by applying the single operation provided
      * by {@link IPlugin#getOperator()} via {@link Observable#lift(Observable.Operator)}.
      * <p>
-     *     If the {@link IPlugin<T>} doesn't use a single {@link rx.Observable.Operator}, you can override this method
-     *     and provide your own transformation rules.
-     * </p>
+     * If the {@link IPlugin<T>} doesn't use a single {@link rx.Observable.Operator}, you can override this method
+     * and provide your own transformation rules.
      *
      * @return A {@link rx.Observable.Transformer} that defines the proper transformations applied by this plugin
      * to the stream.
      */
     public Observable.Transformer<T, T> transform() {
         return tObservable -> tObservable.lift(getOperator());
+    }
+
+    /**
+     * Default implementation that takes an {@link Observable<T>} stream and transforms it applying the
+     * {@link rx.Observable.Transformer} returned by {@link IPlugin#transform()}.
+     * <p>
+     * You should override this method only when the plugin generates a stream and when the
+     * {@link IPlugin#process(Observable, Object)} method accepts {@code null} as valid input.
+     *
+     * @param stream The {@link Observable<T>} to process.
+     * @param params An optional parameter object of type {@link P}.
+     * @return A new {@link Observable<T>} built by applying the {@link rx.Observable.Transformer} returned by
+     * {@link IPlugin#transform()}.
+     */
+    public Observable<T> process(Observable<T> stream, P params) {
+        if (stream != null) {
+            return stream.compose(this.transform());
+        }
+        return null;
+    }
+
+    /**
+     * Process an {@link Observable<T>} stream just as in {@link IPlugin#process(Observable, Object)} but with
+     * {@code null} parameters.
+     *
+     * @param stream The {@link Observable<T>} to process.
+     * @return A new {@link Observable<T>} built by applying the {@link rx.Observable.Transformer} returned by
+     * {@link IPlugin#transform()}.
+     * @see {@link IPlugin#process(Observable, Object)}
+     */
+    public Observable<T> process(Observable<T> stream) {
+        return process(stream, null);
     }
 
 }

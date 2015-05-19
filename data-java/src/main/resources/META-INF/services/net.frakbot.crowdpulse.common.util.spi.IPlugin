@@ -14,5 +14,4 @@
 # limitations under the License.
 #
 
-net.frakbot.crowdpulse.social.facebook.extraction.FacebookExtractor
-net.frakbot.crowdpulse.social.facebook.profile.FacebookProfiler
+net.frakbot.crowdpulse.data.rx.MessagePersister

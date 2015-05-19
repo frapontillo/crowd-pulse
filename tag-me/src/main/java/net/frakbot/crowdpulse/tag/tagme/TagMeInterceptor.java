@@ -16,6 +16,7 @@
 
 package net.frakbot.crowdpulse.tag.tagme;
 
+import net.frakbot.crowdpulse.common.util.CrowdLogger;
 import retrofit.RequestInterceptor;
 
 import java.io.IOException;
@@ -35,10 +36,11 @@ public class TagMeInterceptor implements RequestInterceptor {
 
         try {
             prop.load(configInput);
-        } catch (IOException noFileException) {
-            System.err.println(noFileException);
+            API_KEY = prop.getProperty(PROP_API_KEY);
+        } catch (Exception exception) {
+            CrowdLogger.getLogger(TagMeInterceptor.class).error("Error while loading TagMe configuration", exception);
+            API_KEY = "";
         }
-        API_KEY = prop.getProperty(PROP_API_KEY);
     }
 
     @Override public void intercept(RequestFacade request) {

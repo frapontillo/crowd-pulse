@@ -20,10 +20,6 @@ sourceCompatibility = 1.8
 
 version = '1.0'
 
-repositories {
-    mavenCentral()
-}
-
 dependencies {
     compile project(':common-util')
     compile group: 'org.mongodb.morphia', name: 'morphia', version: '0.109'

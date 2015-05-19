@@ -22,6 +22,7 @@ import net.frakbot.crowdpulse.social.exception.SocialException;
 import net.frakbot.crowdpulse.social.exception.InvalidParametersSocialException;
 import net.frakbot.crowdpulse.social.exception.MissingParametersSocialException;
 import net.frakbot.crowdpulse.common.util.StringUtil;
+import rx.Observable;
 import rx.observables.ConnectableObservable;
 
 import java.util.List;
@@ -29,7 +30,7 @@ import java.util.List;
 /**
  * @author Francesco
  */
-public abstract class IExtractor extends IPlugin<Message> {
+public abstract class IExtractor extends IPlugin<Message, ExtractionParameters> {
     /**
      * Returns the maximum number of parameters that this extractor supports per each query.
      *
@@ -173,5 +174,9 @@ public abstract class IExtractor extends IPlugin<Message> {
      * @param parameters {@link net.frakbot.crowdpulse.social.extraction.ExtractionParameters} to search for.
      * @return {@link rx.Observable< net.frakbot.crowdpulse.data.entity.Message >}
      */
-    public abstract ConnectableObservable<Message> getMessages(ExtractionParameters parameters);
+    protected abstract ConnectableObservable<Message> getMessages(ExtractionParameters parameters);
+
+    @Override public Observable<Message> process(Observable<Message> stream, ExtractionParameters params) {
+        return getMessages(params);
+    }
 }

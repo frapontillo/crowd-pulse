@@ -26,7 +26,7 @@ import rx.Observable;
 /**
  * @author Francesco Pontillo
  */
-public class FromProfileMessageGeoFixer extends IPlugin<Message> {
+public class FromProfileMessageGeoFixer extends IPlugin<Message, Void> {
     private final static String GEOFIXER_IMPL = "fromprofile";
     private final ProfileRepository profileRepository;
 

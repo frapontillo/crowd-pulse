@@ -18,12 +18,13 @@ package net.frakbot.crowdpulse.playground.cli;
 
 import net.frakbot.crowdpulse.common.util.CrowdLogger;
 import net.frakbot.crowdpulse.common.util.rx.SubscriptionGroupLatch;
+import net.frakbot.crowdpulse.common.util.spi.IPlugin;
 import net.frakbot.crowdpulse.common.util.spi.PluginProvider;
 import net.frakbot.crowdpulse.data.entity.Message;
 import net.frakbot.crowdpulse.data.rx.MessagePrintObserver;
 import net.frakbot.crowdpulse.social.extraction.ExtractionParameters;
-import net.frakbot.crowdpulse.social.extraction.IExtractor;
 import org.apache.logging.log4j.Logger;
+import rx.Observable;
 import rx.Subscription;
 import rx.observables.ConnectableObservable;
 
@@ -42,16 +43,27 @@ public class FlowMain {
     }
 
     public void run(String args[]) throws ClassNotFoundException {
-        IExtractor extractor = PluginProvider.getPlugin("twitter");
+        // get all tasks according to some criteria
+        IPlugin<Message, ExtractionParameters> extractor = PluginProvider.getPlugin("twitter");
+        IPlugin<Message, Void> messagePersister = PluginProvider.getPlugin("message-persist");
 
-        ConnectableObservable<Message> stream = extractor.getMessages(getExtractionParams());
+        // start the pipeline
+        ConnectableObservable<Message> init = (ConnectableObservable<Message>) extractor.process(null, getExtractionParams());
+        // this is the main stream
+        Observable<Message> stream = init;
 
+        // pipeline
+        stream = messagePersister.process(stream);
+        // TODO: more processing here
+
+        // subscribe to the connectable stream
         SubscriptionGroupLatch allSubscriptions = new SubscriptionGroupLatch(1);
         Subscription subscription = stream.subscribe(new MessagePrintObserver(allSubscriptions));
         allSubscriptions.setSubscriptions(subscription);
 
-        stream.connect();
+        init.connect();
         allSubscriptions.waitAllUnsubscribed();
+
         logger.info("Done.");
     }
 

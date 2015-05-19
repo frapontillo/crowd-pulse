@@ -32,7 +32,7 @@ import java.util.List;
 /**
  * @author Francesco Pontillo
  */
-public class SimpleStopWordRemover extends IPlugin<Message> {
+public class SimpleStopWordRemover extends IPlugin<Message, Void> {
     private final static String STOPWORDREMOVER_IMPL = "simple";
     private final HashMap<String, HashSet<String>> dictionaries;
     private final List<String> punctuation = Arrays.asList(".",",",":",";","?","!","(",")","[","]","{","}");

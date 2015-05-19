@@ -36,7 +36,7 @@ import java.util.stream.Collectors;
 /**
  * @author Francesco Pontillo
  */
-public class OpenNLPTokenizer extends IPlugin<Message> {
+public class OpenNLPTokenizer extends IPlugin<Message, Void> {
     private final static String TOKENIZER_IMPL = "opennlp";
     private Map<String, TokenizerModel> models;
 

@@ -50,7 +50,7 @@ public class TwitterExtractorRunner {
             getTwitterInstance();
             getTwitterStreamInstance();
         } catch (TwitterException e) {
-            e.printStackTrace();
+            logger.error("Can't instantiate a Twitter instance", e);
         }
 
         // create the old messages Observable

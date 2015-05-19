@@ -36,7 +36,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class TagCategorizeMain {
     private SubscriptionGroupLatch allSubscriptions;
-    private IPlugin<Tag> tagCategorizer;
+    private IPlugin<Tag, Void> tagCategorizer;
 
     public static void main(String[] args) throws IOException {
         TagCategorizeMain main = new TagCategorizeMain();

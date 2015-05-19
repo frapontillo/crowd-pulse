@@ -30,7 +30,7 @@ import java.util.List;
  * @see {@link "http://wikipedia-miner.cms.waikato.ac.nz/services/?wikify"}
  * @author Francesco Pontillo
  */
-public class WikipediaMinerTagger extends IPlugin<Message> {
+public class WikipediaMinerTagger extends IPlugin<Message, Void> {
     private final static String TAGGER_NAME = "wikipediaminer";
     private final static String WIKIPEDIA_MINER_ENDPOINT = "http://wikipedia-miner.cms.waikato.ac.nz";
     private final static WikipediaMinerService service;

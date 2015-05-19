@@ -28,7 +28,7 @@ import java.util.List;
 /**
  * @author Francesco Pontillo
  */
-public class CoreNLPLemmatizer extends ISingleablePlugin<Message> {
+public class CoreNLPLemmatizer extends ISingleablePlugin<Message, Void> {
     private final static String LEMMATIZER_IMPL = "stanford";
     private final Morphology morphology;
 

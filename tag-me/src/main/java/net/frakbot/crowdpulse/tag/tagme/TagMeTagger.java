@@ -32,7 +32,7 @@ import java.util.List;
  * @author Francesco Pontillo
  * @see {@link "http://tagme.di.unipi.it/tagme_help.html#tagging"}
  */
-public class TagMeTagger extends IPlugin<Message> {
+public class TagMeTagger extends IPlugin<Message, Void> {
     private final static String TAGGER_NAME = "tagme";
     private final static String TAG_ME_ENDPOINT = "http://tagme.di.unipi.it";
     private final static TagMeService service;

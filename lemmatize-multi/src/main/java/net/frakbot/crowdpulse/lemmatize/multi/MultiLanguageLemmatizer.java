@@ -46,11 +46,11 @@ import java.util.List;
  *
  * @author Francesco Pontillo
  */
-public class MultiLanguageLemmatizer extends IPlugin<Message> {
+public class MultiLanguageLemmatizer extends IPlugin<Message, Void> {
     private final static String LEMMATIZER_IMPL = "multi";
     private final static String LEMMATIZER_WILDCARD = "*";
     private final HashMap<String, String> lemmatizerMap;
-    private final HashMap<String, IPlugin<Message>> lemmatizers;
+    private final HashMap<String, IPlugin<Message, Void>> lemmatizers;
 
     public MultiLanguageLemmatizer() {
         lemmatizerMap = new HashMap<>();
@@ -75,17 +75,17 @@ public class MultiLanguageLemmatizer extends IPlugin<Message> {
         return new ILemmatizerOperator() {
             @Override public List<Token> lemmatizeMessageTokens(Message message) {
                 // find or instantiate the lemmatizer
-                IPlugin<Message> lemmatizer = getLemmatizerForMessage(message);
+                IPlugin<Message, Void> lemmatizer = getLemmatizerForMessage(message);
                 if (lemmatizer instanceof ISingleablePlugin) {
-                    return ((ISingleablePlugin<Message>) lemmatizer).singleProcess(message).getTokens();
+                    return ((ISingleablePlugin<Message, Void>) lemmatizer).singleProcess(message).getTokens();
                 }
                 return null;
             }
         };
     }
 
-    private IPlugin<Message> getLemmatizerForMessage(Message message) {
-        IPlugin<Message> lemmatizer;
+    private IPlugin<Message, Void> getLemmatizerForMessage(Message message) {
+        IPlugin<Message, Void> lemmatizer;
         String lang = message.getLanguage();
         // find or instantiate the lemmatizer
         if ((lemmatizer = lemmatizers.get(lang)) == null) {

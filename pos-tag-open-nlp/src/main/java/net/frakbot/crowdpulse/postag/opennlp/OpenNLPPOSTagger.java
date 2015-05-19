@@ -34,7 +34,7 @@ import java.util.stream.Collectors;
 /**
  * @author Francesco Pontillo
  */
-public class OpenNLPPOSTagger extends IPlugin<Message> {
+public class OpenNLPPOSTagger extends IPlugin<Message, Void> {
     private final static String POSTAGGER_IMPL = "opennlp";
     private Map<String, POSModel> models;
 
