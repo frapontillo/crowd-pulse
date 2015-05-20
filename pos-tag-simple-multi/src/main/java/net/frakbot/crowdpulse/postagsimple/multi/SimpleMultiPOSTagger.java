@@ -32,14 +32,14 @@ import java.util.List;
  *
  * @author Francesco Pontillo
  */
-public class SimpleMultiPOSTagger extends IPlugin<Message, Void> {
+public class SimpleMultiPOSTagger extends IPlugin<Message, Message, Void> {
     private static final String SIMPLEPOSTAGGER_IMPL = "simplepostagger-multi";
 
     @Override public String getName() {
         return SIMPLEPOSTAGGER_IMPL;
     }
 
-    @Override public Observable.Operator<Message, Message> getOperator() {
+    @Override public Observable.Operator<Message, Message> getOperator(Void parameters) {
         SimpleMultiPOSTagger actualTagger = this;
         return new ISimplePOSTaggerOperator() {
             @Override public List<Token> posTagMessageTokens(Message message) {
@@ -53,7 +53,7 @@ public class SimpleMultiPOSTagger extends IPlugin<Message, Void> {
             return null;
         }
         String language = message.getLanguage();
-        IPlugin<Message, Void> actualTagger = null;
+        IPlugin<Message, Message, Void> actualTagger = null;
         try {
             actualTagger = PluginProvider.getPlugin("simplepostagger-" + language);
         } catch (ClassNotFoundException e) {

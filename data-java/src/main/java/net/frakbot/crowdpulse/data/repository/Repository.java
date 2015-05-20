@@ -61,6 +61,10 @@ public class Repository<T,K> extends BasicDAO<T,K> {
         return Observable.from(findBetweenIds(fromId, toId).fetch());
     }
 
+    public Observable<T> get() {
+        return Observable.from(findBetweenIds(null, null).fetch());
+    }
+
     public List<T> getBetweenKeys(K from, K to) {
         return findBetweenKeys(from, to).asList();
     }

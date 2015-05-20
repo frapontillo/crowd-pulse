@@ -40,7 +40,7 @@ public class CoreNLPLemmatizer extends ISingleablePlugin<Message, Void> {
         return LEMMATIZER_IMPL;
     }
 
-    @Override public Observable.Operator<Message, Message> getOperator() {
+    @Override public Observable.Operator<Message, Message> getOperator(Void parameters) {
         CoreNLPLemmatizer currentLemmatizer = this;
         return new ILemmatizerOperator() {
             @Override public List<Token> lemmatizeMessageTokens(Message message) {

@@ -36,7 +36,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class LanguageDetectMain {
     private SubscriptionGroupLatch allSubscriptions;
-    private IPlugin<Message, Void> languageDetector;
+    private IPlugin<Message, Message, Void> languageDetector;
 
     public static void main(String[] args) throws IOException {
         LanguageDetectMain main = new LanguageDetectMain();

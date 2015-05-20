@@ -30,7 +30,7 @@ import java.util.List;
  * @see {@link "http://wikipedia-miner.cms.waikato.ac.nz/services/?wikify"}
  * @author Francesco Pontillo
  */
-public class WikipediaMinerTagger extends IPlugin<Message, Void> {
+public class WikipediaMinerTagger extends IPlugin<Message, Message, Void> {
     private final static String TAGGER_NAME = "wikipediaminer";
     private final static String WIKIPEDIA_MINER_ENDPOINT = "http://wikipedia-miner.cms.waikato.ac.nz";
     private final static WikipediaMinerService service;
@@ -47,7 +47,7 @@ public class WikipediaMinerTagger extends IPlugin<Message, Void> {
         return TAGGER_NAME;
     }
 
-    @Override protected Observable.Operator<Message, Message> getOperator() {
+    @Override protected Observable.Operator<Message, Message> getOperator(Void parameters) {
         return new ITaggerOperator() {
             @Override protected List<Tag> getTagsImpl(String text, String language) {
                 // get the tags

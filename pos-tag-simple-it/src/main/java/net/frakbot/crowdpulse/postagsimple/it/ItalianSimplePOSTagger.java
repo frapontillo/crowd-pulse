@@ -34,7 +34,7 @@ public class ItalianSimplePOSTagger extends ISingleablePlugin<Message, Void> {
         return SIMPLEPOSTAGGER_IMPL;
     }
 
-    @Override public Observable.Operator<Message, Message> getOperator() {
+    @Override public Observable.Operator<Message, Message> getOperator(Void parameters) {
         ItalianSimplePOSTagger actualTagger = this;
         return new ISimplePOSTaggerOperator() {
             @Override public List<Token> posTagMessageTokens(Message message) {

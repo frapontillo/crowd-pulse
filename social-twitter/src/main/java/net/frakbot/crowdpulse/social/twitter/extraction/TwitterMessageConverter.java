@@ -36,7 +36,7 @@ public class TwitterMessageConverter extends MessageConverter<Status> {
 
     @Override public Message fromSpecificExtractor(Status original) {
         Message message = new Message();
-        message.setSource(TwitterExtractor.EXTRACTOR_NAME);
+        message.setSource(TwitterExtractor.PLUGIN_NAME);
         message.setText(original.getText());
         message.setFromUser(original.getUser().getScreenName());
         if (!StringUtil.isNullOrEmpty(original.getInReplyToScreenName())) {

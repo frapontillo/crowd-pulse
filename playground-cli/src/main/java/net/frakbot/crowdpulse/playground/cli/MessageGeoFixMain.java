@@ -36,7 +36,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class MessageGeoFixMain {
     private SubscriptionGroupLatch allSubscriptions;
-    private IPlugin<Message, Void> messageGeoFixer;
+    private IPlugin<Message, Message, Void> messageGeoFixer;
 
     public static void main(String[] args) throws IOException {
         MessageGeoFixMain main = new MessageGeoFixMain();

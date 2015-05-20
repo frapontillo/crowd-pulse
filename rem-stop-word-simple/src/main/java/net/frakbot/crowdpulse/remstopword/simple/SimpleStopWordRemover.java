@@ -32,7 +32,7 @@ import java.util.List;
 /**
  * @author Francesco Pontillo
  */
-public class SimpleStopWordRemover extends IPlugin<Message, Void> {
+public class SimpleStopWordRemover extends IPlugin<Message, Message, Void> {
     private final static String STOPWORDREMOVER_IMPL = "simple";
     private final HashMap<String, HashSet<String>> dictionaries;
     private final List<String> punctuation = Arrays.asList(".",",",":",";","?","!","(",")","[","]","{","}");
@@ -45,7 +45,7 @@ public class SimpleStopWordRemover extends IPlugin<Message, Void> {
         return STOPWORDREMOVER_IMPL;
     }
 
-    @Override public Observable.Operator<Message, Message> getOperator() {
+    @Override public Observable.Operator<Message, Message> getOperator(Void parameters) {
         return new IStopWordRemoverOperator() {
             @Override public List<Token> stopWordRemoveMessageTokens(Message message) {
                 List<Token> tokens = message.getTokens();

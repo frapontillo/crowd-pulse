@@ -44,7 +44,7 @@ import rx.Observable;
  *
  * @author Francesco Pontillo
  */
-public class SentiWordNetSentimentAnalyzer extends IPlugin<Message, Void> {
+public class SentiWordNetSentimentAnalyzer extends IPlugin<Message, Message, Void> {
     private final static String SENTIMENT_IMPL = "sentiwordnet";
     private final MultiWordNet multiWordNet;
     private final SentiWordNet sentiWordNet;
@@ -58,7 +58,7 @@ public class SentiWordNetSentimentAnalyzer extends IPlugin<Message, Void> {
         return SENTIMENT_IMPL;
     }
 
-    @Override protected Observable.Operator<Message, Message> getOperator() {
+    @Override protected Observable.Operator<Message, Message> getOperator(Void parameters) {
         return new ISentimentAnalyzerOperator() {
             @Override public Message sentimentAnalyze(Message message) {
                 double totalScore = 0;

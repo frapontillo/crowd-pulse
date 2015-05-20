@@ -17,25 +17,19 @@
 package net.frakbot.crowdpulse.social.twitter.profile;
 
 import net.frakbot.crowdpulse.data.entity.Profile;
-import net.frakbot.crowdpulse.social.profile.ProfileParameters;
 import net.frakbot.crowdpulse.social.profile.IProfiler;
-import rx.Observable;
+import net.frakbot.crowdpulse.social.profile.ProfileParameters;
 import rx.observables.ConnectableObservable;
 
 /**
  * @author Francesco Pontillo
  */
 public class TwitterProfiler extends IProfiler {
-    public static final String PROFILER_NAME = "twitter";
+    public static final String PLUGIN_NAME = "profiler-twitter";
     private static TwitterProfilerRunner runner = null;
 
     @Override public String getName() {
-        return PROFILER_NAME;
-    }
-
-    @Override protected Observable.Operator<Profile, Profile> getOperator() {
-        // TODO: URGENT, FIX THIS!
-        return null;
+        return PLUGIN_NAME;
     }
 
     private TwitterProfilerRunner getRunnerInstance() {

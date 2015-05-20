@@ -36,7 +36,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class MessageStopWordRemoveMain {
     private SubscriptionGroupLatch allSubscriptions;
-    private IPlugin<Message, Void> stopWordRemover;
+    private IPlugin<Message, Message, Void> stopWordRemover;
 
     public static void main(String[] args) throws IOException {
         MessageStopWordRemoveMain main = new MessageStopWordRemoveMain();

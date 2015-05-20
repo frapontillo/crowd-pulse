@@ -22,11 +22,12 @@ import net.frakbot.crowdpulse.data.entity.Profile;
 import net.frakbot.crowdpulse.data.repository.ProfileRepository;
 import net.frakbot.crowdpulse.fixgeomessage.IMessageGeoFixerOperator;
 import rx.Observable;
+import rx.Subscriber;
 
 /**
  * @author Francesco Pontillo
  */
-public class FromProfileMessageGeoFixer extends IPlugin<Message, Void> {
+public class FromProfileMessageGeoFixer extends IPlugin<Message, Message, Void> {
     private final static String GEOFIXER_IMPL = "fromprofile";
     private final ProfileRepository profileRepository;
 
@@ -38,7 +39,7 @@ public class FromProfileMessageGeoFixer extends IPlugin<Message, Void> {
         return GEOFIXER_IMPL;
     }
 
-    @Override public Observable.Operator<Message, Message> getOperator() {
+    @Override public Observable.Operator<Message, Message> getOperator(Void parameters) {
         return new IMessageGeoFixerOperator() {
             @Override public Double[] getCoordinates(Message message) {
                 Profile user = profileRepository.getByUsername(message.getFromUser());

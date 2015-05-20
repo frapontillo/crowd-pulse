@@ -36,7 +36,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class MessagePOSTagMain {
     private SubscriptionGroupLatch allSubscriptions;
-    private IPlugin<Message, Void> posTagger;
+    private IPlugin<Message, Message, Void> posTagger;
 
     public static void main(String[] args) throws IOException {
         MessagePOSTagMain main = new MessagePOSTagMain();

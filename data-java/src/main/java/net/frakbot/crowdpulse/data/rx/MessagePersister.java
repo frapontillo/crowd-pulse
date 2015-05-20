@@ -27,7 +27,7 @@ import rx.Observable;
 /**
  * @author Francesco Pontillo
  */
-public class MessagePersister extends IPlugin<Message, Void> {
+public class MessagePersister extends IPlugin<Message, Message, Void> {
     public final static String PLUGIN_NAME = "message-persist";
     private final MessageRepository messageRepository;
     private final Logger logger = CrowdLogger.getLogger(MessagePersister.class);
@@ -40,7 +40,7 @@ public class MessagePersister extends IPlugin<Message, Void> {
         return PLUGIN_NAME;
     }
 
-    @Override protected Observable.Operator<Message, Message> getOperator() {
+    @Override protected Observable.Operator<Message, Message> getOperator(Void parameters) {
         return subscriber -> new CrowdSubscriber<Message>(subscriber) {
             @Override public void onNext(Message message) {
                 messageRepository.save(message);

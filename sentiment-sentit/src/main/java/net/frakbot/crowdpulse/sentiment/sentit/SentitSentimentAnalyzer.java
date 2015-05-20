@@ -34,7 +34,7 @@ import java.util.List;
 /**
  * @author Francesco Pontillo
  */
-public class SentitSentimentAnalyzer extends IPlugin<Message, Void> {
+public class SentitSentimentAnalyzer extends IPlugin<Message, Message, Void> {
     private final static String SENTIMENT_IMPL = "sentit";
     private final static String SENTIT_ENDPOINT = "http://sentit.cloudapp.net:9100/sentit/v2";
     private final static int MAX_MESSAGES_PER_REQ = 10;
@@ -64,7 +64,7 @@ public class SentitSentimentAnalyzer extends IPlugin<Message, Void> {
      *
      * @return Always {@code null}.
      */
-    @Override public Observable.Operator<Message, Message> getOperator() {
+    @Override public Observable.Operator<Message, Message> getOperator(Void parameters) {
         return null;
     }
 

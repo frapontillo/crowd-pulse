@@ -25,15 +25,14 @@ import net.frakbot.crowdpulse.data.entity.Profile;
 import net.frakbot.crowdpulse.fixgeoprofile.IProfileGeoFixerOperator;
 import rx.Observable;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
 /**
  * @author Francesco Pontillo
  */
-public class GoogleMapsProfileGeoFixer extends IPlugin<Profile, Void> {
-    private final static String GEOFIXER_IMPL = "googlemaps";
+public class GoogleMapsProfileGeoFixer extends IPlugin<Profile, Profile, Void> {
+    public final static String PLUGIN_NAME = "googlemaps";
     private final static String PROP_GEOCODING_APIKEY = "geocoding.apiKey";
     private final GeoApiContext context;
 
@@ -42,10 +41,10 @@ public class GoogleMapsProfileGeoFixer extends IPlugin<Profile, Void> {
     }
 
     @Override public String getName() {
-        return GEOFIXER_IMPL;
+        return PLUGIN_NAME;
     }
 
-    @Override public Observable.Operator<Profile, Profile> getOperator() {
+    @Override protected Observable.Operator<Profile, Profile> getOperator(Void parameters) {
         return new IProfileGeoFixerOperator() {
             @Override public Double[] getCoordinates(Profile profile) {
                 GeocodingResult[] results = null;

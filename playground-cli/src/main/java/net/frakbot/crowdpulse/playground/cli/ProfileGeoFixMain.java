@@ -36,7 +36,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class ProfileGeoFixMain {
     private SubscriptionGroupLatch allSubscriptions;
-    private IPlugin<Profile, Void> profileGeoFixer;
+    private IPlugin<Profile, Profile, Void> profileGeoFixer;
 
     public static void main(String[] args) throws IOException {
         ProfileGeoFixMain main = new ProfileGeoFixMain();

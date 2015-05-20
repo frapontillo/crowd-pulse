@@ -23,14 +23,16 @@ import net.frakbot.crowdpulse.social.exception.InvalidParametersSocialException;
 import net.frakbot.crowdpulse.social.exception.MissingParametersSocialException;
 import net.frakbot.crowdpulse.common.util.StringUtil;
 import rx.Observable;
+import rx.Subscriber;
 import rx.observables.ConnectableObservable;
+import rx.observers.SafeSubscriber;
 
 import java.util.List;
 
 /**
  * @author Francesco
  */
-public abstract class IExtractor extends IPlugin<Message, ExtractionParameters> {
+public abstract class IExtractor extends IPlugin<Void, Message, ExtractionParameters> {
     /**
      * Returns the maximum number of parameters that this extractor supports per each query.
      *
@@ -176,7 +178,22 @@ public abstract class IExtractor extends IPlugin<Message, ExtractionParameters> 
      */
     protected abstract ConnectableObservable<Message> getMessages(ExtractionParameters parameters);
 
-    @Override public Observable<Message> process(Observable<Message> stream, ExtractionParameters params) {
-        return getMessages(params);
+    @Override protected Observable.Operator<Message, Void> getOperator(ExtractionParameters parameters) {
+        return subscriber -> new SafeSubscriber<>(new Subscriber<Object>() {
+            @Override public void onCompleted() {
+                ConnectableObservable<Message> dbMessages = getMessages(parameters);
+                dbMessages.subscribe(subscriber);
+                dbMessages.connect();
+            }
+
+            @Override public void onError(Throwable e) {
+                e.printStackTrace();
+                subscriber.onError(e);
+            }
+
+            @Override public void onNext(Object o) {
+                // do absolutely nothing
+            }
+        });
     }
 }

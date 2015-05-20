@@ -32,7 +32,7 @@ import java.util.List;
  * @author Francesco Pontillo
  * @see {@link "http://tagme.di.unipi.it/tagme_help.html#tagging"}
  */
-public class TagMeTagger extends IPlugin<Message, Void> {
+public class TagMeTagger extends IPlugin<Message, Message, Void> {
     private final static String TAGGER_NAME = "tagme";
     private final static String TAG_ME_ENDPOINT = "http://tagme.di.unipi.it";
     private final static TagMeService service;
@@ -51,7 +51,7 @@ public class TagMeTagger extends IPlugin<Message, Void> {
         return TAGGER_NAME;
     }
 
-    @Override protected Observable.Operator<Message, Message> getOperator() {
+    @Override protected Observable.Operator<Message, Message> getOperator(Void parameters) {
         return new ITaggerOperator() {
             @Override protected List<Tag> getTagsImpl(String text, String language) {
                 // get the tags

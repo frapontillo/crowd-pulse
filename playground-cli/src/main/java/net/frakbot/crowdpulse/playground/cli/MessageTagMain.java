@@ -38,7 +38,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class MessageTagMain {
     private SubscriptionGroupLatch allSubscriptions;
-    private IPlugin<Message, Void> tagger;
+    private IPlugin<Message, Message, Void> tagger;
 
     public static void main(String[] args) throws IOException {
         MessageTagMain main = new MessageTagMain();

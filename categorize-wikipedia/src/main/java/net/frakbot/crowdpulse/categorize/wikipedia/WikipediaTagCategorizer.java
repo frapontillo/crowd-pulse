@@ -35,7 +35,7 @@ import java.util.Map;
 /**
  * @author Francesco Pontillo
  */
-public class WikipediaTagCategorizer extends IPlugin<Tag, Void> {
+public class WikipediaTagCategorizer extends IPlugin<Tag, Tag, Void> {
     public static final String TAGCATEGORIZER_IMPL = "wikipedia";
     private static final String WIKIPEDIA_ENDPOINT_1 = "http://";
     private static final String WIKIPEDIA_ENDPOINT_2 = ".wikipedia.org/w";
@@ -55,7 +55,7 @@ public class WikipediaTagCategorizer extends IPlugin<Tag, Void> {
         return TAGCATEGORIZER_IMPL;
     }
 
-    @Override public Observable.Operator<Tag, Tag> getOperator() {
+    @Override public Observable.Operator<Tag, Tag> getOperator(Void parameters) {
         return new ITagCategorizerOperator() {
             @Override public List<String> getCategories(Tag tag) {
                 WikipediaService wikipediaService = getService(tag.getLanguage());

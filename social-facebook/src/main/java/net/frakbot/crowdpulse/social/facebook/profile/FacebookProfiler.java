@@ -16,6 +16,7 @@
 
 package net.frakbot.crowdpulse.social.facebook.profile;
 
+import net.frakbot.crowdpulse.data.entity.Message;
 import net.frakbot.crowdpulse.data.entity.Profile;
 import net.frakbot.crowdpulse.social.profile.ProfileParameters;
 import net.frakbot.crowdpulse.social.profile.IProfiler;
@@ -26,14 +27,14 @@ import rx.observables.ConnectableObservable;
  * @author Francesco Pontillo
  */
 public class FacebookProfiler extends IProfiler {
-    public static final String PROFILER_NAME = "facebook";
+    public static final String PROFILER_NAME = "profiler-facebook";
     private static FacebookProfilerRunner runner = null;
 
     @Override public String getName() {
         return PROFILER_NAME;
     }
 
-    @Override protected Observable.Operator<Profile, Profile> getOperator() {
+    @Override protected Observable.Operator<Profile, Message> getOperator(ProfileParameters parameters) {
         // TODO: URGENT, FIX THIS!
         return null;
     }

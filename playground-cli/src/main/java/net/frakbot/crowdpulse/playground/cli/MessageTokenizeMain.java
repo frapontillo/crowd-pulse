@@ -36,7 +36,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class MessageTokenizeMain {
     private SubscriptionGroupLatch allSubscriptions;
-    private IPlugin<Message, Void> tokenizer;
+    private IPlugin<Message, Message, Void> tokenizer;
 
     public static void main(String[] args) throws IOException {
         MessageTokenizeMain main = new MessageTokenizeMain();

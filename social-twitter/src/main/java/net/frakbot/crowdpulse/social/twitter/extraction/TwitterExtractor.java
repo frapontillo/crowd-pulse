@@ -32,15 +32,15 @@ import rx.observables.ConnectableObservable;
  */
 public class TwitterExtractor extends IExtractor {
 
-    public static final String EXTRACTOR_NAME = "twitter";
+    public static final String PLUGIN_NAME = "extractor-twitter";
     private static TwitterExtractorRunner runner = null;
     private static final Logger logger = CrowdLogger.getLogger(TwitterExtractor.class);
 
     @Override public String getName() {
-        return EXTRACTOR_NAME;
+        return PLUGIN_NAME;
     }
 
-    @Override protected Observable.Operator<Message, Message> getOperator() {
+    @Override protected Observable.Operator<Message, Void> getOperator() {
         // TODO: URGENT, FIX THIS!
         return null;
     }
@@ -147,7 +147,7 @@ public class TwitterExtractor extends IExtractor {
 
     @Override
     public ConnectableObservable<Message> getMessages(final ExtractionParameters parameters) {
-        Observable<Message> messages = null;
+        Observable<Message> messages;
 
         // validate parameters
         try {

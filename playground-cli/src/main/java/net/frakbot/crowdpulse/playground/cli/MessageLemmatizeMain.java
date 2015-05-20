@@ -36,7 +36,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class MessageLemmatizeMain {
     private SubscriptionGroupLatch allSubscriptions;
-    private IPlugin<Message, Void> lemmatizer;
+    private IPlugin<Message, Message, Void> lemmatizer;
 
     public static void main(String[] args) throws IOException {
         MessageLemmatizeMain main = new MessageLemmatizeMain();
