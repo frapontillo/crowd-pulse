@@ -50,7 +50,7 @@ public class MessageStopWordRemoveMain {
 
         ConnectableObservable<Message> messages = candidates
                 .compose(new BackpressureAsyncTransformer<>())
-                .compose(stopWordRemover.transform())
+                .compose(stopWordRemover.transform(null))
                 .publish();
         Observable<List<Message>> bufferedMessages = messages.buffer(10, TimeUnit.SECONDS, 3);
 

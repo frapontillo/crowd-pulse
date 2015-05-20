@@ -25,6 +25,7 @@ import net.frakbot.crowdpulse.data.entity.Profile;
 import net.frakbot.crowdpulse.data.rx.MessageFetcher;
 import net.frakbot.crowdpulse.data.rx.MessagePersister;
 import net.frakbot.crowdpulse.data.rx.MessagePrintObserver;
+import net.frakbot.crowdpulse.data.rx.ProfilePersister;
 import net.frakbot.crowdpulse.fixgeoprofile.googlemaps.GoogleMapsProfileGeoFixer;
 import net.frakbot.crowdpulse.social.extraction.ExtractionParameters;
 import net.frakbot.crowdpulse.social.twitter.extraction.TwitterExtractor;
@@ -54,6 +55,7 @@ public class FlowMain {
         IPlugin<Message, Message, Void> messagePersister = PluginProvider.getPlugin(MessagePersister.PLUGIN_NAME);
         IPlugin<Message, Profile, Void> profiler = PluginProvider.getPlugin(TwitterProfiler.PLUGIN_NAME);
         IPlugin<Profile, Profile, Void> profileGeoFixer = PluginProvider.getPlugin(GoogleMapsProfileGeoFixer.PLUGIN_NAME);
+        IPlugin<Profile, Profile, Void> profilePersister = PluginProvider.getPlugin(ProfilePersister.PLUGIN_NAME);
         IPlugin<Profile, Message, Void> messageFetcher = PluginProvider.getPlugin(MessageFetcher.PLUGIN_NAME);
 
         // start the pipeline
@@ -69,6 +71,7 @@ public class FlowMain {
         messageStream = messagePersister.process(messageStream);
         profileStream = profiler.process(messageStream);
         profileStream = profileGeoFixer.process(profileStream);
+        profileStream = profilePersister.process(profileStream);
         messageStream = messageFetcher.process(profileStream);
         // TODO: add more processing steps here
 

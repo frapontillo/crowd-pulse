@@ -40,11 +40,6 @@ public class TwitterExtractor extends IExtractor {
         return PLUGIN_NAME;
     }
 
-    @Override protected Observable.Operator<Message, Void> getOperator() {
-        // TODO: URGENT, FIX THIS!
-        return null;
-    }
-
     @Override public long getMaximumQueryParameters() {
         return 10;
     }

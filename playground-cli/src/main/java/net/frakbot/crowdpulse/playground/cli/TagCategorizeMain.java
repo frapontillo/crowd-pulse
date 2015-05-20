@@ -50,7 +50,7 @@ public class TagCategorizeMain {
 
         ConnectableObservable<Tag> tags = candidates
                 .compose(new BackpressureAsyncTransformer<>())
-                .compose(tagCategorizer.transform())
+                .compose(tagCategorizer.transform(null))
                 .publish();
         Observable<List<Tag>> bufferedTags = tags.buffer(10, TimeUnit.SECONDS, 3);
 

@@ -50,7 +50,7 @@ public class ProfileGeoFixMain {
 
         ConnectableObservable<Profile> profiles = candidates
                 .compose(new BackpressureAsyncTransformer<>())
-                .compose(profileGeoFixer.transform())
+                .compose(profileGeoFixer.transform(null))
                 .publish();
         Observable<List<Profile>> bufferedProfiles = profiles.buffer(10, TimeUnit.SECONDS, 3);
 

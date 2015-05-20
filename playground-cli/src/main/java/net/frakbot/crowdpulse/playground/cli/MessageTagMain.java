@@ -52,7 +52,7 @@ public class MessageTagMain {
 
         ConnectableObservable<Message> messages = candidates
                 .compose(new BackpressureAsyncTransformer<>())
-                .compose(tagger.transform())
+                .compose(tagger.transform(null))
                 .publish();
         Observable<List<Message>> bufferedMessages = messages.buffer(10, TimeUnit.SECONDS, 3);
 

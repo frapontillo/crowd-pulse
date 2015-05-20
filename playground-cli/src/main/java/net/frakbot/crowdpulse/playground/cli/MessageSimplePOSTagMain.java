@@ -50,7 +50,7 @@ public class MessageSimplePOSTagMain {
 
         ConnectableObservable<Message> messages = candidates
                 .compose(new BackpressureAsyncTransformer<>())
-                .compose(simplePOSTagger.transform())
+                .compose(simplePOSTagger.transform(null))
                 .publish();
         Observable<List<Message>> bufferedMessages = messages.buffer(10, TimeUnit.SECONDS, 3);
 

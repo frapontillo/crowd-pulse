@@ -50,7 +50,7 @@ public class MessageLemmatizeMain {
 
         ConnectableObservable<Message> messages = candidates
                 .compose(new BackpressureAsyncTransformer<>())
-                .compose(lemmatizer.transform())
+                .compose(lemmatizer.transform(null))
                 .publish();
         Observable<List<Message>> bufferedMessages = messages.buffer(10, TimeUnit.SECONDS, 3);
 

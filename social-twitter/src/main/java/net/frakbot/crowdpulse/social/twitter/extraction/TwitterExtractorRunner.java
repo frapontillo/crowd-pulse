@@ -16,18 +16,18 @@
 
 package net.frakbot.crowdpulse.social.twitter.extraction;
 
-import net.frakbot.crowdpulse.common.util.*;
+import net.frakbot.crowdpulse.common.util.CrowdLogger;
+import net.frakbot.crowdpulse.common.util.DateUtil;
+import net.frakbot.crowdpulse.common.util.StringUtil;
 import net.frakbot.crowdpulse.data.entity.Message;
 import net.frakbot.crowdpulse.social.extraction.ExtractionParameters;
-import net.frakbot.crowdpulse.social.util.*;
-import org.apache.logging.log4j.*;
+import net.frakbot.crowdpulse.social.util.Checker;
 import rx.Observable;
 import rx.Subscriber;
 import rx.functions.Func1;
 import rx.observables.ConnectableObservable;
 import rx.schedulers.Schedulers;
 import twitter4j.*;
-import twitter4j.Logger;
 
 import java.util.ArrayList;
 import java.util.Date;

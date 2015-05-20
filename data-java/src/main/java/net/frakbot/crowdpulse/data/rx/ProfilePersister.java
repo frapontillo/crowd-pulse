@@ -19,32 +19,32 @@ package net.frakbot.crowdpulse.data.rx;
 import net.frakbot.crowdpulse.common.util.CrowdLogger;
 import net.frakbot.crowdpulse.common.util.rx.CrowdSubscriber;
 import net.frakbot.crowdpulse.common.util.spi.IPlugin;
-import net.frakbot.crowdpulse.data.entity.Message;
-import net.frakbot.crowdpulse.data.repository.MessageRepository;
+import net.frakbot.crowdpulse.data.entity.Profile;
+import net.frakbot.crowdpulse.data.repository.ProfileRepository;
 import org.apache.logging.log4j.Logger;
 import rx.Observable;
 
 /**
  * @author Francesco Pontillo
  */
-public class MessagePersister extends IPlugin<Message, Message, Void> {
-    public final static String PLUGIN_NAME = "message-persist";
-    private final MessageRepository messageRepository;
-    private final Logger logger = CrowdLogger.getLogger(MessagePersister.class);
+public class ProfilePersister extends IPlugin<Profile, Profile, Void> {
+    public final static String PLUGIN_NAME = "profile-persist";
+    private final ProfileRepository profileRepository;
+    private final Logger logger = CrowdLogger.getLogger(ProfilePersister.class);
 
-    public MessagePersister() {
-        messageRepository = new MessageRepository();
+    public ProfilePersister() {
+        profileRepository = new ProfileRepository();
     }
 
     @Override public String getName() {
         return PLUGIN_NAME;
     }
 
-    @Override protected Observable.Operator<Message, Message> getOperator(Void parameters) {
-        return subscriber -> new CrowdSubscriber<Message>(subscriber) {
-            @Override public void onNext(Message message) {
-                messageRepository.save(message);
-                subscriber.onNext(message);
+    @Override protected Observable.Operator<Profile, Profile> getOperator(Void parameters) {
+        return subscriber -> new CrowdSubscriber<Profile>(subscriber) {
+            @Override public void onNext(Profile profile) {
+                profileRepository.save(profile);
+                subscriber.onNext(profile);
             }
         };
     }

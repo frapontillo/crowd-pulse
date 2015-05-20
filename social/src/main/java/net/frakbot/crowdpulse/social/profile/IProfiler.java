@@ -41,6 +41,11 @@ public abstract class IProfiler extends IPlugin<Message, Profile, ProfileParamet
      */
     public abstract ConnectableObservable<Profile> getProfile(ProfileParameters parameters);
 
+    @Override public Observable<Profile> process(Observable<Message> stream, ProfileParameters params) {
+        stream = stream.distinct(message -> new ProfileKey(message.getSource(), message.getFromUser()));
+        return super.process(stream, params);
+    }
+
     @Override protected Observable.Operator<Profile, Message> getOperator(ProfileParameters parameters) {
         return subscriber -> new SafeSubscriber<>(new Subscriber<Message>() {
             @Override public void onCompleted() {

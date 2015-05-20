@@ -16,11 +16,15 @@
 
 package net.frakbot.crowdpulse.common.util.spi;
 
+import net.frakbot.crowdpulse.common.util.rx.BackpressureAsyncTransformer;
 import rx.Observable;
 
 /**
- * Simple interface for Plugins. Each plugin should declare a name so that it can be retrieved by the
- * {@link java.util.ServiceLoader}.
+ * Simple interface for Plugins.
+ * <p>
+ * A plugin should return an {@link rx.Observable.Operator}
+ *
+ * Each plugin should also declare a name so that it can be retrieved by the {@link java.util.ServiceLoader}.
  *
  * @author Francesco Pontillo
  */
@@ -36,12 +40,14 @@ public abstract class IPlugin<Input, Output, Parameter> {
      * on a given stream of data of type {@code Input} and return a stream of type {@code Output}.
      *
      * @param parameters Plugin-specific parameters of class {@link Parameter} to invoke the operator.
-     *
      * @return An {@link rx.Observable.Operator} that works on {@link Observable<Input>} and emits values in a
      * {@link Observable<Output>}.
      */
     protected abstract Observable.Operator<Output, Input> getOperator(Parameter parameters);
 
+    /**
+     * @see IPlugin#getOperator(Object)
+     */
     protected Observable.Operator<Output, Input> getOperator() {
         return getOperator(null);
     }
@@ -53,16 +59,24 @@ public abstract class IPlugin<Input, Output, Parameter> {
      * If the {@link IPlugin< Output >} doesn't use a single {@link rx.Observable.Operator}, you can override this method
      * and provide your own transformation rules.
      *
+     * @param params Parameters to perform the specific task with.
      * @return A {@link rx.Observable.Transformer} that defines the proper transformations applied by this plugin
      * to the stream.
      */
+    public Observable.Transformer<Input, Output> transform(Parameter params) {
+        return inputObservable -> inputObservable.lift(getOperator(params));
+    }
+
+    /**
+     * @see IPlugin#transform(Object)
+     */
     public Observable.Transformer<Input, Output> transform() {
-        return inputObservable -> inputObservable.lift(getOperator());
+        return transform(null);
     }
 
     /**
      * Default implementation that takes an {@link Observable< Output >} stream and transforms it applying the
-     * {@link rx.Observable.Transformer} returned by {@link IPlugin#transform()}.
+     * {@link rx.Observable.Transformer} returned by {@link IPlugin#transform(Object)}.
      * <p>
      * You should override this method only when the plugin generates a stream and when the
      * {@link IPlugin#process(Observable, Object)} method accepts {@code null} as valid input.
@@ -70,11 +84,13 @@ public abstract class IPlugin<Input, Output, Parameter> {
      * @param stream The {@link Observable< Output >} to process.
      * @param params An optional parameter object of type {@link Parameter}.
      * @return A new {@link Observable< Output >} built by applying the {@link rx.Observable.Transformer} returned by
-     * {@link IPlugin#transform()}.
+     * {@link IPlugin#transform(Object)}.
      */
     public Observable<Output> process(Observable<Input> stream, Parameter params) {
         if (stream != null) {
-            return stream.compose(this.transform());
+            return stream
+                    .compose(this.transform(params))
+                    .compose(new BackpressureAsyncTransformer<>());
         }
         return null;
     }
@@ -85,10 +101,10 @@ public abstract class IPlugin<Input, Output, Parameter> {
      *
      * @param stream The {@link Observable< Output >} to process.
      * @return A new {@link Observable< Output >} built by applying the {@link rx.Observable.Transformer} returned by
-     * {@link IPlugin#transform()}.
+     * {@link IPlugin#transform(Object)}.
      * @see {@link IPlugin#process(Observable, Object)}
      */
-    public Observable<Output> process(Observable<Input> stream) {
+    public final Observable<Output> process(Observable<Input> stream) {
         return process(stream, null);
     }
 

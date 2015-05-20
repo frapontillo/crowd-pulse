@@ -16,3 +16,4 @@
 
 net.frakbot.crowdpulse.data.rx.MessagePersister
 net.frakbot.crowdpulse.data.rx.MessageFetcher
+net.frakbot.crowdpulse.data.rx.ProfilePersister

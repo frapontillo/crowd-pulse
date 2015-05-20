@@ -68,7 +68,7 @@ public class SentitSentimentAnalyzer extends IPlugin<Message, Message, Void> {
         return null;
     }
 
-    @Override public Observable.Transformer<Message, Message> transform() {
+    @Override public Observable.Transformer<Message, Message> transform(Void params) {
         return messages -> messages
                 .buffer(MAX_MESSAGES_PER_REQ)
                 .lift(new SentitOperator())
