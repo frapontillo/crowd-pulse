@@ -105,6 +105,8 @@ public class TwitterExtractorRunner {
                 try {
                     getTwitterStreamInstance().cleanUp();
                     getTwitterStreamInstance().shutdown();
+                    logger.info("SEARCH: ended.");
+                    logger.info("STREAMING: ended.");
                 } catch (TwitterException e) {
                     e.printStackTrace();
                 }

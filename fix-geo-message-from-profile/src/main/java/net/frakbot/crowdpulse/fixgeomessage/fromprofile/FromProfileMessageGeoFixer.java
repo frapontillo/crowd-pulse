@@ -28,7 +28,7 @@ import rx.Subscriber;
  * @author Francesco Pontillo
  */
 public class FromProfileMessageGeoFixer extends IPlugin<Message, Message, Void> {
-    private final static String GEOFIXER_IMPL = "fromprofile";
+    public final static String PLUGIN_NAME = "fromprofile";
     private final ProfileRepository profileRepository;
 
     public FromProfileMessageGeoFixer() {
@@ -36,7 +36,7 @@ public class FromProfileMessageGeoFixer extends IPlugin<Message, Message, Void> 
     }
 
     @Override public String getName() {
-        return GEOFIXER_IMPL;
+        return PLUGIN_NAME;
     }
 
     @Override public Observable.Operator<Message, Message> getOperator(Void parameters) {

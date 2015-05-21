@@ -47,7 +47,7 @@ public class ExtractionMain {
         new JCommander(params, args);
         IExtractor extractor = PluginProvider.getPlugin(params.getSource());
 
-        ConnectableObservable<Message> messages = extractor.process(null, params).publish();
+        ConnectableObservable<Message> messages = extractor.process(params, (Observable<?>[]) null).publish();
         Observable<List<Message>> bufferedMessages = messages.buffer(10, TimeUnit.SECONDS, 3, Schedulers.io());
 
         SubscriptionGroupLatch allSubscriptions = new SubscriptionGroupLatch(1);

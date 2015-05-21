@@ -16,7 +16,6 @@
 
 package net.frakbot.crowdpulse.social.profile;
 
-import net.frakbot.crowdpulse.common.util.rx.CrowdSubscriber;
 import net.frakbot.crowdpulse.common.util.spi.IPlugin;
 import net.frakbot.crowdpulse.data.entity.Message;
 import net.frakbot.crowdpulse.data.entity.Profile;
@@ -41,15 +40,19 @@ public abstract class IProfiler extends IPlugin<Message, Profile, ProfileParamet
      */
     public abstract ConnectableObservable<Profile> getProfile(ProfileParameters parameters);
 
-    @Override public Observable<Profile> process(Observable<Message> stream, ProfileParameters params) {
-        stream = stream.distinct(message -> new ProfileKey(message.getSource(), message.getFromUser()));
-        return super.process(stream, params);
+    @Override public Observable<Profile> process(ProfileParameters params, Observable<Message> stream) {
+        Observable<Message> distinctStream = stream.distinct(
+                message -> new ProfileKey(message.getSource(), message.getFromUser()));
+        return super.process(params, distinctStream);
     }
 
     @Override protected Observable.Operator<Profile, Message> getOperator(ProfileParameters parameters) {
         return subscriber -> new SafeSubscriber<>(new Subscriber<Message>() {
+            private int subscriptions = 0;
+
             @Override public void onCompleted() {
-                subscriber.onCompleted();
+                // as onNext are asynchronous, never complete automatically when the main stream does
+                // instead, rely on the last remaining subscription to notify the completion to subscriber
             }
 
             @Override public void onError(Throwable e) {
@@ -57,8 +60,37 @@ public abstract class IProfiler extends IPlugin<Message, Profile, ProfileParamet
             }
 
             @Override public void onNext(Message message) {
-                ConnectableObservable<Profile> profiles = getProfile(parameters);
-                profiles.subscribe(subscriber);
+                // build params
+                ProfileParameters params = new ProfileParameters();
+                params.setSource(message.getSource());
+                params.setProfile(message.getFromUser());
+                if (parameters != null) {
+                    params.setTags(parameters.getTags());
+                }
+                // get all the profiles
+                ConnectableObservable<Profile> profiles = getProfile(params);
+                profiles.subscribe(new SafeSubscriber<>(new Subscriber<Profile>() {
+                    @Override public void onCompleted() {
+                        // if all the subscriptions have completed, complete the main subscriber
+                        subscriptions -= 1;
+                        if (subscriptions == 0) {
+                            subscriber.onCompleted();
+                        } else if (subscriptions < 0) {
+                            subscriber.onError(new ArrayIndexOutOfBoundsException(
+                                    "A higher number of subscriptions has completed."));
+                        }
+                    }
+
+                    @Override public void onError(Throwable e) {
+                        subscriber.onError(e);
+                    }
+
+                    @Override public void onNext(Profile profile) {
+                        subscriber.onNext(profile);
+                    }
+                }));
+                // increase the number of the current subscriptions so that we can eventually complete
+                subscriptions += 1;
                 profiles.connect();
             }
         });

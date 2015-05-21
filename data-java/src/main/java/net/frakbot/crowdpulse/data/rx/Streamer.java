@@ -14,24 +14,22 @@
  * limitations under the License.
  */
 
-package net.frakbot.crowdpulse.data.entity;
+package net.frakbot.crowdpulse.data.rx;
 
-import org.mongodb.morphia.annotations.Id;
+import net.frakbot.crowdpulse.common.util.spi.IPlugin;
+import rx.Observable;
 
 /**
  * @author Francesco Pontillo
  */
-public class GenericEntity<T> {
-    @Id private T id;
+public class Streamer extends IPlugin<Object, Object, Void> {
+    public final static String PLUGIN_NAME = "streamer";
 
-    public T getId() {
-        return id;
+    @Override public String getName() {
+        return PLUGIN_NAME;
     }
 
-    public void setId(T id) {
-        if (this.id != null) {
-            throw new UnsupportedOperationException("Can't change the ID of an Entity.");
-        }
-        this.id = id;
+    @Override protected Observable.Operator<Object, Object> getOperator(Void parameters) {
+        return subscriber -> subscriber;
     }
 }

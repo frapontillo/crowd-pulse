@@ -30,6 +30,7 @@ public class BackpressureAsyncTransformer<T> implements Observable.Transformer<T
                 // when downstream observers can't keep up, buffer the generated values
                 .onBackpressureBuffer()
                 // observer on an IO thread
-                .observeOn(Schedulers.io());
+                .observeOn(Schedulers.io())
+                ;
     }
 }

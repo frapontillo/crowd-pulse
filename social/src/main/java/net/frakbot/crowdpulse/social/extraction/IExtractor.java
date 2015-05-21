@@ -181,9 +181,9 @@ public abstract class IExtractor extends IPlugin<Void, Message, ExtractionParame
     @Override protected Observable.Operator<Message, Void> getOperator(ExtractionParameters parameters) {
         return subscriber -> new SafeSubscriber<>(new Subscriber<Object>() {
             @Override public void onCompleted() {
-                ConnectableObservable<Message> dbMessages = getMessages(parameters);
-                dbMessages.subscribe(subscriber);
-                dbMessages.connect();
+                ConnectableObservable<Message> messages = getMessages(parameters);
+                messages.subscribe(subscriber);
+                messages.connect();
             }
 
             @Override public void onError(Throwable e) {

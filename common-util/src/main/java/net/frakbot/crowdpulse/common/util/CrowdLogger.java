@@ -41,7 +41,7 @@ public class CrowdLogger {
         LoggerContext ctx = (LoggerContext) LogManager.getContext(false);
         Configuration config = ctx.getConfiguration();
         LoggerConfig loggerConfig = config.getLoggerConfig(loggerName);
-        loggerConfig.setLevel(Level.INFO);
+        loggerConfig.setLevel(Level.DEBUG);
         ctx.updateLoggers();
         return logger;
     }

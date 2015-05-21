@@ -49,6 +49,7 @@ public class TwitterProfilerRunner {
                     // fetch and convert the user
                     User user = TwitterFactory.getTwitterInstance().showUser(parameters.getProfile());
                     Profile profile = new TwitterProfileConverter(parameters).fromExtractor(user, null);
+                    // TODO: evaluate convenience of fetching the user connection graph here
                     // notify the user
                     subscriber.onNext(profile);
                 } catch (TwitterException e) {

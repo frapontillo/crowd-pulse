@@ -24,10 +24,13 @@ import net.frakbot.crowdpulse.data.repository.MessageRepository;
 import org.apache.logging.log4j.Logger;
 import rx.Observable;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * @author Francesco Pontillo
  */
-public class MessagePersister extends IPlugin<Message, Message, Void> {
+public class MessagePersister extends IPlugin<Message, Message, MessagePersister.MessagePersisterOptions> {
     public final static String PLUGIN_NAME = "message-persist";
     private final MessageRepository messageRepository;
     private final Logger logger = CrowdLogger.getLogger(MessagePersister.class);
@@ -40,12 +43,37 @@ public class MessagePersister extends IPlugin<Message, Message, Void> {
         return PLUGIN_NAME;
     }
 
-    @Override protected Observable.Operator<Message, Message> getOperator(Void parameters) {
+    @Override protected Observable.Operator<Message, Message> getOperator(MessagePersisterOptions parameters) {
         return subscriber -> new CrowdSubscriber<Message>(subscriber) {
+            @Override public void onCompleted() {
+                super.onCompleted();
+            }
+
             @Override public void onNext(Message message) {
+                if (parameters != null) {
+                    List<String> tags = new ArrayList<>();
+                    tags.add(parameters.getTag());
+                    message.setCustomTags(tags);
+                }
                 messageRepository.save(message);
                 subscriber.onNext(message);
             }
         };
+    }
+
+    public static class MessagePersisterOptions {
+        private String tag;
+
+        public MessagePersisterOptions(String tag) {
+            this.tag = tag;
+        }
+
+        public String getTag() {
+            return tag;
+        }
+
+        public void setTag(String tag) {
+            this.tag = tag;
+        }
     }
 }

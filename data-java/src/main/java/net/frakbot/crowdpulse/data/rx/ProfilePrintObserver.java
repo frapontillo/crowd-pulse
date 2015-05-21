@@ -17,6 +17,7 @@
 package net.frakbot.crowdpulse.data.rx;
 
 import net.frakbot.crowdpulse.common.util.CrowdLogger;
+import net.frakbot.crowdpulse.common.util.rx.SubscriptionGroupLatch;
 import net.frakbot.crowdpulse.data.entity.Profile;
 import org.apache.logging.log4j.Logger;
 import rx.Observer;
@@ -26,17 +27,24 @@ import rx.Observer;
  */
 public class ProfilePrintObserver implements Observer<Profile> {
     private static final Logger logger = CrowdLogger.getLogger(ProfilePrintObserver.class);
+    private final SubscriptionGroupLatch latch;
+
+    public ProfilePrintObserver(SubscriptionGroupLatch latch) {
+        this.latch = latch;
+    }
 
     @Override public void onCompleted() {
-        logger.info("Profile stream completed..");
+        logger.info("Profile stream completed.");
+        latch.countDown();
     }
 
     @Override public void onError(Throwable e) {
         logger.error("Profile stream errored.", e);
         e.printStackTrace();
+        latch.countDown();
     }
 
     @Override public void onNext(Profile profile) {
-        logger.debug("Completed work for profile \"%s\".", profile.toString());
+        logger.debug("Completed work for profile \"{}\".", profile.toString());
     }
 }

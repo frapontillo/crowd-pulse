@@ -16,10 +16,7 @@
 
 package net.frakbot.crowdpulse.data.entity;
 
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author Francesco Pontillo
