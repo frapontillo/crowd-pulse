@@ -25,7 +25,6 @@ import net.frakbot.crowdpulse.social.profile.IProfiler;
 import net.frakbot.crowdpulse.social.profile.ProfileParameters;
 import rx.Observable;
 import rx.Subscription;
-import rx.observables.ConnectableObservable;
 import rx.schedulers.Schedulers;
 
 import java.io.IOException;
@@ -47,14 +46,13 @@ public class ProfileMain {
         new JCommander(params, args);
         IProfiler profiler = PluginProvider.getPlugin(params.getSource());
 
-        ConnectableObservable<Profile> profiles = profiler.getProfile(params);
+        Observable<Profile> profiles = profiler.getProfile(params);
         Observable<List<Profile>> bufferedMessages = profiles.buffer(10, TimeUnit.SECONDS, 3, Schedulers.io());
 
         SubscriptionGroupLatch allSubscriptions = new SubscriptionGroupLatch(1);
         Subscription bufferedSubscription = bufferedMessages.subscribe(new BufferedProfileListObserver(allSubscriptions));
         allSubscriptions.setSubscriptions(bufferedSubscription);
 
-        profiles.connect();
         allSubscriptions.waitAllUnsubscribed();
         MainHelper.getLogger().info("Done.");
     }

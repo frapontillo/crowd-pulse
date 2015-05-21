@@ -38,7 +38,7 @@ import java.util.HashMap;
 public class FacebookProfilerRunner {
     private static final Logger logger = CrowdLogger.getLogger(FacebookProfilerRunner.class);
 
-    public ConnectableObservable<Profile> getProfile(final ProfileParameters parameters) {
+    public Observable<Profile> getProfile(final ProfileParameters parameters) {
 
         // initialize the twitter instance
         try {
@@ -113,9 +113,8 @@ public class FacebookProfilerRunner {
         });
 
         profiles = profiles.subscribeOn(Schedulers.io());
-        ConnectableObservable<Profile> connProfiles = profiles.publish();
 
-        return connProfiles;
+        return profiles;
     }
 
 }

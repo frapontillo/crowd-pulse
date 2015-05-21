@@ -176,14 +176,13 @@ public abstract class IExtractor extends IPlugin<Void, Message, ExtractionParame
      * @param parameters {@link net.frakbot.crowdpulse.social.extraction.ExtractionParameters} to search for.
      * @return {@link rx.Observable< net.frakbot.crowdpulse.data.entity.Message >}
      */
-    protected abstract ConnectableObservable<Message> getMessages(ExtractionParameters parameters);
+    protected abstract Observable<Message> getMessages(ExtractionParameters parameters);
 
     @Override protected Observable.Operator<Message, Void> getOperator(ExtractionParameters parameters) {
         return subscriber -> new SafeSubscriber<>(new Subscriber<Object>() {
             @Override public void onCompleted() {
-                ConnectableObservable<Message> messages = getMessages(parameters);
+                Observable<Message> messages = getMessages(parameters);
                 messages.subscribe(subscriber);
-                messages.connect();
             }
 
             @Override public void onError(Throwable e) {

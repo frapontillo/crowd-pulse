@@ -33,6 +33,7 @@ import net.frakbot.crowdpulse.social.twitter.extraction.TwitterExtractor;
 import net.frakbot.crowdpulse.social.twitter.profile.TwitterProfiler;
 import org.apache.logging.log4j.Logger;
 import rx.Observable;
+import rx.Subscriber;
 import rx.Subscription;
 import rx.observables.ConnectableObservable;
 
@@ -62,11 +63,8 @@ public class FlowMain {
         IPlugin<Object, Message, Void> messageSimpleSel = PluginProvider.getPlugin(Streamer.PLUGIN_NAME);
         IPlugin<Message, Message, Void> messageGLocFixer = PluginProvider.getPlugin(FromProfileMessageGeoFixer.PLUGIN_NAME);
 
-
         // start the pipeline
-        Observable<Object> init = Observable.empty();
-        ConnectableObservable<Message> fin;
-        // ConnectableObservable<Profile> profileFin;
+        ConnectableObservable<Object> init = Observable.empty().publish();
 
         // main stream
         Observable<Message> messageStream;
@@ -77,7 +75,7 @@ public class FlowMain {
 
         // extract messages
         messageStream = messageExtractor.process(getExtractionParams(), init);
-        messageStream = messagePersister.process(new MessagePersister.MessagePersisterOptions("first"), messageStream);
+        messageStream = messagePersister.process(messageStream);
 
         // right after, extract and process profiles
         profileStream = profileExtractor.process(messageStream);
@@ -91,21 +89,28 @@ public class FlowMain {
         // in the end, save the messages to the database
         messageStream = messagePersister.process(messageStream);
 
-        // TODO: add more processing steps here
+        // ---------------------------------- TODO: add more processing steps here ---------------------------------- //
 
         // ============================================== END PIPELINE ============================================== //
 
-        // profileFin = profileStream.publish();
-        fin = messageStream.publish();
-
         // subscribe to the connectable stream
         SubscriptionGroupLatch allSubscriptions = new SubscriptionGroupLatch(1);
-        Subscription subscription = fin.subscribe(new MessagePrintObserver(allSubscriptions));
-        // Subscription subscription = profileFin.subscribe(new ProfilePrintObserver(allSubscriptions));
-        allSubscriptions.setSubscriptions(subscription);
+        /*Subscription subscription = init.subscribe(new Subscriber<Object>() {
+            @Override public void onCompleted() {
+                logger.debug("EXECUTION: STARTED");
+                allSubscriptions.countDown();
+            }
 
-        fin.connect();
-        // profileFin.connect();
+            @Override public void onError(Throwable e) {
+            }
+
+            @Override public void onNext(Object o) {
+            }
+        });*/
+        Subscription subscription2 = messageStream.subscribe(new MessagePrintObserver(allSubscriptions));
+        allSubscriptions.setSubscriptions(subscription2);
+
+        init.connect();
         allSubscriptions.waitAllUnsubscribed();
 
         logger.info("Done.");

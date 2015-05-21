@@ -46,7 +46,7 @@ public class FacebookProfiler extends IProfiler {
         return runner;
     }
 
-    @Override public ConnectableObservable<Profile> getProfile(ProfileParameters parameters) {
+    @Override public Observable<Profile> getProfile(ProfileParameters parameters) {
         return getRunnerInstance().getProfile(parameters);
     }
 }

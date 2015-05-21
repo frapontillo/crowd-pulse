@@ -141,7 +141,7 @@ public class TwitterExtractor extends IExtractor {
     }
 
     @Override
-    public ConnectableObservable<Message> getMessages(final ExtractionParameters parameters) {
+    public Observable<Message> getMessages(final ExtractionParameters parameters) {
         Observable<Message> messages;
 
         // validate parameters

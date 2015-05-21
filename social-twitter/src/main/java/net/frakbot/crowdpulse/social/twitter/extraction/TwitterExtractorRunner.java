@@ -26,6 +26,7 @@ import rx.Observable;
 import rx.Subscriber;
 import rx.functions.Func1;
 import rx.observables.ConnectableObservable;
+import rx.observers.SafeSubscriber;
 import rx.schedulers.Schedulers;
 import twitter4j.*;
 
@@ -43,7 +44,7 @@ public class TwitterExtractorRunner {
     private static final int TWEETS_PER_PAGE = 200;
     private static final org.apache.logging.log4j.Logger logger = CrowdLogger.getLogger(TwitterExtractorRunner.class);
 
-    public ConnectableObservable<Message> getMessages(final ExtractionParameters parameters) {
+    public Observable<Message> getMessages(final ExtractionParameters parameters) {
 
         // initialize the twitter instances
         try {
@@ -97,11 +98,20 @@ public class TwitterExtractorRunner {
 
         // the resulting Observable should be a union of both old and new messages
         // make it as a ConnectableObservable so that multiple subscribers can subscribe to it
-        ConnectableObservable<Message> messages = Observable.merge(oldMessages, newMessages).publish();
-
-        // subscribe to the merged messages in order to attempt a shutdown of the TwitterStreaming
-        messages.subscribe(new Subscriber<Message>() {
+        Observable<Message> messages = Observable.merge(oldMessages, newMessages);
+        messages = messages.lift(subscriber -> new SafeSubscriber<>(new Subscriber<Message>() {
             @Override public void onCompleted() {
+                cleanup();
+            }
+
+            @Override public void onError(Throwable e) {
+                cleanup();
+            }
+
+            @Override public void onNext(Message message) {
+            }
+
+            private void cleanup() {
                 try {
                     getTwitterStreamInstance().cleanUp();
                     getTwitterStreamInstance().shutdown();
@@ -111,13 +121,7 @@ public class TwitterExtractorRunner {
                     e.printStackTrace();
                 }
             }
-
-            @Override public void onError(Throwable e) {
-            }
-
-            @Override public void onNext(Message message) {
-            }
-        });
+        }));
 
         return messages;
     }

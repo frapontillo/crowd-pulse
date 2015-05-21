@@ -18,6 +18,8 @@ package net.frakbot.crowdpulse.data.rx;
 
 import net.frakbot.crowdpulse.common.util.spi.IPlugin;
 import rx.Observable;
+import rx.Subscriber;
+import rx.observers.SafeSubscriber;
 
 /**
  * @author Francesco Pontillo
@@ -30,6 +32,22 @@ public class Streamer extends IPlugin<Object, Object, Void> {
     }
 
     @Override protected Observable.Operator<Object, Object> getOperator(Void parameters) {
-        return subscriber -> subscriber;
+        return new Observable.Operator<Object, Object>() {
+            @Override public Subscriber<? super Object> call(Subscriber<? super Object> subscriber) {
+                return new SafeSubscriber<>(new Subscriber<Object>() {
+                    @Override public void onCompleted() {
+                        subscriber.onCompleted();
+                    }
+
+                    @Override public void onError(Throwable e) {
+                        subscriber.onError(e);
+                    }
+
+                    @Override public void onNext(Object o) {
+                        subscriber.onNext(o);
+                    }
+                });
+            }
+        };
     }
 }

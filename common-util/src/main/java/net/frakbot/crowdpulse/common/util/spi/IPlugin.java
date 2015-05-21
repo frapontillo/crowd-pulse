@@ -60,7 +60,8 @@ public abstract class IPlugin<Input, Output, Parameter> {
     }
 
     /**
-     * Default implementation to transform a stream of generic type {@link Input} by applying the single operation provided
+     * Default implementation to transform a stream of generic type {@link Input} by applying the single operation
+     * provided
      * by {@link IPlugin#getOperator()} via {@link Observable#lift(Observable.Operator)}.
      * <p>
      * If the {@link IPlugin<Input>} doesn't use a single {@link rx.Observable.Operator}, you can override this method
@@ -115,32 +116,66 @@ public abstract class IPlugin<Input, Output, Parameter> {
      * @return A new {@link Observable<Output>} built by {@link IPlugin#process(Object, Observable)}.
      */
     public Observable<Output> process(Parameter params, Observable<? extends Object>... streams) {
-        Observable<Input> keep = (Observable<Input>) streams[0];
+        Observable<Input> stream = (Observable<Input>) streams[0];
         if (streams.length == 1) {
-            return process(params, keep);
+            return process(params, stream);
         }
         // merge every Observable we have to wait for
         Observable[] waitStreams = Arrays.copyOfRange(streams, 1, streams.length);
         Observable<Object> waitObservables = Observable.merge(waitStreams);
 
-        ConnectableObservable<Input> connectableKeep = keep.cache().publish();
+        // stream = waitObservables.lift(getWaitOperator(stream));
 
-        // only publish values when all previous observables have completed
-        waitObservables.subscribe(new SafeSubscriber<>(new Subscriber<Object>() {
+        waitObservables.subscribe(new Subscriber<Object>() {
             @Override public void onCompleted() {
-                // as soon as every "wait-for-it" Observable completes within the merge operator
-                // connect to the "actual" stream
-                connectableKeep.connect();
+
             }
 
             @Override public void onError(Throwable e) {
+
             }
 
             @Override public void onNext(Object o) {
-            }
-        }));
 
-        return process(params, connectableKeep);
+            }
+        });
+
+        /*waitObservables.subscribe(new Subscriber<Object>() {
+            @Override public void onCompleted() {
+                ConnectableObservable<Input> connStream = stream.publish();
+                connStream.connect();
+            }
+
+            @Override public void onError(Throwable e) {
+
+            }
+
+            @Override public void onNext(Object o) {
+
+            }
+        });*/
+
+        return process(params, stream);
+    }
+
+    private <TInput, TOutput> Observable.Operator<TInput, TOutput> getWaitOperator(Observable<TInput> stream) {
+        return new Observable.Operator<TInput, TOutput>() {
+            @Override public Subscriber<? super TOutput> call(Subscriber<? super TInput> subscriber) {
+                return new SafeSubscriber<>(new Subscriber<Object>() {
+                    @Override public void onCompleted() {
+                        stream.subscribe(subscriber);
+                    }
+
+                    @Override public void onError(Throwable e) {
+
+                    }
+
+                    @Override public void onNext(Object o) {
+
+                    }
+                });
+            }
+        };
     }
 
     /**

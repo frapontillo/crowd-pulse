@@ -21,7 +21,6 @@ import net.frakbot.crowdpulse.data.entity.Message;
 import net.frakbot.crowdpulse.data.entity.Profile;
 import rx.Observable;
 import rx.Subscriber;
-import rx.observables.ConnectableObservable;
 import rx.observers.SafeSubscriber;
 
 /**
@@ -38,7 +37,7 @@ public abstract class IProfiler extends IPlugin<Message, Profile, ProfileParamet
      * @param parameters {@link net.frakbot.crowdpulse.social.profile.ProfileParameters} to search for.
      * @return {@link rx.Observable<net.frakbot.crowdpulse.data.entity.Profile>}
      */
-    public abstract ConnectableObservable<Profile> getProfile(ProfileParameters parameters);
+    public abstract Observable<Profile> getProfile(ProfileParameters parameters);
 
     @Override public Observable<Profile> process(ProfileParameters params, Observable<Message> stream) {
         Observable<Message> distinctStream = stream.distinct(
@@ -68,7 +67,7 @@ public abstract class IProfiler extends IPlugin<Message, Profile, ProfileParamet
                     params.setTags(parameters.getTags());
                 }
                 // get all the profiles
-                ConnectableObservable<Profile> profiles = getProfile(params);
+                Observable<Profile> profiles = getProfile(params);
                 profiles.subscribe(new SafeSubscriber<>(new Subscriber<Profile>() {
                     @Override public void onCompleted() {
                         // if all the subscriptions have completed, complete the main subscriber
@@ -91,7 +90,6 @@ public abstract class IProfiler extends IPlugin<Message, Profile, ProfileParamet
                 }));
                 // increase the number of the current subscriptions so that we can eventually complete
                 subscriptions += 1;
-                profiles.connect();
             }
         });
     }
