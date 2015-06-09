@@ -25,7 +25,6 @@ import net.frakbot.crowdpulse.social.util.Checker;
 import rx.Observable;
 import rx.Subscriber;
 import rx.functions.Func1;
-import rx.observables.ConnectableObservable;
 import rx.observers.SafeSubscriber;
 import rx.schedulers.Schedulers;
 import twitter4j.*;
@@ -102,13 +101,16 @@ public class TwitterExtractorRunner {
         messages = messages.lift(subscriber -> new SafeSubscriber<>(new Subscriber<Message>() {
             @Override public void onCompleted() {
                 cleanup();
+                subscriber.onCompleted();
             }
 
             @Override public void onError(Throwable e) {
                 cleanup();
+                subscriber.onError(e);
             }
 
             @Override public void onNext(Message message) {
+                subscriber.onNext(message);
             }
 
             private void cleanup() {
@@ -161,9 +163,7 @@ public class TwitterExtractorRunner {
                 List<Status> tweetList = result.getTweets();
                 List<Message> messageList = converter.fromExtractor(tweetList);
                 // notify the subscriber of new tweets
-                for (Message message : messageList) {
-                    subscriber.onNext(message);
-                }
+                messageList.forEach(subscriber::onNext);
                 // get the next page query
                 query = result.nextQuery();
             }
@@ -413,17 +413,15 @@ public class TwitterExtractorRunner {
     }
 
     private Func1<Message, Boolean> checkReferencedUsers(final ExtractionParameters parameters) {
-        return new Func1<Message, Boolean>() {
-            @Override public Boolean call(Message message) {
-                // if no referenced users are requested
-                if (parameters.getReferenceUsers() == null || parameters.getReferenceUsers().size() <= 0) {
-                    return true;
-                }
-                // if some referenced users are requested, all tweets should contain those
-                // BUT we need to exclude all tweets whose recipient user matches a referenced user
-                // (referenced users are all users involved in a tweet but the recipient)
-                return !parameters.getReferenceUsers().contains(message.getToUsers());
+        return message -> {
+            // if no referenced users are requested
+            if (parameters.getReferenceUsers() == null || parameters.getReferenceUsers().size() <= 0) {
+                return true;
             }
+            // if some referenced users are requested, all tweets should contain those
+            // BUT we need to exclude all tweets whose recipient user matches a referenced user
+            // (referenced users are all users involved in a tweet but the recipient)
+            return !parameters.getReferenceUsers().contains(message.getToUsers());
         };
     }
 

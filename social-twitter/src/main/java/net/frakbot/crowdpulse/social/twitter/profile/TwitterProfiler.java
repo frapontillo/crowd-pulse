@@ -19,7 +19,6 @@ package net.frakbot.crowdpulse.social.twitter.profile;
 import net.frakbot.crowdpulse.data.entity.Profile;
 import net.frakbot.crowdpulse.social.profile.IProfiler;
 import net.frakbot.crowdpulse.social.profile.ProfileParameters;
-import rx.observables.ConnectableObservable;
 
 /**
  * @author Francesco Pontillo
@@ -39,7 +38,7 @@ public class TwitterProfiler extends IProfiler {
         return runner;
     }
 
-    @Override public ConnectableObservable<Profile> getProfile(ProfileParameters parameters) {
-        return getRunnerInstance().getProfile(parameters);
+    @Override public Profile getSingleProfile(ProfileParameters parameters) {
+        return getRunnerInstance().getSingleProfile(parameters);
     }
 }

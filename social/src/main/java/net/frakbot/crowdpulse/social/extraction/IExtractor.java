@@ -16,16 +16,13 @@
 
 package net.frakbot.crowdpulse.social.extraction;
 
+import net.frakbot.crowdpulse.common.util.StringUtil;
 import net.frakbot.crowdpulse.common.util.spi.IPlugin;
 import net.frakbot.crowdpulse.data.entity.Message;
-import net.frakbot.crowdpulse.social.exception.SocialException;
 import net.frakbot.crowdpulse.social.exception.InvalidParametersSocialException;
 import net.frakbot.crowdpulse.social.exception.MissingParametersSocialException;
-import net.frakbot.crowdpulse.common.util.StringUtil;
+import net.frakbot.crowdpulse.social.exception.SocialException;
 import rx.Observable;
-import rx.Subscriber;
-import rx.observables.ConnectableObservable;
-import rx.observers.SafeSubscriber;
 
 import java.util.List;
 
@@ -178,21 +175,13 @@ public abstract class IExtractor extends IPlugin<Void, Message, ExtractionParame
      */
     protected abstract Observable<Message> getMessages(ExtractionParameters parameters);
 
+    // TODO: the operator isn't used in the Extractor since this is an entry point plugin (for now)
     @Override protected Observable.Operator<Message, Void> getOperator(ExtractionParameters parameters) {
-        return subscriber -> new SafeSubscriber<>(new Subscriber<Object>() {
-            @Override public void onCompleted() {
-                Observable<Message> messages = getMessages(parameters);
-                messages.subscribe(subscriber);
-            }
+        return null;
+    }
 
-            @Override public void onError(Throwable e) {
-                e.printStackTrace();
-                subscriber.onError(e);
-            }
-
-            @Override public void onNext(Object o) {
-                // do absolutely nothing
-            }
-        });
+    // TODO: if the extractor has to wait on other observables to complete, we must implement the logic here
+    @Override public Observable<Message> process(ExtractionParameters params, Observable<?>... streams) {
+        return getMessages(params);
     }
 }

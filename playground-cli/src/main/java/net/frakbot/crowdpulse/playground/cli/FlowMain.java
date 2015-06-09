@@ -37,7 +37,9 @@ import rx.Subscriber;
 import rx.Subscription;
 import rx.observables.ConnectableObservable;
 
+import java.util.ArrayList;
 import java.util.GregorianCalendar;
+import java.util.List;
 
 import static net.frakbot.crowdpulse.data.rx.MessagePersister.*;
 
@@ -64,7 +66,7 @@ public class FlowMain {
         IPlugin<Message, Message, Void> messageGLocFixer = PluginProvider.getPlugin(FromProfileMessageGeoFixer.PLUGIN_NAME);
 
         // start the pipeline
-        ConnectableObservable<Object> init = Observable.empty().publish();
+        // ConnectableObservable<Object> init = Observable.empty().publish();
 
         // main stream
         Observable<Message> messageStream;
@@ -74,8 +76,8 @@ public class FlowMain {
         // ================================================ PIPELINE ================================================ //
 
         // extract messages
-        messageStream = messageExtractor.process(getExtractionParams(), init);
-        messageStream = messagePersister.process(messageStream);
+        messageStream = messageExtractor.process(getExtractionParams());
+        messageStream = messagePersister.process(messageStream).cache();
 
         // right after, extract and process profiles
         profileStream = profileExtractor.process(messageStream);
@@ -83,21 +85,32 @@ public class FlowMain {
         profileStream = profilePersister.process(profileStream);
 
         // as soon as profiling is done, keep on processing messages
-        messageStream = messageSimpleSel.process(messageStream, profileStream);
+        // messageStream = messageSimpleSel.process(messageStream, profileStream);
         // messageStream = messageGLocFixer.process(messageStream);
 
         // in the end, save the messages to the database
-        messageStream = messagePersister.process(messageStream);
+        // messageStream = messagePersister.process(messageStream);
 
         // ---------------------------------- TODO: add more processing steps here ---------------------------------- //
 
         // ============================================== END PIPELINE ============================================== //
 
-        // subscribe to the connectable stream
+        // TODO: enable after fixing replay/cache issue
+        List<Observable> observableList = new ArrayList<>();
+        observableList.add(messageStream);
+        observableList.add(profileStream);
+        Observable[] observables = observableList.toArray(new Observable[] {});
+        ConnectableObservable stream = Observable.merge(observables).publish();
+        /*
+        ConnectableObservable stream = profileStream.publish();
+        */
+
         SubscriptionGroupLatch allSubscriptions = new SubscriptionGroupLatch(1);
-        /*Subscription subscription = init.subscribe(new Subscriber<Object>() {
+
+        // subscribe to the connectable stream
+        Subscription subscription = stream.subscribe(new Subscriber<Object>() {
             @Override public void onCompleted() {
-                logger.debug("EXECUTION: STARTED");
+                logger.debug("EXECUTION: COMPLETED");
                 allSubscriptions.countDown();
             }
 
@@ -106,20 +119,20 @@ public class FlowMain {
 
             @Override public void onNext(Object o) {
             }
-        });*/
-        Subscription subscription2 = messageStream.subscribe(new MessagePrintObserver(allSubscriptions));
-        allSubscriptions.setSubscriptions(subscription2);
+        });
+        // Subscription subscription2 = messageStream.subscribe(new MessagePrintObserver(allSubscriptions));
 
-        init.connect();
+        allSubscriptions.setSubscriptions(subscription);
+        stream.connect();
+
         allSubscriptions.waitAllUnsubscribed();
-
         logger.info("Done.");
     }
 
     private ExtractionParameters getExtractionParams() {
         ExtractionParameters extractionParameters = new ExtractionParameters();
         extractionParameters.setFromUser("frapontillo");
-        extractionParameters.setSince(new GregorianCalendar(2015, 4, 21).getTime());
+        extractionParameters.setSince(new GregorianCalendar(2015, 4, 23).getTime());
         extractionParameters.setUntil(new GregorianCalendar().getTime());
         return extractionParameters;
     }
