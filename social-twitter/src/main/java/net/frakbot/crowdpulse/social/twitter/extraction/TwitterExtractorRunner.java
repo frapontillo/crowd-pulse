@@ -144,6 +144,20 @@ public class TwitterExtractorRunner {
         return Observable.never();
     }
 
+    private boolean waitForTwitterTimeout(TwitterException exception) throws InterruptedException {
+        int remaining = exception.getRateLimitStatus().getRemaining();
+        if (remaining <= 0) {
+            int secondsToWait = exception.getRateLimitStatus().getSecondsUntilReset() + 5;
+            logger.warn("Encountered Twitter rate limit, waiting for {} seconds...", secondsToWait);
+            Thread.sleep(1000 * secondsToWait);
+            logger.warn("{} seconds have elapsed, now retrying the Twitter call...", secondsToWait);
+            // return true if the exception was rate limit related
+            return true;
+        }
+        // return false otherwise
+        return false;
+    }
+
     /**
      * Download all old messages (maximum 7-10 days past) that match the {@link net.frakbot.crowdpulse.social.extraction.ExtractionParameters}.
      *
@@ -159,7 +173,15 @@ public class TwitterExtractorRunner {
             // query can be null if we reach the end of the search result pages
             while (query != null) {
                 // get the tweets and convert them
-                QueryResult result = twitter.search(query);
+                QueryResult result = null;
+                try {
+                    result = twitter.search(query);
+                } catch (TwitterException timeout) {
+                    if (waitForTwitterTimeout(timeout)) {
+                        continue;
+                    }
+                    throw timeout;
+                }
                 List<Status> tweetList = result.getTweets();
                 List<Message> messageList = converter.fromExtractor(tweetList);
                 // notify the subscriber of new tweets
@@ -169,9 +191,10 @@ public class TwitterExtractorRunner {
             }
             // at this point, there is no other available query: we have finished
             subscriber.onCompleted();
-        } catch (TwitterException e) {
+        } catch (TwitterException | InterruptedException e) {
             subscriber.onError(e);
         }
+
     }
 
     /**
@@ -191,11 +214,18 @@ public class TwitterExtractorRunner {
             // query can be null if we reach the end of the search result pages
             while (paging != null) {
                 // get the tweets
-                ResponseList<Status> tweetList = twitter.getUserTimeline(parameters.getFromUser(), paging);
+                ResponseList<Status> tweetList = null;
+                try {
+                    tweetList = twitter.getUserTimeline(parameters.getFromUser(), paging);
+                } catch (TwitterException timeout) {
+                    if (waitForTwitterTimeout(timeout)) {
+                        continue;
+                    }
+                }
 
                 long maxId = -1;
                 // if there are no tweets, we reached the end of the search, otherwise get the latest ID
-                if (!tweetList.isEmpty()) {
+                if (tweetList != null && !tweetList.isEmpty()) {
                     maxId = tweetList.get(tweetList.size() - 1).getId();
                 } else {
                     paging = null;
@@ -229,7 +259,7 @@ public class TwitterExtractorRunner {
             }
             // at this point, there is no other available query: we have finished
             subscriber.onCompleted();
-        } catch (TwitterException e) {
+        } catch (InterruptedException | TwitterException e) {
             subscriber.onError(e);
         }
     }
@@ -346,8 +376,11 @@ public class TwitterExtractorRunner {
         }
         if (!StringUtil.isNullOrEmpty(parameters.getQuery())) {
             String[] components = parameters.getQuery().split(",");
-            for (String component : components) {
-                queryStringBuilder.append("\"").append(component).append("\" ");
+            for (int i = 0; i < components.length; i++) {
+                queryStringBuilder.append(components[i]);
+                if (i < components.length - 1) {
+                    queryStringBuilder.append(" OR ");
+                }
             }
         }
 
