@@ -18,11 +18,11 @@ package net.frakbot.crowdpulse.common.util.spi;
 
 import net.frakbot.crowdpulse.common.util.rx.BackpressureAsyncTransformer;
 import rx.Observable;
-import rx.Subscriber;
+import rx.Observer;
 import rx.observables.ConnectableObservable;
-import rx.observers.SafeSubscriber;
 
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * Simple interface for Plugins.
@@ -125,29 +125,37 @@ public abstract class IPlugin<Input, Output, Parameter> {
      * <li>the first element is the one to process by {@link IPlugin#processSingle(Object, Observable)} and return</li>
      * <li>the remaining elements are the ones whose completion must be waited before streaming elements</li>
      * </ul>
+     * <p>
+     * Since all the "wait" streams are merged and subscribed on, you may want to make them cached via
+     * {@link Observable#cache()} before passing them to the processing method.
      *
      * @param params  An optional parameter object of type {@link Parameter}.
      * @param streams The array of {@link Observable}s to use (only the first one will be processed).
      * @return A new {@link Observable<Output>} built by {@link IPlugin#processSingle(Object, Observable)}.
      */
     public Observable<Output> process(Parameter params, Observable<? extends Object>... streams) {
-        Observable<Input> stream = (Observable<Input>) streams[0];
         if (streams.length == 1) {
-            return processSingle(params, stream);
+            return processSingle(params, (Observable<Input>) streams[0]);
         }
 
-        // TODO: remove when multiple streams are handled in the following lines
-        assert (false);
+        // the first element must be processed but must emit items
+        streams[0] = streams[0].publish();
 
-        // merge every Observable we have to wait for
         Observable[] waitStreams = Arrays.copyOfRange(streams, 1, streams.length);
         Observable<Object> waitObservables = Observable.merge(waitStreams);
+        waitObservables.subscribe(new Observer<Object>() {
+            @Override public void onCompleted() {
+                ((ConnectableObservable<Input>) streams[0]).connect();
+            }
 
-        // TODO: wait for waitObservables, then emit stream
-        ConnectableObservable<Input> newStream = stream.publish();
-        waitObservables = waitObservables.lift(getWaitOperator(newStream));
+            @Override public void onError(Throwable e) {
+            }
 
-        return processSingle(params, stream);
+            @Override public void onNext(Object o) {
+            }
+        });
+
+        return processSingle(params, (ConnectableObservable<Input>) streams[0]);
     }
 
     /**
@@ -160,26 +168,59 @@ public abstract class IPlugin<Input, Output, Parameter> {
         return process(null, streams);
     }
 
-    // TODO: test this
-    public Observable<Output> waitThenEmit(Parameter params, Observable waitForThis, Observable<Output> emitThis) {
-        ConnectableObservable<Output> newStream = emitThis.publish();
-        waitForThis = waitForThis.lift(getWaitOperator(newStream));
-        return newStream;
-    }
+    /**
+     * @param params
+     * @param streams
+     * @return
+     * @deprecated use {@link IPlugin#process(Object, Observable[])}
+     */
+    public List<Observable> processMulti(Parameter params, Observable<? extends Object>... streams) {
+        if (streams.length == 1) {
+            return Arrays.asList(processSingle(params, (Observable<Input>) streams[0]));
+        }
 
-    // TODO: test this
-    private <TInput, TOutput> Observable.Operator<TInput, TOutput> getWaitOperator(ConnectableObservable<TInput> stream) {
-        return subscriber -> new SafeSubscriber<>(new Subscriber<Object>() {
+        streams[0] = streams[0].publish();
+        streams[1].subscribe(new Observer<Object>() {
             @Override public void onCompleted() {
-                stream.connect();
+                ((ConnectableObservable<Input>) streams[0]).connect();
             }
 
             @Override public void onError(Throwable e) {
-                stream.connect();
             }
 
-            @Override public void onNext(Object o) {}
+            @Override public void onNext(Object o) {
+            }
         });
+        /*
+        streams[1] = streams[1].lift(subscriber -> new Subscriber<Object>() {
+            @Override public void onCompleted() {
+                ((ConnectableObservable<Input>)streams[0]).connect();
+                subscriber.onCompleted();
+            }
+
+            @Override public void onError(Throwable e) {
+                subscriber.onError(e);
+
+            }
+
+            @Override public void onNext(Object o) {
+                subscriber.onNext(o);
+            }
+        });
+        */
+
+        return Arrays.asList(streams);
+    }
+
+    /**
+     * Process a {@link List<Observable>} just as in {@link IPlugin#processMulti(Object, Observable[])} but
+     * with {@code null} parameters.
+     *
+     * @see {@link IPlugin#processMulti(Object, Observable[])}
+     * @deprecated use {@link IPlugin#process(Object, Observable[])}
+     */
+    public List<Observable> processMulti(Observable<? extends Object>... streams) {
+        return processMulti(null, streams);
     }
 
 }

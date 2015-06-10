@@ -32,22 +32,18 @@ public class Streamer extends IPlugin<Object, Object, Void> {
     }
 
     @Override protected Observable.Operator<Object, Object> getOperator(Void parameters) {
-        return new Observable.Operator<Object, Object>() {
-            @Override public Subscriber<? super Object> call(Subscriber<? super Object> subscriber) {
-                return new SafeSubscriber<>(new Subscriber<Object>() {
-                    @Override public void onCompleted() {
-                        subscriber.onCompleted();
-                    }
-
-                    @Override public void onError(Throwable e) {
-                        subscriber.onError(e);
-                    }
-
-                    @Override public void onNext(Object o) {
-                        subscriber.onNext(o);
-                    }
-                });
+        return subscriber -> new SafeSubscriber<>(new Subscriber<Object>() {
+            @Override public void onCompleted() {
+                subscriber.onCompleted();
             }
-        };
+
+            @Override public void onError(Throwable e) {
+                subscriber.onError(e);
+            }
+
+            @Override public void onNext(Object o) {
+                subscriber.onNext(o);
+            }
+        });
     }
 }

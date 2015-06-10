@@ -23,7 +23,6 @@ import net.frakbot.crowdpulse.common.util.spi.PluginProvider;
 import net.frakbot.crowdpulse.data.entity.Message;
 import net.frakbot.crowdpulse.data.entity.Profile;
 import net.frakbot.crowdpulse.data.rx.MessagePersister;
-import net.frakbot.crowdpulse.data.rx.MessagePrintObserver;
 import net.frakbot.crowdpulse.data.rx.ProfilePersister;
 import net.frakbot.crowdpulse.data.rx.Streamer;
 import net.frakbot.crowdpulse.fixgeomessage.fromprofile.FromProfileMessageGeoFixer;
@@ -41,7 +40,7 @@ import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import java.util.List;
 
-import static net.frakbot.crowdpulse.data.rx.MessagePersister.*;
+import static net.frakbot.crowdpulse.data.rx.MessagePersister.MessagePersisterOptions;
 
 /**
  * Playground to test stream composability.
@@ -65,9 +64,6 @@ public class FlowMain {
         IPlugin<Object, Message, Void> messageSimpleSel = PluginProvider.getPlugin(Streamer.PLUGIN_NAME);
         IPlugin<Message, Message, Void> messageGLocFixer = PluginProvider.getPlugin(FromProfileMessageGeoFixer.PLUGIN_NAME);
 
-        // start the pipeline
-        // ConnectableObservable<Object> init = Observable.empty().publish();
-
         // main stream
         Observable<Message> messageStream;
         // profile stream (temporary)
@@ -85,25 +81,22 @@ public class FlowMain {
         profileStream = profilePersister.process(profileStream);
 
         // as soon as profiling is done, keep on processing messages
-        // messageStream = messageSimpleSel.process(messageStream, profileStream);
-        // messageStream = messageGLocFixer.process(messageStream);
-
-        // in the end, save the messages to the database
-        // messageStream = messagePersister.process(messageStream);
+        messageStream = messageSimpleSel.process(messageStream, profileStream);
+        messageStream = messageGLocFixer.process(messageStream);
 
         // ---------------------------------- TODO: add more processing steps here ---------------------------------- //
 
+        // in the end, save the messages to the database
+        messageStream = messagePersister.process(messageStream);
+
         // ============================================== END PIPELINE ============================================== //
 
-        // TODO: enable after fixing replay/cache issue
+        // observableList will contain the list of the terminal streams
+        // terminal streams are the Observables that have to be subscribed on for completion
         List<Observable> observableList = new ArrayList<>();
+        // add terminal streams here (e.g. messageStream, profileStream)
         observableList.add(messageStream);
-        observableList.add(profileStream);
-        Observable[] observables = observableList.toArray(new Observable[] {});
-        ConnectableObservable stream = Observable.merge(observables).publish();
-        /*
-        ConnectableObservable stream = profileStream.publish();
-        */
+        ConnectableObservable stream = mergeObservables(observableList).publish();
 
         SubscriptionGroupLatch allSubscriptions = new SubscriptionGroupLatch(1);
 
@@ -115,9 +108,12 @@ public class FlowMain {
             }
 
             @Override public void onError(Throwable e) {
+                logger.error("EXECUTION: ERRORED");
+                allSubscriptions.countDown();
             }
 
             @Override public void onNext(Object o) {
+                logger.debug(o.toString());
             }
         });
         // Subscription subscription2 = messageStream.subscribe(new MessagePrintObserver(allSubscriptions));
@@ -132,8 +128,13 @@ public class FlowMain {
     private ExtractionParameters getExtractionParams() {
         ExtractionParameters extractionParameters = new ExtractionParameters();
         extractionParameters.setFromUser("frapontillo");
-        extractionParameters.setSince(new GregorianCalendar(2015, 4, 23).getTime());
+        extractionParameters.setSince(new GregorianCalendar(2015, 5, 9).getTime());
         extractionParameters.setUntil(new GregorianCalendar().getTime());
         return extractionParameters;
+    }
+
+    private Observable mergeObservables(List<Observable> observableList) {
+        Observable[] observables = observableList.toArray(new Observable[] {});
+        return Observable.merge(observables);
     }
 }
