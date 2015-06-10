@@ -21,6 +21,7 @@ import com.beust.jcommander.Parameters;
 import net.frakbot.crowdpulse.social.converter.GeoLocationBoxConverter;
 import net.frakbot.crowdpulse.social.converter.ISO8601DateConverter;
 
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -128,5 +129,41 @@ public class ExtractionParameters {
 
     public void setUntil(Date until) {
         this.until = until;
+    }
+
+    public void setSource(String source) {
+        this.source = source;
+    }
+
+    public void setQuery(String query) {
+        this.query = query;
+    }
+
+    public void setGeoLocationBox(GeoLocationBox geoLocationBox) {
+        this.geoLocationBox = geoLocationBox;
+    }
+
+    public void setGeoArea(String geoArea) {
+        this.geoArea = geoArea;
+    }
+
+    public void setReferenceUsers(List<String> referenceUsers) {
+        this.referenceUsers = referenceUsers;
+    }
+
+    public void setLanguage(String language) {
+        this.language = language;
+    }
+
+    public void setLocale(String locale) {
+        this.locale = locale;
+    }
+
+    public void setTags(List<String> tags) {
+        this.tags = tags;
+    }
+
+    public void setTags(String... tags) {
+        this.tags = Arrays.asList(tags);
     }
 }
