@@ -22,7 +22,6 @@ import rx.Observer;
 import rx.observables.ConnectableObservable;
 
 import java.util.Arrays;
-import java.util.List;
 
 /**
  * Simple interface for Plugins.
@@ -166,61 +165,6 @@ public abstract class IPlugin<Input, Output, Parameter> {
      */
     public Observable<Output> process(Observable<? extends Object>... streams) {
         return process(null, streams);
-    }
-
-    /**
-     * @param params
-     * @param streams
-     * @return
-     * @deprecated use {@link IPlugin#process(Object, Observable[])}
-     */
-    public List<Observable> processMulti(Parameter params, Observable<? extends Object>... streams) {
-        if (streams.length == 1) {
-            return Arrays.asList(processSingle(params, (Observable<Input>) streams[0]));
-        }
-
-        streams[0] = streams[0].publish();
-        streams[1].subscribe(new Observer<Object>() {
-            @Override public void onCompleted() {
-                ((ConnectableObservable<Input>) streams[0]).connect();
-            }
-
-            @Override public void onError(Throwable e) {
-            }
-
-            @Override public void onNext(Object o) {
-            }
-        });
-        /*
-        streams[1] = streams[1].lift(subscriber -> new Subscriber<Object>() {
-            @Override public void onCompleted() {
-                ((ConnectableObservable<Input>)streams[0]).connect();
-                subscriber.onCompleted();
-            }
-
-            @Override public void onError(Throwable e) {
-                subscriber.onError(e);
-
-            }
-
-            @Override public void onNext(Object o) {
-                subscriber.onNext(o);
-            }
-        });
-        */
-
-        return Arrays.asList(streams);
-    }
-
-    /**
-     * Process a {@link List<Observable>} just as in {@link IPlugin#processMulti(Object, Observable[])} but
-     * with {@code null} parameters.
-     *
-     * @see {@link IPlugin#processMulti(Object, Observable[])}
-     * @deprecated use {@link IPlugin#process(Object, Observable[])}
-     */
-    public List<Observable> processMulti(Observable<? extends Object>... streams) {
-        return processMulti(null, streams);
     }
 
 }
