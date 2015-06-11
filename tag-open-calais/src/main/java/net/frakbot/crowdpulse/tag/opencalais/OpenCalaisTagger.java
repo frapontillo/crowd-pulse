@@ -65,6 +65,7 @@ public class OpenCalaisTagger extends IPlugin<Message, Message, Void> {
                     for (String entity : response.getEntities()) {
                         Tag tag = new Tag();
                         tag.setText(entity);
+                        tag.addSource(getName());
                         tags.add(tag);
                     }
                 } catch (Exception ignored) {}

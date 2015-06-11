@@ -64,6 +64,7 @@ public class TagMeTagger extends IPlugin<Message, Message, Void> {
                         for (TagMeResponse.TagMeAnnotation annotation : response.getAnnotations()) {
                             Tag tag = new Tag();
                             tag.setText(annotation.getTitle());
+                            tag.addSource(getName());
                             tags.add(tag);
                         }
                     } catch (RetrofitError e) {

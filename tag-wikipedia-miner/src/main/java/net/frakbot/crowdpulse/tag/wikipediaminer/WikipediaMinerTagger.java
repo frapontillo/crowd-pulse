@@ -58,6 +58,7 @@ public class WikipediaMinerTagger extends IPlugin<Message, Message, Void> {
                     for (WikifyResponse.DetectedTopic topic : response.getDetectedTopics()) {
                         Tag tag = new Tag();
                         tag.setText(topic.getTitle());
+                        tag.addSource(getName());
                         tags.add(tag);
                     }
                 } catch (Exception ignored) {}
