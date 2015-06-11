@@ -35,7 +35,7 @@ import java.util.List;
  * @author Francesco Pontillo
  */
 public class SentitSentimentAnalyzer extends IPlugin<Message, Message, Void> {
-    private final static String SENTIMENT_IMPL = "sentit";
+    public final static String PLUGIN_NAME = "sentiment-sentit";
     private final static String SENTIT_ENDPOINT = "http://sentit.cloudapp.net:9100/sentit/v2";
     private final static int MAX_MESSAGES_PER_REQ = 10;
     private final static SentitService service;
@@ -55,7 +55,7 @@ public class SentitSentimentAnalyzer extends IPlugin<Message, Message, Void> {
     }
 
     @Override public String getName() {
-        return SENTIMENT_IMPL;
+        return PLUGIN_NAME;
     }
 
     /**

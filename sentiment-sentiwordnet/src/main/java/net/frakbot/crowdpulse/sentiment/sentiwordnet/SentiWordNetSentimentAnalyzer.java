@@ -45,7 +45,7 @@ import rx.Observable;
  * @author Francesco Pontillo
  */
 public class SentiWordNetSentimentAnalyzer extends IPlugin<Message, Message, Void> {
-    private final static String SENTIMENT_IMPL = "sentiwordnet";
+    public final static String PLUGIN_NAME = "sentiwordnet";
     private final MultiWordNet multiWordNet;
     private final SentiWordNet sentiWordNet;
 
@@ -55,7 +55,7 @@ public class SentiWordNetSentimentAnalyzer extends IPlugin<Message, Message, Voi
     }
 
     @Override public String getName() {
-        return SENTIMENT_IMPL;
+        return PLUGIN_NAME;
     }
 
     @Override protected Observable.Operator<Message, Message> getOperator(Void parameters) {
