@@ -16,6 +16,7 @@
 
 package net.frakbot.crowdpulse.playground.cli;
 
+import net.frakbot.crowdpulse.categorize.wikipedia.WikipediaTagCategorizer;
 import net.frakbot.crowdpulse.common.util.CrowdLogger;
 import net.frakbot.crowdpulse.common.util.rx.SubscriptionGroupLatch;
 import net.frakbot.crowdpulse.common.util.spi.IPlugin;
@@ -28,9 +29,16 @@ import net.frakbot.crowdpulse.data.rx.Streamer;
 import net.frakbot.crowdpulse.detectlanguage.optimaize.OptimaizeLanguageDetector;
 import net.frakbot.crowdpulse.fixgeomessage.fromprofile.FromProfileMessageGeoFixer;
 import net.frakbot.crowdpulse.fixgeoprofile.googlemaps.GoogleMapsProfileGeoFixer;
+import net.frakbot.crowdpulse.lemmatize.multi.MultiLanguageLemmatizer;
+import net.frakbot.crowdpulse.postag.opennlp.OpenNLPPOSTagger;
+import net.frakbot.crowdpulse.postagsimple.multi.SimpleMultiPOSTagger;
+import net.frakbot.crowdpulse.remstopword.simple.SimpleStopWordRemover;
+import net.frakbot.crowdpulse.sentiment.sentit.SentitSentimentAnalyzer;
 import net.frakbot.crowdpulse.social.extraction.ExtractionParameters;
 import net.frakbot.crowdpulse.social.twitter.extraction.TwitterExtractor;
 import net.frakbot.crowdpulse.social.twitter.profile.TwitterProfiler;
+import net.frakbot.crowdpulse.tag.wikipediaminer.WikipediaMinerTagger;
+import net.frakbot.crowdpulse.tokenize.opennlp.OpenNLPTokenizer;
 import org.apache.logging.log4j.Logger;
 import rx.Observable;
 import rx.Subscriber;
@@ -65,6 +73,14 @@ public class FlowMain {
         IPlugin<Object, Message, Void> messageSimpleSel = PluginProvider.getPlugin(Streamer.PLUGIN_NAME);
         IPlugin<Message, Message, Void> messageGLocFixer = PluginProvider.getPlugin(FromProfileMessageGeoFixer.PLUGIN_NAME);
         IPlugin<Message, Message, Void> messageLangFixer = PluginProvider.getPlugin(OptimaizeLanguageDetector.PLUGIN_NAME);
+        IPlugin<Message, Message, Void> messageCtxTagger = PluginProvider.getPlugin(WikipediaMinerTagger.PLUGIN_NAME);
+        IPlugin<Message, Message, Void> messageTagCatgrz = PluginProvider.getPlugin(WikipediaTagCategorizer.PLUGIN_NAME);
+        IPlugin<Message, Message, Void> messageTokenizer = PluginProvider.getPlugin(OpenNLPTokenizer.PLUGIN_NAME);
+        IPlugin<Message, Message, Void> messageStopWrdRm = PluginProvider.getPlugin(SimpleStopWordRemover.PLUGIN_NAME);
+        IPlugin<Message, Message, Void> messageLemmatizr = PluginProvider.getPlugin(MultiLanguageLemmatizer.PLUGIN_NAME);
+        IPlugin<Message, Message, Void> messagePosTagger = PluginProvider.getPlugin(OpenNLPPOSTagger.PLUGIN_NAME);
+        IPlugin<Message, Message, Void> messageSimPosTgr = PluginProvider.getPlugin(SimpleMultiPOSTagger.PLUGIN_NAME);
+        IPlugin<Message, Message, Void> messageSentiment = PluginProvider.getPlugin(SentitSentimentAnalyzer.PLUGIN_NAME);
 
         // main stream
         Observable<Message> messageStream;
@@ -86,6 +102,16 @@ public class FlowMain {
         messageStream = messageSimpleSel.process(messageStream, profileStream);
         messageStream = messageGLocFixer.process(messageStream);
         messageStream = messageLangFixer.process(messageStream);
+
+        // NLP processing
+        messageStream = messageCtxTagger.process(messageStream);
+        messageStream = messageTagCatgrz.process(messageStream);
+        messageStream = messageTokenizer.process(messageStream);
+        messageStream = messageStopWrdRm.process(messageStream);
+        messageStream = messageLemmatizr.process(messageStream);
+        messageStream = messagePosTagger.process(messageStream);
+        messageStream = messageSimPosTgr.process(messageStream);
+        messageStream = messageSentiment.process(messageStream);
 
         // ---------------------------------- TODO: add more processing steps here ---------------------------------- //
 
@@ -131,7 +157,7 @@ public class FlowMain {
     private ExtractionParameters getExtractionParams() {
         ExtractionParameters extractionParameters = new ExtractionParameters();
         extractionParameters.setFromUser("frapontillo");
-        extractionParameters.setSince(new GregorianCalendar(2015, 5, 9).getTime());
+        extractionParameters.setSince(new GregorianCalendar(2015, 5, 11).getTime());
         extractionParameters.setUntil(new GregorianCalendar().getTime());
         return extractionParameters;
     }

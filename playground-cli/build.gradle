@@ -37,6 +37,9 @@ dependencies {
     compile project(':fix-geo-message')
     compile project(':fix-geo-message-from-profile')
 
+    compile project(':detect-language')
+    compile project(':detect-language-optimaize')
+
     compile project(':tag')
     compile project(':tag-babelfy')
     compile project(':tag-me')
@@ -46,14 +49,14 @@ dependencies {
     compile project(':categorize')
     compile project(':categorize-wikipedia')
 
-    compile project(':detect-language')
-    compile project(':detect-language-optimaize')
-
     compile project(':fix-geo-message')
     compile project(':fix-geo-message-from-profile')
 
     compile project(':tokenize')
     compile project(':tokenize-open-nlp')
+
+    compile project(':rem-stop-word')
+    compile project(':rem-stop-word-simple')
 
     compile project(':pos-tag')
     compile project(':pos-tag-open-nlp')
@@ -62,9 +65,6 @@ dependencies {
     compile project(':pos-tag-simple-multi')
     compile project(':pos-tag-simple-it')
     compile project(':pos-tag-simple-en')
-
-    compile project(':rem-stop-word')
-    compile project(':rem-stop-word-simple')
 
     compile project(':lemmatize')
     compile project(':lemmatize-multi')

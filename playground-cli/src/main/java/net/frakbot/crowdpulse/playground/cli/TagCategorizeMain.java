@@ -21,8 +21,8 @@ import net.frakbot.crowdpulse.common.util.GenericAnalysisParameters;
 import net.frakbot.crowdpulse.common.util.rx.BackpressureAsyncTransformer;
 import net.frakbot.crowdpulse.common.util.rx.SubscriptionGroupLatch;
 import net.frakbot.crowdpulse.common.util.spi.IPlugin;
-import net.frakbot.crowdpulse.data.entity.Tag;
-import net.frakbot.crowdpulse.data.rx.BufferedTagListObserver;
+import net.frakbot.crowdpulse.data.entity.Message;
+import net.frakbot.crowdpulse.data.rx.BufferedMessageListObserver;
 import rx.Observable;
 import rx.Subscription;
 import rx.observables.ConnectableObservable;
@@ -36,7 +36,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class TagCategorizeMain {
     private SubscriptionGroupLatch allSubscriptions;
-    private IPlugin<Tag, Tag, Void> tagCategorizer;
+    private IPlugin<Message, Message, Void> tagCategorizer;
 
     public static void main(String[] args) throws IOException {
         TagCategorizeMain main = new TagCategorizeMain();
@@ -46,20 +46,20 @@ public class TagCategorizeMain {
 
     public void run(String[] args) throws IOException {
         GenericAnalysisParameters params = MainHelper.start(args);
-        final Observable<Tag> candidates = MainHelper.getTags(params);
+        final Observable<Message> candidates = MainHelper.getMessages(params);
 
-        ConnectableObservable<Tag> tags = candidates
+        ConnectableObservable<Message> tags = candidates
                 .compose(new BackpressureAsyncTransformer<>())
                 .compose(tagCategorizer.transform(null))
                 .publish();
-        Observable<List<Tag>> bufferedTags = tags.buffer(10, TimeUnit.SECONDS, 3);
+        Observable<List<Message>> bufferedTags = tags.buffer(10, TimeUnit.SECONDS, 3);
 
         allSubscriptions = new SubscriptionGroupLatch(2);
         Subscription subscription = tags.subscribe(
                 tag -> MainHelper.getLogger().info("READ: \"{}\"", tag.getText()),
                 throwable -> allSubscriptions.countDown(),
                 allSubscriptions::countDown);
-        Subscription bufferedSubscription = bufferedTags.subscribe(new BufferedTagListObserver
+        Subscription bufferedSubscription = bufferedTags.subscribe(new BufferedMessageListObserver
                 (allSubscriptions));
         allSubscriptions.setSubscriptions(subscription, bufferedSubscription);
 

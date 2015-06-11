@@ -53,6 +53,9 @@ include 'categorize-wikipedia'
 include 'tokenize'
 include 'tokenize-open-nlp'
 
+include 'rem-stop-word'
+include 'rem-stop-word-simple'
+
 include 'pos-tag'
 include 'pos-tag-open-nlp'
 
@@ -60,9 +63,6 @@ include 'pos-tag-simple'
 include 'pos-tag-simple-multi'
 include 'pos-tag-simple-it'
 include 'pos-tag-simple-en'
-
-include 'rem-stop-word'
-include 'rem-stop-word-simple'
 
 include 'lemmatize'
 include 'lemmatize-multi'
