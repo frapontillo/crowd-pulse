@@ -30,7 +30,7 @@ import java.util.List;
  * @author Francesco Pontillo
  */
 public class BabelfyTagger extends IPlugin<Message, Message, Void> {
-    private final static String TAGGER_NAME = "babelfy";
+    public final static String PLUGIN_NAME = "babelfy";
     private final static String BABELFY_ENDPOINT = "http://babelfy.io/v1";
     private final static BabelfyService service;
 
@@ -44,7 +44,7 @@ public class BabelfyTagger extends IPlugin<Message, Message, Void> {
     }
 
     @Override public String getName() {
-        return TAGGER_NAME;
+        return PLUGIN_NAME;
     }
 
     @Override protected Observable.Operator<Message, Message> getOperator(Void parameters) {
