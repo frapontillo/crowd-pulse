@@ -37,7 +37,7 @@ import java.util.stream.Collectors;
  * @author Francesco Pontillo
  */
 public class OpenNLPTokenizer extends IPlugin<Message, Message, Void> {
-    private final static String TOKENIZER_IMPL = "opennlp";
+    public final static String PLUGIN_NAME = "tokenizer-opennlp";
     private Map<String, TokenizerModel> models;
 
     public OpenNLPTokenizer() {
@@ -45,7 +45,7 @@ public class OpenNLPTokenizer extends IPlugin<Message, Message, Void> {
     }
 
     @Override public String getName() {
-        return TOKENIZER_IMPL;
+        return PLUGIN_NAME;
     }
 
     @Override protected Observable.Operator<Message, Message> getOperator(Void parameters) {
