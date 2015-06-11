@@ -31,8 +31,8 @@ public class WikipediaTagCategorizerTest {
 
     @Test
     public void testSPI() throws ClassNotFoundException {
-        IPlugin<Tag, Tag, Void> wikipediaTagCategorizer = PluginProvider.getPlugin(WikipediaTagCategorizer.TAGCATEGORIZER_IMPL);
-        assertTrue(wikipediaTagCategorizer.getName().equals(WikipediaTagCategorizer.TAGCATEGORIZER_IMPL));
+        IPlugin<Tag, Tag, Void> wikipediaTagCategorizer = PluginProvider.getPlugin(WikipediaTagCategorizer.PLUGIN_NAME);
+        assertTrue(wikipediaTagCategorizer.getName().equals(WikipediaTagCategorizer.PLUGIN_NAME));
     }
 
 }
