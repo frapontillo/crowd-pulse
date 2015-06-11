@@ -34,7 +34,7 @@ import java.util.List;
  * @author Francesco Pontillo
  */
 public class OpenCalaisTagger extends IPlugin<Message, Message, Void> {
-    private final static String TAGGER_NAME = "opencalais";
+    public final static String PLUGIN_NAME = "opencalais";
     private final static String OPEN_CALAIS_ENDPOINT = "http://api.opencalais.com/tag/rs";
     private final static OpenCalaisService service;
 
@@ -52,7 +52,7 @@ public class OpenCalaisTagger extends IPlugin<Message, Message, Void> {
     }
 
     @Override public String getName() {
-        return TAGGER_NAME;
+        return PLUGIN_NAME;
     }
 
     @Override protected Observable.Operator<Message, Message> getOperator(Void parameters) {
@@ -65,6 +65,7 @@ public class OpenCalaisTagger extends IPlugin<Message, Message, Void> {
                     for (String entity : response.getEntities()) {
                         Tag tag = new Tag();
                         tag.setText(entity);
+                        tag.addSource(getName());
                         tags.add(tag);
                     }
                 } catch (Exception ignored) {}

@@ -1,6 +1,7 @@
 package net.frakbot.crowdpulse.categorize;
 
 import net.frakbot.crowdpulse.common.util.rx.CrowdSubscriber;
+import net.frakbot.crowdpulse.data.entity.Message;
 import net.frakbot.crowdpulse.data.entity.Tag;
 import rx.Observable;
 import rx.Subscriber;
@@ -12,15 +13,17 @@ import java.util.List;
  *
  * @author Francesco Pontillo
  */
-public abstract class ITagCategorizerOperator implements Observable.Operator<Tag, Tag> {
+public abstract class ITagCategorizerOperator implements Observable.Operator<Message, Message> {
 
     @Override
-    public Subscriber<? super Tag> call(Subscriber<? super Tag> subscriber) {
-        return new CrowdSubscriber<Tag>(subscriber) {
+    public Subscriber<? super Message> call(Subscriber<? super Message> subscriber) {
+        return new CrowdSubscriber<Message>(subscriber) {
             @Override
-            public void onNext(Tag tag) {
-                categorizeTag(tag);
-                subscriber.onNext(tag);
+            public void onNext(Message message) {
+                if (message.getTags() != null) {
+                    message.getTags().forEach(ITagCategorizerOperator.this::categorizeTag);
+                }
+                subscriber.onNext(message);
             }
         };
     }

@@ -16,19 +16,15 @@
 
 package net.frakbot.crowdpulse.social.facebook.profile;
 
-import net.frakbot.crowdpulse.social.facebook.FacebookFactory;
 import facebook4j.*;
 import facebook4j.internal.org.json.JSONException;
 import facebook4j.internal.org.json.JSONObject;
 import facebook4j.json.DataObjectFactory;
-import net.frakbot.crowdpulse.data.entity.Profile;
-import net.frakbot.crowdpulse.social.profile.ProfileParameters;
 import net.frakbot.crowdpulse.common.util.CrowdLogger;
+import net.frakbot.crowdpulse.data.entity.Profile;
+import net.frakbot.crowdpulse.social.facebook.FacebookFactory;
+import net.frakbot.crowdpulse.social.profile.ProfileParameters;
 import org.apache.logging.log4j.Logger;
-import rx.Observable;
-import rx.Subscriber;
-import rx.observables.ConnectableObservable;
-import rx.schedulers.Schedulers;
 
 import java.util.HashMap;
 
@@ -38,7 +34,64 @@ import java.util.HashMap;
 public class FacebookProfilerRunner {
     private static final Logger logger = CrowdLogger.getLogger(FacebookProfilerRunner.class);
 
-    public ConnectableObservable<Profile> getProfile(final ProfileParameters parameters) {
+    public Profile getSingleProfile(ProfileParameters parameters) {
+        Profile profile = null;
+        try {
+            long followings = 0;
+            long followers = 0;
+            String objectType = null;
+            Object userOrPage = null;
+
+            // get the raw message so we can determine if it is a user or a page
+            Reading includeMetadata = new Reading();
+            includeMetadata.metadata();
+            HashMap<String, String> rawMap = new HashMap<String, String>();
+            rawMap.put("metadata", "1");
+            RawAPIResponse res = FacebookFactory.getFacebookInstance().rawAPI().callGetAPI(parameters.getProfile(), rawMap);
+
+            // we now have the full JSON, so we go into it and check the object type
+            JSONObject json = res.asJSONObject();
+            String jsonType;
+            try {
+                jsonType = json.getJSONObject("metadata").getString("type");
+            } catch (JSONException e) {
+                jsonType = null;
+            }
+
+            Page locationPage = null;
+
+            if (jsonType.equals("user")) {
+                // if the profile is a user, fetch both friends and followers (subscribers)
+                userOrPage = DataObjectFactory.createUser(res.asString());
+                objectType = FacebookProfileConverter.DATA_OBJECT_TYPE_USER;
+                followings = FacebookFactory.getFacebookInstance().friends()
+                        .getFriends(parameters.getProfile()).getCount();
+                followers = FacebookFactory.getFacebookInstance()
+                        .getSubscribers(parameters.getProfile()).getCount();
+                locationPage = FacebookFactory.getFacebookInstance().getPage(((User)userOrPage).getLocation().getId());
+            } else if (jsonType.equals("page")) {
+                // if the profile is a page, followings stays to 0
+                userOrPage = DataObjectFactory.createPage(res.asString());
+                objectType = FacebookProfileConverter.DATA_OBJECT_TYPE_PAGE;
+                Page page = (Page) userOrPage;
+                followers = page.getLikes();
+                locationPage = page;
+            }
+
+            HashMap<String, Object> conversionMap = new HashMap<String, Object>();
+            conversionMap.put(FacebookProfileConverter.DATA_OBJECT_TYPE, objectType);
+            conversionMap.put(FacebookProfileConverter.DATA_FOLLOWINGS_COUNT, followings);
+            conversionMap.put(FacebookProfileConverter.DATA_FOLLOWERS_COUNT, followers);
+            conversionMap.put(FacebookProfileConverter.DATA_LOCATION_PAGE, locationPage);
+
+            // convert the user or page
+            profile = new FacebookProfileConverter(parameters).fromExtractor(userOrPage, conversionMap);
+        } catch (FacebookException ignored) { }
+        return profile;
+    }
+
+    /*
+    public Observable<Profile> getProfile(final ProfileParameters parameters) {
 
         // initialize the twitter instance
         try {
@@ -113,9 +166,9 @@ public class FacebookProfilerRunner {
         });
 
         profiles = profiles.subscribeOn(Schedulers.io());
-        ConnectableObservable<Profile> connProfiles = profiles.publish();
 
-        return connProfiles;
+        return profiles;
     }
+    */
 
 }

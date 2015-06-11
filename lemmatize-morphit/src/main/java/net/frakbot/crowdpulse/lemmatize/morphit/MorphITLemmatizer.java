@@ -45,8 +45,8 @@ import java.util.regex.Pattern;
  * @author Francesco Pontillo
  */
 public class MorphITLemmatizer extends ISingleablePlugin<Message, Void> {
+    public static final String PLUGIN_NAME = "lemmatizer-it";
     private static final Pattern spacePattern = Pattern.compile("\\s+");
-    private static final String LEMMATIZER_IMPL = "lemmatizer-it";
 
     // <key:(tanl-tag), value:(morphit-tag-1,...)>
     private HashMap<String, HashSet<String>> tanlMorphITMap;
@@ -100,7 +100,7 @@ public class MorphITLemmatizer extends ISingleablePlugin<Message, Void> {
     }
 
     @Override public String getName() {
-        return LEMMATIZER_IMPL;
+        return PLUGIN_NAME;
     }
 
     @Override public Observable.Operator<Message, Message> getOperator(Void parameters) {

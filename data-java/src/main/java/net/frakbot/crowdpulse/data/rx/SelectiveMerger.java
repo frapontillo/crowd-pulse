@@ -23,6 +23,7 @@ import rx.Subscriber;
 
 /**
  * @author Francesco Pontillo
+ * TODO: is this really necessary?
  */
 public class SelectiveMerger extends IPlugin<Observable, Message, Void> {
     public final static String PLUGIN_NAME = "selective-merger";
@@ -31,8 +32,8 @@ public class SelectiveMerger extends IPlugin<Observable, Message, Void> {
         return PLUGIN_NAME;
     }
 
-    @Override public Observable<Message> process(Void params, Observable<Observable> stream) {
-        return super.process(params, stream);
+    @Override public Observable<Message> processSingle(Void params, Observable<Observable> stream) {
+        return super.processSingle(params, stream);
     }
 
     @Override protected Observable.Operator<Message, Observable> getOperator(Void parameters) {

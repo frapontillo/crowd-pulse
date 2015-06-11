@@ -33,10 +33,10 @@ import java.util.List;
  * @author Francesco Pontillo
  */
 public class SimpleMultiPOSTagger extends IPlugin<Message, Message, Void> {
-    private static final String SIMPLEPOSTAGGER_IMPL = "simplepostagger-multi";
+    public static final String PLUGIN_NAME = "simplepostagger-multi";
 
     @Override public String getName() {
-        return SIMPLEPOSTAGGER_IMPL;
+        return PLUGIN_NAME;
     }
 
     @Override public Observable.Operator<Message, Message> getOperator(Void parameters) {

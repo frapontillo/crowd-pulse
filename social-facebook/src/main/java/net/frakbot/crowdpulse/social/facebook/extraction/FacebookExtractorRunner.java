@@ -17,15 +17,15 @@
 package net.frakbot.crowdpulse.social.facebook.extraction;
 
 import facebook4j.*;
+import net.frakbot.crowdpulse.common.util.CrowdLogger;
+import net.frakbot.crowdpulse.common.util.StringUtil;
 import net.frakbot.crowdpulse.data.entity.Message;
 import net.frakbot.crowdpulse.social.extraction.ExtractionParameters;
 import net.frakbot.crowdpulse.social.util.Checker;
-import net.frakbot.crowdpulse.common.util.CrowdLogger;
-import net.frakbot.crowdpulse.common.util.StringUtil;
 import org.apache.logging.log4j.Logger;
 import rx.Observable;
 import rx.Subscriber;
-import rx.observables.ConnectableObservable;
+import rx.observers.SafeSubscriber;
 import rx.schedulers.Schedulers;
 
 import java.util.Date;
@@ -39,7 +39,7 @@ public class FacebookExtractorRunner {
     private static final int POSTS_POLLING_MINUTES = 1;
     private static final Logger logger = CrowdLogger.getLogger(FacebookExtractorRunner.class);
 
-    public ConnectableObservable<Message> getMessages(final ExtractionParameters parameters) {
+    public Observable<Message> getMessages(final ExtractionParameters parameters) {
 
         // initialize the facebook instances
         try {
@@ -105,11 +105,19 @@ public class FacebookExtractorRunner {
                 .filter(Checker.checkQuery(parameters));
         mergedAndFiltered = mergedAndFiltered.subscribeOn(Schedulers.io());
 
-        ConnectableObservable<Message> messages = mergedAndFiltered.publish();
-
-        // subscribe to the merged messages in order to attempt a shutdown of the Facebook instance
-        messages.subscribe(new Subscriber<Message>() {
+        mergedAndFiltered = mergedAndFiltered.lift(subscriber -> new SafeSubscriber<>(new Subscriber<Message>() {
             @Override public void onCompleted() {
+                cleanup();
+            }
+
+            @Override public void onError(Throwable e) {
+                cleanup();
+            }
+
+            @Override public void onNext(Message message) {
+            }
+
+            private void cleanup() {
                 // cleanup Facebook
                 try {
                     getFacebookInstance().shutdown();
@@ -117,15 +125,9 @@ public class FacebookExtractorRunner {
                     e.printStackTrace();
                 }
             }
+        }));
 
-            @Override public void onError(Throwable e) {
-            }
-
-            @Override public void onNext(Message message) {
-            }
-        });
-
-        return messages;
+        return mergedAndFiltered;
     }
 
     /**

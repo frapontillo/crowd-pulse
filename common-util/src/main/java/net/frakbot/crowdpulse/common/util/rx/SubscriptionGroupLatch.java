@@ -43,6 +43,9 @@ public class SubscriptionGroupLatch implements Subscription {
     }
 
     @Override public boolean isUnsubscribed() {
+        if (subscriptions == null) {
+            return true;
+        }
         for (Subscription subscription : subscriptions) {
             if (!subscription.isUnsubscribed()) {
                 return false;

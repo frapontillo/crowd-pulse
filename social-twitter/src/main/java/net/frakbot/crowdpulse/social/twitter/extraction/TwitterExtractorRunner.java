@@ -25,7 +25,7 @@ import net.frakbot.crowdpulse.social.util.Checker;
 import rx.Observable;
 import rx.Subscriber;
 import rx.functions.Func1;
-import rx.observables.ConnectableObservable;
+import rx.observers.SafeSubscriber;
 import rx.schedulers.Schedulers;
 import twitter4j.*;
 
@@ -43,7 +43,7 @@ public class TwitterExtractorRunner {
     private static final int TWEETS_PER_PAGE = 200;
     private static final org.apache.logging.log4j.Logger logger = CrowdLogger.getLogger(TwitterExtractorRunner.class);
 
-    public ConnectableObservable<Message> getMessages(final ExtractionParameters parameters) {
+    public Observable<Message> getMessages(final ExtractionParameters parameters) {
 
         // initialize the twitter instances
         try {
@@ -97,11 +97,23 @@ public class TwitterExtractorRunner {
 
         // the resulting Observable should be a union of both old and new messages
         // make it as a ConnectableObservable so that multiple subscribers can subscribe to it
-        ConnectableObservable<Message> messages = Observable.merge(oldMessages, newMessages).publish();
-
-        // subscribe to the merged messages in order to attempt a shutdown of the TwitterStreaming
-        messages.subscribe(new Subscriber<Message>() {
+        Observable<Message> messages = Observable.merge(oldMessages, newMessages);
+        messages = messages.lift(subscriber -> new SafeSubscriber<>(new Subscriber<Message>() {
             @Override public void onCompleted() {
+                cleanup();
+                subscriber.onCompleted();
+            }
+
+            @Override public void onError(Throwable e) {
+                cleanup();
+                subscriber.onError(e);
+            }
+
+            @Override public void onNext(Message message) {
+                subscriber.onNext(message);
+            }
+
+            private void cleanup() {
                 try {
                     getTwitterStreamInstance().cleanUp();
                     getTwitterStreamInstance().shutdown();
@@ -111,13 +123,7 @@ public class TwitterExtractorRunner {
                     e.printStackTrace();
                 }
             }
-
-            @Override public void onError(Throwable e) {
-            }
-
-            @Override public void onNext(Message message) {
-            }
-        });
+        }));
 
         return messages;
     }
@@ -138,6 +144,20 @@ public class TwitterExtractorRunner {
         return Observable.never();
     }
 
+    private boolean waitForTwitterTimeout(TwitterException exception) throws InterruptedException {
+        int remaining = exception.getRateLimitStatus().getRemaining();
+        if (remaining <= 0) {
+            int secondsToWait = exception.getRateLimitStatus().getSecondsUntilReset() + 5;
+            logger.warn("Encountered Twitter rate limit, waiting for {} seconds...", secondsToWait);
+            Thread.sleep(1000 * secondsToWait);
+            logger.warn("{} seconds have elapsed, now retrying the Twitter call...", secondsToWait);
+            // return true if the exception was rate limit related
+            return true;
+        }
+        // return false otherwise
+        return false;
+    }
+
     /**
      * Download all old messages (maximum 7-10 days past) that match the {@link net.frakbot.crowdpulse.social.extraction.ExtractionParameters}.
      *
@@ -153,21 +173,28 @@ public class TwitterExtractorRunner {
             // query can be null if we reach the end of the search result pages
             while (query != null) {
                 // get the tweets and convert them
-                QueryResult result = twitter.search(query);
+                QueryResult result = null;
+                try {
+                    result = twitter.search(query);
+                } catch (TwitterException timeout) {
+                    if (waitForTwitterTimeout(timeout)) {
+                        continue;
+                    }
+                    throw timeout;
+                }
                 List<Status> tweetList = result.getTweets();
                 List<Message> messageList = converter.fromExtractor(tweetList);
                 // notify the subscriber of new tweets
-                for (Message message : messageList) {
-                    subscriber.onNext(message);
-                }
+                messageList.forEach(subscriber::onNext);
                 // get the next page query
                 query = result.nextQuery();
             }
             // at this point, there is no other available query: we have finished
             subscriber.onCompleted();
-        } catch (TwitterException e) {
+        } catch (TwitterException | InterruptedException e) {
             subscriber.onError(e);
         }
+
     }
 
     /**
@@ -187,11 +214,18 @@ public class TwitterExtractorRunner {
             // query can be null if we reach the end of the search result pages
             while (paging != null) {
                 // get the tweets
-                ResponseList<Status> tweetList = twitter.getUserTimeline(parameters.getFromUser(), paging);
+                ResponseList<Status> tweetList = null;
+                try {
+                    tweetList = twitter.getUserTimeline(parameters.getFromUser(), paging);
+                } catch (TwitterException timeout) {
+                    if (waitForTwitterTimeout(timeout)) {
+                        continue;
+                    }
+                }
 
                 long maxId = -1;
                 // if there are no tweets, we reached the end of the search, otherwise get the latest ID
-                if (!tweetList.isEmpty()) {
+                if (tweetList != null && !tweetList.isEmpty()) {
                     maxId = tweetList.get(tweetList.size() - 1).getId();
                 } else {
                     paging = null;
@@ -225,7 +259,7 @@ public class TwitterExtractorRunner {
             }
             // at this point, there is no other available query: we have finished
             subscriber.onCompleted();
-        } catch (TwitterException e) {
+        } catch (InterruptedException | TwitterException e) {
             subscriber.onError(e);
         }
     }
@@ -342,8 +376,11 @@ public class TwitterExtractorRunner {
         }
         if (!StringUtil.isNullOrEmpty(parameters.getQuery())) {
             String[] components = parameters.getQuery().split(",");
-            for (String component : components) {
-                queryStringBuilder.append("\"").append(component).append("\" ");
+            for (int i = 0; i < components.length; i++) {
+                queryStringBuilder.append(components[i]);
+                if (i < components.length - 1) {
+                    queryStringBuilder.append(" OR ");
+                }
             }
         }
 
@@ -409,17 +446,15 @@ public class TwitterExtractorRunner {
     }
 
     private Func1<Message, Boolean> checkReferencedUsers(final ExtractionParameters parameters) {
-        return new Func1<Message, Boolean>() {
-            @Override public Boolean call(Message message) {
-                // if no referenced users are requested
-                if (parameters.getReferenceUsers() == null || parameters.getReferenceUsers().size() <= 0) {
-                    return true;
-                }
-                // if some referenced users are requested, all tweets should contain those
-                // BUT we need to exclude all tweets whose recipient user matches a referenced user
-                // (referenced users are all users involved in a tweet but the recipient)
-                return !parameters.getReferenceUsers().contains(message.getToUsers());
+        return message -> {
+            // if no referenced users are requested
+            if (parameters.getReferenceUsers() == null || parameters.getReferenceUsers().size() <= 0) {
+                return true;
             }
+            // if some referenced users are requested, all tweets should contain those
+            // BUT we need to exclude all tweets whose recipient user matches a referenced user
+            // (referenced users are all users involved in a tweet but the recipient)
+            return !parameters.getReferenceUsers().contains(message.getToUsers());
         };
     }
 

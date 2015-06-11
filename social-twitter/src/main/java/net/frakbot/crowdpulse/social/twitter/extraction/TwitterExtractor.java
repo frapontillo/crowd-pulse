@@ -141,17 +141,14 @@ public class TwitterExtractor extends IExtractor {
     }
 
     @Override
-    public ConnectableObservable<Message> getMessages(final ExtractionParameters parameters) {
-        Observable<Message> messages;
-
+    public Observable<Message> getMessages(final ExtractionParameters parameters) {
         // validate parameters
         try {
             validateParameters(parameters);
         } catch (SocialException e) {
             logger.error(e);
             System.err.println(e);
-            messages = Observable.empty();
-            return messages.publish();
+            return Observable.empty();
         }
 
         return getRunnerInstance().getMessages(parameters);

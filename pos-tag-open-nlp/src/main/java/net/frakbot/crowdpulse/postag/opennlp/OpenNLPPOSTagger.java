@@ -35,7 +35,7 @@ import java.util.stream.Collectors;
  * @author Francesco Pontillo
  */
 public class OpenNLPPOSTagger extends IPlugin<Message, Message, Void> {
-    private final static String POSTAGGER_IMPL = "opennlp";
+    public final static String PLUGIN_NAME = "postagger-opennlp";
     private Map<String, POSModel> models;
 
     public OpenNLPPOSTagger() {
@@ -43,7 +43,7 @@ public class OpenNLPPOSTagger extends IPlugin<Message, Message, Void> {
     }
 
     @Override public String getName() {
-        return POSTAGGER_IMPL;
+        return PLUGIN_NAME;
     }
 
     @Override public Observable.Operator<Message, Message> getOperator(Void parameters) {

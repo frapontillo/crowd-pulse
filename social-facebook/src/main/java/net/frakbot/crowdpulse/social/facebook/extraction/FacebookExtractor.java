@@ -90,7 +90,7 @@ public class FacebookExtractor extends IExtractor {
         return super.validateParameters(parameters);
     }
 
-    @Override public ConnectableObservable<Message> getMessages(ExtractionParameters parameters) {
+    @Override public Observable<Message> getMessages(ExtractionParameters parameters) {
         Observable<Message> messages;
 
         // validate parameters

@@ -16,14 +16,10 @@
 
 package net.frakbot.crowdpulse.social.twitter.profile;
 
+import net.frakbot.crowdpulse.common.util.CrowdLogger;
 import net.frakbot.crowdpulse.data.entity.Profile;
 import net.frakbot.crowdpulse.social.profile.ProfileParameters;
 import net.frakbot.crowdpulse.social.twitter.TwitterFactory;
-import net.frakbot.crowdpulse.common.util.CrowdLogger;
-import rx.Observable;
-import rx.Subscriber;
-import rx.observables.ConnectableObservable;
-import rx.schedulers.Schedulers;
 import twitter4j.TwitterException;
 import twitter4j.User;
 
@@ -33,38 +29,13 @@ import twitter4j.User;
 public class TwitterProfilerRunner {
     private static final org.apache.logging.log4j.Logger logger = CrowdLogger.getLogger(TwitterProfilerRunner.class);
 
-    public ConnectableObservable<Profile> getProfile(final ProfileParameters parameters) {
-
-        // initialize the twitter instance
+    public Profile getSingleProfile(ProfileParameters parameters) {
+        Profile profile = null;
         try {
-            TwitterFactory.getTwitterInstance();
-        } catch (TwitterException e) {
-            e.printStackTrace();
-        }
-
-        Observable<Profile> profiles = Observable.create(new Observable.OnSubscribe<Profile>() {
-            @Override public void call(Subscriber<? super Profile> subscriber) {
-                logger.info("PROFILER: started.");
-                try {
-                    // fetch and convert the user
-                    User user = TwitterFactory.getTwitterInstance().showUser(parameters.getProfile());
-                    Profile profile = new TwitterProfileConverter(parameters).fromExtractor(user, null);
-                    // TODO: evaluate convenience of fetching the user connection graph here
-                    // notify the user
-                    subscriber.onNext(profile);
-                } catch (TwitterException e) {
-                    subscriber.onError(e);
-                }
-                // immediately complete, there's nothing else to do
-                subscriber.onCompleted();
-                logger.info("PROFILER: ended.");
-            }
-        });
-
-        profiles = profiles.subscribeOn(Schedulers.io());
-        ConnectableObservable<Profile> connProfiles = profiles.publish();
-
-        return connProfiles;
+            // TODO: evaluate convenience of fetching the user connection graph here
+            User user = TwitterFactory.getTwitterInstance().showUser(parameters.getProfile());
+            profile = new TwitterProfileConverter(parameters).fromExtractor(user, null);
+        } catch (TwitterException ignored) { }
+        return profile;
     }
-
 }

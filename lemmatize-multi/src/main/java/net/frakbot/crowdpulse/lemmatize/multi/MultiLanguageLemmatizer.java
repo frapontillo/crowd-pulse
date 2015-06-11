@@ -47,7 +47,7 @@ import java.util.List;
  * @author Francesco Pontillo
  */
 public class MultiLanguageLemmatizer extends IPlugin<Message, Message, Void> {
-    private final static String LEMMATIZER_IMPL = "multi";
+    public final static String PLUGIN_NAME = "lemmatizer-multi";
     private final static String LEMMATIZER_WILDCARD = "*";
     private final HashMap<String, String> lemmatizerMap;
     private final HashMap<String, IPlugin<Message, Message, Void>> lemmatizers;
@@ -62,13 +62,13 @@ public class MultiLanguageLemmatizer extends IPlugin<Message, Message, Void> {
 
         // if no implementation is found for a given language, fallback to Stanford-CoreNLP
         // (some languages may not be supported)
-        lemmatizerMap.put(LEMMATIZER_WILDCARD, "stanford");
+        lemmatizerMap.put(LEMMATIZER_WILDCARD, "lemmatizer-stanford");
 
         lemmatizers = new HashMap<>();
     }
 
     @Override public String getName() {
-        return LEMMATIZER_IMPL;
+        return PLUGIN_NAME;
     }
 
     @Override public Observable.Operator<Message, Message> getOperator(Void parameters) {

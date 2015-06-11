@@ -29,7 +29,7 @@ import java.util.List;
  * @author Francesco Pontillo
  */
 public class CoreNLPLemmatizer extends ISingleablePlugin<Message, Void> {
-    private final static String LEMMATIZER_IMPL = "stanford";
+    public final static String PLUGIN_NAME = "lemmatizer-stanford";
     private final Morphology morphology;
 
     public CoreNLPLemmatizer() {
@@ -37,7 +37,7 @@ public class CoreNLPLemmatizer extends ISingleablePlugin<Message, Void> {
     }
 
     @Override public String getName() {
-        return LEMMATIZER_IMPL;
+        return PLUGIN_NAME;
     }
 
     @Override public Observable.Operator<Message, Message> getOperator(Void parameters) {

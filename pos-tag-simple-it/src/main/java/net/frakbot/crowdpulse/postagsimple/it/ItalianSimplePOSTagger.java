@@ -28,10 +28,10 @@ import java.util.List;
  * @author Francesco Pontillo
  */
 public class ItalianSimplePOSTagger extends ISingleablePlugin<Message, Void> {
-    private final static String SIMPLEPOSTAGGER_IMPL = "simplepostagger-it";
+    public final static String PLUGIN_NAME = "simplepostagger-it";
 
     @Override public String getName() {
-        return SIMPLEPOSTAGGER_IMPL;
+        return PLUGIN_NAME;
     }
 
     @Override public Observable.Operator<Message, Message> getOperator(Void parameters) {

@@ -31,7 +31,7 @@ import java.util.List;
  * @author Francesco Pontillo
  */
 public class WikipediaMinerTagger extends IPlugin<Message, Message, Void> {
-    private final static String TAGGER_NAME = "wikipediaminer";
+    public final static String PLUGIN_NAME = "wikipediaminer";
     private final static String WIKIPEDIA_MINER_ENDPOINT = "http://wikipedia-miner.cms.waikato.ac.nz";
     private final static WikipediaMinerService service;
 
@@ -44,7 +44,7 @@ public class WikipediaMinerTagger extends IPlugin<Message, Message, Void> {
     }
 
     @Override public String getName() {
-        return TAGGER_NAME;
+        return PLUGIN_NAME;
     }
 
     @Override protected Observable.Operator<Message, Message> getOperator(Void parameters) {
@@ -58,6 +58,7 @@ public class WikipediaMinerTagger extends IPlugin<Message, Message, Void> {
                     for (WikifyResponse.DetectedTopic topic : response.getDetectedTopics()) {
                         Tag tag = new Tag();
                         tag.setText(topic.getTitle());
+                        tag.addSource(getName());
                         tags.add(tag);
                     }
                 } catch (Exception ignored) {}
