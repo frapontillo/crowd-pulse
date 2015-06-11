@@ -1,5 +1,6 @@
 package net.frakbot.crowdpulse.detectlanguage;
 
+import net.frakbot.crowdpulse.common.util.StringUtil;
 import net.frakbot.crowdpulse.common.util.rx.CrowdSubscriber;
 import net.frakbot.crowdpulse.data.entity.Message;
 import rx.Observable;
@@ -17,7 +18,9 @@ public abstract class ILanguageDetectorOperator implements Observable.Operator<M
         return new CrowdSubscriber<Message>(subscriber) {
             @Override
             public void onNext(Message message) {
-                message.setLanguage(getLanguage(message));
+                if (StringUtil.isNullOrEmpty(message.getLanguage())) {
+                    message.setLanguage(getLanguage(message));
+                }
                 subscriber.onNext(message);
             }
         };

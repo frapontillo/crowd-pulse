@@ -37,7 +37,7 @@ import java.util.List;
  * @author Francesco Pontillo
  */
 public class OptimaizeLanguageDetector extends IPlugin<Message, Message, Void> {
-    private final static String LANGUAGEDETECTOR_IMPL = "optimaize";
+    public final static String PLUGIN_NAME = "optimaize";
     private final LanguageDetector languageDetector;
     private final TextObjectFactory textObjectFactory;
 
@@ -58,7 +58,7 @@ public class OptimaizeLanguageDetector extends IPlugin<Message, Message, Void> {
     }
 
     @Override public String getName() {
-        return LANGUAGEDETECTOR_IMPL;
+        return PLUGIN_NAME;
     }
 
     @Override public Observable.Operator<Message, Message> getOperator(Void parameters) {
