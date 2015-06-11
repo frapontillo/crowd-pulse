@@ -25,6 +25,7 @@ import net.frakbot.crowdpulse.data.entity.Profile;
 import net.frakbot.crowdpulse.data.rx.MessagePersister;
 import net.frakbot.crowdpulse.data.rx.ProfilePersister;
 import net.frakbot.crowdpulse.data.rx.Streamer;
+import net.frakbot.crowdpulse.detectlanguage.optimaize.OptimaizeLanguageDetector;
 import net.frakbot.crowdpulse.fixgeomessage.fromprofile.FromProfileMessageGeoFixer;
 import net.frakbot.crowdpulse.fixgeoprofile.googlemaps.GoogleMapsProfileGeoFixer;
 import net.frakbot.crowdpulse.social.extraction.ExtractionParameters;
@@ -63,6 +64,7 @@ public class FlowMain {
         IPlugin<Profile, Profile, Void> profilePersister = PluginProvider.getPlugin(ProfilePersister.PLUGIN_NAME);
         IPlugin<Object, Message, Void> messageSimpleSel = PluginProvider.getPlugin(Streamer.PLUGIN_NAME);
         IPlugin<Message, Message, Void> messageGLocFixer = PluginProvider.getPlugin(FromProfileMessageGeoFixer.PLUGIN_NAME);
+        IPlugin<Message, Message, Void> messageLangFixer = PluginProvider.getPlugin(OptimaizeLanguageDetector.PLUGIN_NAME);
 
         // main stream
         Observable<Message> messageStream;
@@ -83,6 +85,7 @@ public class FlowMain {
         // as soon as profiling is done, keep on processing messages
         messageStream = messageSimpleSel.process(messageStream, profileStream);
         messageStream = messageGLocFixer.process(messageStream);
+        messageStream = messageLangFixer.process(messageStream);
 
         // ---------------------------------- TODO: add more processing steps here ---------------------------------- //
 
