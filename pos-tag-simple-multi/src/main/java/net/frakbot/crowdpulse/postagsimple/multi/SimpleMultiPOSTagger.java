@@ -16,12 +16,14 @@
 
 package net.frakbot.crowdpulse.postagsimple.multi;
 
+import net.frakbot.crowdpulse.common.util.CrowdLogger;
 import net.frakbot.crowdpulse.common.util.spi.IPlugin;
 import net.frakbot.crowdpulse.common.util.spi.ISingleablePlugin;
 import net.frakbot.crowdpulse.common.util.spi.PluginProvider;
 import net.frakbot.crowdpulse.data.entity.Message;
 import net.frakbot.crowdpulse.data.entity.Token;
 import net.frakbot.crowdpulse.postagsimple.ISimplePOSTaggerOperator;
+import org.apache.logging.log4j.Logger;
 import rx.Observable;
 
 import java.util.List;
@@ -34,6 +36,7 @@ import java.util.List;
  */
 public class SimpleMultiPOSTagger extends IPlugin<Message, Message, Void> {
     public static final String PLUGIN_NAME = "simplepostagger-multi";
+    private final static Logger logger = CrowdLogger.getLogger(SimpleMultiPOSTagger.class);
 
     @Override public String getName() {
         return PLUGIN_NAME;
@@ -57,7 +60,7 @@ public class SimpleMultiPOSTagger extends IPlugin<Message, Message, Void> {
         try {
             actualTagger = PluginProvider.getPlugin("simplepostagger-" + language);
         } catch (ClassNotFoundException e) {
-            e.printStackTrace();
+            logger.warn("Could not find a Simple POS Tagger implementation for the language \"{}\".", language);
         }
         if (actualTagger != null && actualTagger instanceof ISingleablePlugin) {
             return ((ISingleablePlugin<Message, Void>) actualTagger).singleProcess(message).getTokens();
