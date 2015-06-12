@@ -100,6 +100,7 @@ public class SentitSentimentAnalyzer extends IPlugin<Message, Message, Void> {
                     } catch (RetrofitError error) {
                         if (error.getResponse().getStatus() == 401) {
                             // TODO: implement some wait-until features (must be async!)
+                            error.printStackTrace();
                         }
                     }
                     subscriber.onNext(messages);
