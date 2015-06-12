@@ -35,6 +35,7 @@ import net.frakbot.crowdpulse.postagsimple.multi.SimpleMultiPOSTagger;
 import net.frakbot.crowdpulse.remstopword.simple.SimpleStopWordRemover;
 import net.frakbot.crowdpulse.sentiment.sentit.SentitSentimentAnalyzer;
 import net.frakbot.crowdpulse.social.extraction.ExtractionParameters;
+import net.frakbot.crowdpulse.social.extraction.GeoLocationBox;
 import net.frakbot.crowdpulse.social.twitter.extraction.TwitterExtractor;
 import net.frakbot.crowdpulse.social.twitter.profile.TwitterProfiler;
 import net.frakbot.crowdpulse.tag.wikipediaminer.WikipediaMinerTagger;
@@ -145,7 +146,6 @@ public class FlowMain {
                 logger.debug(o.toString());
             }
         });
-        // Subscription subscription2 = messageStream.subscribe(new MessagePrintObserver(allSubscriptions));
 
         allSubscriptions.setSubscriptions(subscription);
         stream.connect();
@@ -156,9 +156,11 @@ public class FlowMain {
 
     private ExtractionParameters getExtractionParams() {
         ExtractionParameters extractionParameters = new ExtractionParameters();
-        extractionParameters.setFromUser("frapontillo");
-        extractionParameters.setSince(new GregorianCalendar(2015, 5, 11).getTime());
+        extractionParameters.setSince(new GregorianCalendar(2014, 5, 1).getTime());
         extractionParameters.setUntil(new GregorianCalendar().getTime());
+        GeoLocationBox locationBox = new GeoLocationBox("Matera, Italy");
+        locationBox.setDistance(20);
+        extractionParameters.setGeoLocationBox(locationBox);
         return extractionParameters;
     }
 
