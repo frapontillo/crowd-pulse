@@ -37,11 +37,8 @@ public class ExtractionParameters {
     @Parameter(names = "-query", description = "Text content to search for")
     private String query;
 
-    @Parameter(names = "-location", description = "Location box", converter = GeoLocationBoxConverter.class)
+    @Parameter(names = "-location", description = "Location box or area", converter = GeoLocationBoxConverter.class)
     private GeoLocationBox geoLocationBox;
-
-    @Parameter(names = "-area", description = "Location area")
-    private String geoArea;
 
     @Parameter(names = "-from", description = "User identifier the messages must originate from")
     private String fromUser;
@@ -77,10 +74,6 @@ public class ExtractionParameters {
 
     public GeoLocationBox getGeoLocationBox() {
         return geoLocationBox;
-    }
-
-    public String getGeoArea() {
-        return geoArea;
     }
 
     public String getFromUser() {
@@ -141,10 +134,6 @@ public class ExtractionParameters {
 
     public void setGeoLocationBox(GeoLocationBox geoLocationBox) {
         this.geoLocationBox = geoLocationBox;
-    }
-
-    public void setGeoArea(String geoArea) {
-        this.geoArea = geoArea;
     }
 
     public void setReferenceUsers(List<String> referenceUsers) {

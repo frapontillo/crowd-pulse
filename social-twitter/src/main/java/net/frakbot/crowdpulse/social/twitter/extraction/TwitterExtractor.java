@@ -92,9 +92,6 @@ public class TwitterExtractor extends IExtractor {
         if (paramCount > maxParamCount) {
             throw new TooComplexParametersSocialException(maxParamCount, paramCount);
         }
-        if (parameters.getGeoArea() != null && parameters.getGeoLocationBox() != null) {
-            throw new InvalidParametersSocialException("You can only use one of geo-area or geo-location box.");
-        }
         return true;
     }
 

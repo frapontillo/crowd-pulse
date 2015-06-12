@@ -180,8 +180,8 @@ public abstract class IExtractor extends IPlugin<Void, Message, ExtractionParame
         return null;
     }
 
-    // TODO: if the extractor has to wait on other observables to complete, we must implement the logic here
     @Override public Observable<Message> process(ExtractionParameters params, Observable<?>... streams) {
         return getMessages(params);
     }
+
 }

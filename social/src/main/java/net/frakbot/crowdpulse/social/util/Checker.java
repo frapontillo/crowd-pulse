@@ -26,88 +26,54 @@ import rx.functions.Func1;
  */
 public class Checker {
     public static Func1<Message, Boolean> checkNonNullMessage() {
-        return new Func1<Message, Boolean>() {
-            @Override public Boolean call(Message message) {
-                return (!StringUtil.isNullOrEmpty(message.getText()));
-            }
-        };
+        return message -> (!StringUtil.isNullOrEmpty(message.getText()));
     }
 
     public static Func1<Message, Boolean> checkQuery(final ExtractionParameters parameters) {
-        return new Func1<Message, Boolean>() {
-            @Override public Boolean call(Message message) {
-                return (StringUtil.isNullOrEmpty(parameters.getQuery()) || message.getText().contains(parameters.getQuery()));
-            }
-        };
+        return message -> (StringUtil.isNullOrEmpty(parameters.getQuery()) || message.getText().contains(parameters.getQuery()));
     }
 
     public static Func1<Message, Boolean> checkFromUser(final ExtractionParameters parameters) {
-        return new Func1<Message, Boolean>() {
-            @Override public Boolean call(Message message) {
-                return (StringUtil.isNullOrEmpty(parameters.getFromUser()) || parameters.getFromUser().equals(message
-                        .getFromUser()));
-            }
-        };
+        return message -> (StringUtil.isNullOrEmpty(parameters.getFromUser()) || parameters.getFromUser().equals(message
+                .getFromUser()));
     }
 
     public static Func1<Message, Boolean> checkToUser(final ExtractionParameters parameters) {
-        return new Func1<Message, Boolean>() {
-            @Override public Boolean call(Message message) {
-                return (StringUtil.isNullOrEmpty(parameters.getToUser())
-                        || message.getToUsers().contains(parameters.getToUser()));
-            }
-        };
+        return message -> (StringUtil.isNullOrEmpty(parameters.getToUser())
+                || message.getToUsers().contains(parameters.getToUser()));
     }
 
     public static Func1<Message, Boolean> checkReferencedUsers(final ExtractionParameters parameters) {
-        return new Func1<Message, Boolean>() {
-            @Override public Boolean call(Message message) {
-                // if no referenced users are requested
-                if (parameters.getReferenceUsers() == null || parameters.getReferenceUsers().size() <= 0) {
-                    return true;
-                }
-                // for each ref user to check
-                for (String user : parameters.getReferenceUsers()) {
-                    // if the message does not contain it, return false
-                    if (!message.getRefUsers().contains(user)) {
-                        return false;
-                    }
-                }
+        return message -> {
+            // if no referenced users are requested
+            if (parameters.getReferenceUsers() == null || parameters.getReferenceUsers().size() <= 0) {
                 return true;
             }
+            // for each ref user to check
+            for (String user : parameters.getReferenceUsers()) {
+                // if the message does not contain it, return false
+                if (!message.getRefUsers().contains(user)) {
+                    return false;
+                }
+            }
+            return true;
         };
     }
 
     public static Func1<Message, Boolean> checkUntilDate(final ExtractionParameters parameters) {
-        return new Func1<Message, Boolean>() {
-            @Override public Boolean call(Message message) {
-                return message.getDate().compareTo(parameters.getUntil()) <= 0;
-            }
-        };
+        return message -> message.getDate().compareTo(parameters.getUntil()) <= 0;
     }
 
     public static Func1<Message, Boolean> checkSinceDate(final ExtractionParameters parameters) {
-        return new Func1<Message, Boolean>() {
-            @Override public Boolean call(Message message) {
-                return message.getDate().compareTo(parameters.getSince()) >= 0;
-            }
-        };
+        return message -> message.getDate().compareTo(parameters.getSince()) >= 0;
     }
 
     public static Func1<Message, Boolean> checkLanguage(final ExtractionParameters parameters) {
-        return new Func1<Message, Boolean>() {
-            @Override public Boolean call(Message message) {
-                return parameters.getLanguage() == null || parameters.getLanguage().equals(message.getLanguage());
-            }
-        };
+        return message -> parameters.getLanguage() == null || parameters.getLanguage().equals(message.getLanguage());
     }
 
     public static Func1<Message, Boolean> checkLocation(final ExtractionParameters parameters) {
-        return new Func1<Message, Boolean>() {
-            @Override public Boolean call(Message message) {
-                return parameters.getGeoLocationBox() == null ||
-                        parameters.getGeoLocationBox().contains(message.getLatitude(), message.getLongitude());
-            }
-        };
+        return message -> parameters.getGeoLocationBox() == null ||
+                parameters.getGeoLocationBox().contains(message.getLongitude(), message.getLatitude());
     }
 }

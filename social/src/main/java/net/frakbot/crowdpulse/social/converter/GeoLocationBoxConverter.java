@@ -27,8 +27,11 @@ public class GeoLocationBoxConverter implements IStringConverter<GeoLocationBox>
         if (value == null) {
             return null;
         }
-        String[] components = value.split(",");
-        return new GeoLocationBox(Double.parseDouble(components[0]), Double.parseDouble(components[1]), Double
-                .parseDouble(components[2]));
+        try {
+            String[] components = value.split(",");
+            return new GeoLocationBox(Double.parseDouble(components[1]), Double.parseDouble(components[0]), Double
+                    .parseDouble(components[2]));
+        } catch (Exception ignored) {}
+        return new GeoLocationBox(value);
     }
 }
