@@ -58,7 +58,7 @@ public class Tag extends GenericEntity<String> {
 
     public void addSource(String source) {
         if (this.sources == null) {
-            this.sources = new ArrayList<String>();
+            this.sources = new ArrayList<>();
         }
         this.sources.add(source);
     }
@@ -88,6 +88,8 @@ public class Tag extends GenericEntity<String> {
     }
 
     public void addCategories(List<String> categories) {
-        addCategories(new HashSet<String>(categories));
+        if (categories != null) {
+            addCategories(new HashSet<>(categories));
+        }
     }
 }

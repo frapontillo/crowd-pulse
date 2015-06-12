@@ -26,6 +26,7 @@ import net.frakbot.crowdpulse.common.util.spi.IPlugin;
 import net.frakbot.crowdpulse.data.entity.Message;
 import net.frakbot.crowdpulse.data.entity.Tag;
 import retrofit.RestAdapter;
+import retrofit.RetrofitError;
 import retrofit.converter.GsonConverter;
 import rx.Observable;
 
@@ -60,7 +61,11 @@ public class WikipediaTagCategorizer extends IPlugin<Message, Message, Void> {
         return new ITagCategorizerOperator() {
             @Override public List<String> getCategories(Tag tag) {
                 WikipediaService wikipediaService = getService(tag.getLanguage());
-                return wikipediaService.tag(tag.getText()).getCategories();
+                try {
+                    return wikipediaService.tag(tag.getText()).getCategories();
+                } catch (RetrofitError error) {
+                    return null;
+                }
             }
         };
     }
