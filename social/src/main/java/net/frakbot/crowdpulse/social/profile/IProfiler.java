@@ -41,7 +41,7 @@ public abstract class IProfiler extends IPlugin<Message, Profile, ProfileParamet
                 .distinct(message -> new ProfileKey(message.getSource(), message.getFromUser()))
                 .map(message -> {
                     ProfileParameters parameters = new ProfileParameters();
-                    parameters.setSource(message.getSource());
+                    parameters.setSource(getName());
                     parameters.setProfile(message.getFromUser());
                     if (params != null) {
                         parameters.setTags(params.getTags());

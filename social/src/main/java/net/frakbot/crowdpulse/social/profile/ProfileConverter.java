@@ -36,16 +36,25 @@ public abstract class ProfileConverter<T> {
 
     public Profile fromExtractor(T original, HashMap<String, Object> additionalData) {
         Profile converted = fromSpecificExtractor(original, additionalData);
-        converted.setSource(parameters.getSource());
-        converted.setTags(parameters.getTags());
+        if (parameters != null) {
+            converted.setSource(parameters.getSource());
+            converted.setTags(parameters.getTags());
+        }
         return converted;
     }
 
     public List<Profile> fromExtractor(List<T> originalList) {
-        List<Profile> messageList = new ArrayList<Profile>(originalList.size());
-        for (T original : originalList) {
-            messageList.add(fromExtractor(original, null));
+        List<Profile> profileList = new ArrayList<>(originalList.size());
+        return addFromExtractor(originalList, profileList);
+    }
+
+    public <L extends List> List<Profile> addFromExtractor(L originalList, List<Profile> addToList, HashMap<String, Object> additionalData) {
+        for (Object original : originalList) {
+            addToList.add(fromExtractor((T) original, additionalData));
         }
-        return messageList;
+        return addToList;
+    }
+    public <L extends List> List<Profile> addFromExtractor(L originalList, List<Profile> addToList) {
+        return addFromExtractor(originalList, addToList, null);
     }
 }
