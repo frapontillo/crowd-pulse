@@ -35,8 +35,8 @@ import net.frakbot.crowdpulse.postagsimple.multi.SimpleMultiPOSTagger;
 import net.frakbot.crowdpulse.remstopword.simple.SimpleStopWordRemover;
 import net.frakbot.crowdpulse.sentiment.sentit.SentitSentimentAnalyzer;
 import net.frakbot.crowdpulse.social.extraction.ExtractionParameters;
-import net.frakbot.crowdpulse.social.extraction.GeoLocationBox;
 import net.frakbot.crowdpulse.social.twitter.extraction.TwitterExtractor;
+import net.frakbot.crowdpulse.social.twitter.profile.TwitterProfileGrapher;
 import net.frakbot.crowdpulse.social.twitter.profile.TwitterProfiler;
 import net.frakbot.crowdpulse.tag.wikipediaminer.WikipediaMinerTagger;
 import net.frakbot.crowdpulse.tokenize.opennlp.OpenNLPTokenizer;
@@ -69,6 +69,7 @@ public class FlowMain {
         IPlugin<Object, Message, ExtractionParameters> messageExtractor = PluginProvider.getPlugin(TwitterExtractor.PLUGIN_NAME);
         IPlugin<Message, Message, MessagePersisterOptions> messagePersister = PluginProvider.getPlugin(MessagePersister.PLUGIN_NAME);
         IPlugin<Message, Profile, Void> profileExtractor = PluginProvider.getPlugin(TwitterProfiler.PLUGIN_NAME);
+        IPlugin<Message, Profile, Void> profileGraphBldr = PluginProvider.getPlugin(TwitterProfileGrapher.PLUGIN_NAME);
         IPlugin<Profile, Profile, Void> profileGLocFixer = PluginProvider.getPlugin(GoogleMapsProfileGeoFixer.PLUGIN_NAME);
         IPlugin<Profile, Profile, Void> profilePersister = PluginProvider.getPlugin(ProfilePersister.PLUGIN_NAME);
         IPlugin<Object, Message, Void> messageSimpleSel = PluginProvider.getPlugin(Streamer.PLUGIN_NAME);
@@ -96,6 +97,7 @@ public class FlowMain {
 
         // right after, extract and process profiles
         profileStream = profileExtractor.process(messageStream);
+        profileStream = profileGraphBldr.process(profileStream).distinct(Profile::getIdentityRepr);
         profileStream = profileGLocFixer.process(profileStream);
         profileStream = profilePersister.process(profileStream);
 
@@ -156,11 +158,9 @@ public class FlowMain {
 
     private ExtractionParameters getExtractionParams() {
         ExtractionParameters extractionParameters = new ExtractionParameters();
-        extractionParameters.setSince(new GregorianCalendar(2014, 5, 1).getTime());
+        extractionParameters.setFromUser("frapontillo");
+        extractionParameters.setSince(new GregorianCalendar(2015, 5, 14).getTime());
         extractionParameters.setUntil(new GregorianCalendar().getTime());
-        GeoLocationBox locationBox = new GeoLocationBox("Matera, Italy");
-        locationBox.setDistance(20);
-        extractionParameters.setGeoLocationBox(locationBox);
         return extractionParameters;
     }
 
