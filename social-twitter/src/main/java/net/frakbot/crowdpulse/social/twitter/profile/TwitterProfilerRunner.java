@@ -32,7 +32,6 @@ public class TwitterProfilerRunner {
     public Profile getSingleProfile(ProfileParameters parameters) {
         Profile profile = null;
         try {
-            // TODO: evaluate convenience of fetching the user connection graph here
             User user = TwitterFactory.getTwitterInstance().showUser(parameters.getProfile());
             profile = new TwitterProfileConverter(parameters).fromExtractor(user, null);
         } catch (TwitterException ignored) { }

@@ -16,3 +16,4 @@
 
 net.frakbot.crowdpulse.social.twitter.extraction.TwitterExtractor
 net.frakbot.crowdpulse.social.twitter.profile.TwitterProfiler
+net.frakbot.crowdpulse.social.twitter.profile.TwitterProfileGrapher

@@ -138,7 +138,6 @@ public class TwitterExtractorRunner {
     private Observable<Long> timeToWait(ExtractionParameters parameters) {
         if (parameters.getUntil() != null) {
             long timeToDeath = parameters.getUntil().getTime() - new Date().getTime();
-            logger.info(String.format("Shutting down the Streaming service in %d seconds.", timeToDeath));
             logger.info("Shutting down the Streaming service in {} seconds.", timeToDeath);
             return Observable.timer(timeToDeath, TimeUnit.MILLISECONDS, Schedulers.io());
         }
