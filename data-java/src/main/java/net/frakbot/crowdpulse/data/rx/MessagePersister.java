@@ -46,7 +46,7 @@ public class MessagePersister extends IPlugin<Message, Message, MessagePersister
     @Override protected Observable.Operator<Message, Message> getOperator(MessagePersisterOptions parameters) {
         return subscriber -> new CrowdSubscriber<Message>(subscriber) {
             @Override public void onCompleted() {
-                super.onCompleted();
+                subscriber.onCompleted();
             }
 
             @Override public void onNext(Message message) {

@@ -16,13 +16,17 @@
 
 package net.frakbot.crowdpulse.data.entity;
 
+import org.bson.types.ObjectId;
+
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
 /**
  * @author Francesco Pontillo
  */
-public class Profile extends Entity {
+public class Profile extends Entity implements Comparable<Profile> {
     private String source;
     private String username;
     private List<String> tags;
@@ -33,6 +37,11 @@ public class Profile extends Entity {
     private String location;
     private Double latitude;
     private Double longitude;
+    private List<String> connections;
+
+    public Profile() {
+        connections = new ArrayList<>();
+    }
 
     public String getSource() {
         return source;
@@ -114,9 +123,32 @@ public class Profile extends Entity {
         this.longitude = longitude;
     }
 
+    public List<String> getConnections() {
+        return connections;
+    }
+
+    public void setConnections(List<String> connections) {
+        this.connections = connections;
+    }
+
+    public void addConnections(String... connections) {
+        this.connections.addAll(Arrays.asList(connections));
+    }
+
     @Override public String toString() {
         return getId().toString() + ":"
                 + getSource() + ":"
                 + getUsername();
+    }
+
+    public String getIdentityRepr() {
+        return getSource() + ":" +  getUsername();
+    }
+
+    @Override public int compareTo(Profile o) {
+        if (this.getSource().equals(o.getSource())) {
+            return this.getUsername().compareTo(o.getUsername());
+        }
+        return this.getSource().compareTo(o.getSource());
     }
 }
