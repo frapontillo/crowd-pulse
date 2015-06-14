@@ -36,7 +36,7 @@ public class FacebookMessageConverter extends MessageConverter<Post> {
 
     @Override public Message fromSpecificExtractor(Post original) {
         Message message = new Message();
-        message.setSource(FacebookExtractor.EXTRACTOR_NAME);
+        message.setSource(FacebookExtractor.PLUGIN_NAME);
         message.setText(original.getMessage());
         message.setFromUser(original.getFrom().getId());
 

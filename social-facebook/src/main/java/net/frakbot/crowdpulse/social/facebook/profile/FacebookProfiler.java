@@ -24,11 +24,11 @@ import net.frakbot.crowdpulse.social.profile.ProfileParameters;
  * @author Francesco Pontillo
  */
 public class FacebookProfiler extends IProfiler {
-    public static final String PROFILER_NAME = "profiler-facebook";
+    public static final String PLUGIN_NAME = "profiler-facebook";
     private static FacebookProfilerRunner runner = null;
 
     @Override public String getName() {
-        return PROFILER_NAME;
+        return PLUGIN_NAME;
     }
 
     @Override public Profile getSingleProfile(ProfileParameters parameters) {

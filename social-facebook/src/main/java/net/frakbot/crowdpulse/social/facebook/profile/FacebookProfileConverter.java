@@ -54,7 +54,9 @@ public class FacebookProfileConverter extends ProfileConverter<Object> {
             User user = (User) original;
             profile.setUsername(user.getId());
             // set the language as ISO-3 ("en", "it", etc.)
-            profile.setLanguage(user.getLocale().getISO3Language());
+            if (user.getLocale() != null) {
+                profile.setLanguage(user.getLocale().getISO3Language());
+            }
         } else if (objectType.equals(DATA_OBJECT_TYPE_PAGE)) {
             profile.setUsername(((Page)original).getId());
             // TODO: find a way to set language for pages

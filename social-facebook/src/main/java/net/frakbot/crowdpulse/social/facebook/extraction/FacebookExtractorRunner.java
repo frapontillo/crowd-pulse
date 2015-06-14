@@ -51,7 +51,7 @@ public class FacebookExtractorRunner {
         // create the old messages Observable
         Observable<Message> oldMessages = Observable.create(new Observable.OnSubscribe<Message>() {
             @Override public void call(Subscriber<? super Message> subscriber) {
-                logger.debug("Started searching.");
+                logger.info("SEARCH: started.");
                 getOldMessages(parameters, subscriber);
             }
         });
@@ -66,7 +66,7 @@ public class FacebookExtractorRunner {
                             @Override public void onStart() {
                                 super.onStart();
                                 date = new Date();
-                                logger.debug("Started streaming.");
+                                logger.info("STREAMING: started.");
                             }
 
                             @Override public void onCompleted() { /* never completes by design */ }
@@ -108,19 +108,24 @@ public class FacebookExtractorRunner {
         mergedAndFiltered = mergedAndFiltered.lift(subscriber -> new SafeSubscriber<>(new Subscriber<Message>() {
             @Override public void onCompleted() {
                 cleanup();
+                subscriber.onCompleted();
             }
 
             @Override public void onError(Throwable e) {
                 cleanup();
+                subscriber.onError(e);
             }
 
             @Override public void onNext(Message message) {
+                subscriber.onNext(message);
             }
 
             private void cleanup() {
                 // cleanup Facebook
                 try {
                     getFacebookInstance().shutdown();
+                    logger.info("SEARCH: ended.");
+                    logger.info("STREAMING: ended.");
                 } catch (FacebookException e) {
                     e.printStackTrace();
                 }
@@ -140,8 +145,7 @@ public class FacebookExtractorRunner {
     private Observable<Long> timeToWait(ExtractionParameters parameters) {
         if (parameters.getUntil() != null) {
             long timeToDeath = parameters.getUntil().getTime() - new Date().getTime();
-            logger.debug(String.format("Shutting down the Streaming service in %d seconds.", timeToDeath /
-                    1000));
+            logger.debug(String.format("Shutting down the Streaming service in %d seconds.", timeToDeath / 1000));
             return Observable.timer(timeToDeath, TimeUnit.MILLISECONDS, Schedulers.io());
         }
         return Observable.never();
@@ -165,8 +169,7 @@ public class FacebookExtractorRunner {
      * @param subscriber The {@link rx.Subscriber} that will be notified of new tweets, errors and completion.
      * @param complete   Whether to notify the completion of posts to the subscriber.
      */
-    private void getOldMessages(ExtractionParameters parameters, Subscriber<? super Message> subscriber, boolean
-            complete) {
+    private void getOldMessages(ExtractionParameters parameters, Subscriber<? super Message> subscriber, boolean complete) {
         try {
             Facebook facebook = getFacebookInstance();
 

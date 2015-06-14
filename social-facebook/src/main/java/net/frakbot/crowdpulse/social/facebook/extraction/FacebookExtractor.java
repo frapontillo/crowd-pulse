@@ -23,9 +23,6 @@ import net.frakbot.crowdpulse.social.exception.SocialException;
 import net.frakbot.crowdpulse.common.util.CrowdLogger;
 import org.apache.logging.log4j.Logger;
 import rx.Observable;
-import rx.Subscriber;
-import rx.observables.ConnectableObservable;
-import rx.observers.SafeSubscriber;
 
 /**
  * IExtractor implementation for Facebook.
@@ -34,12 +31,12 @@ import rx.observers.SafeSubscriber;
  */
 public class FacebookExtractor extends IExtractor {
 
-    public static final String EXTRACTOR_NAME = "extractor-facebook";
+    public static final String PLUGIN_NAME = "extractor-facebook";
     private static FacebookExtractorRunner runner = null;
     private static final Logger logger = CrowdLogger.getLogger(FacebookExtractor.class);
 
     @Override public String getName() {
-        return EXTRACTOR_NAME;
+        return PLUGIN_NAME;
     }
 
     @Override public long getMaximumQueryParameters() {
