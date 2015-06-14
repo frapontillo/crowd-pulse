@@ -52,7 +52,7 @@ public abstract class IPlugin<Input, Output, Parameter> {
     /**
      * @see IPlugin#getOperator(Object)
      */
-    protected Observable.Operator<Output, Input> getOperator() {
+    protected final Observable.Operator<Output, Input> getOperator() {
         return getOperator(null);
     }
 
@@ -80,7 +80,7 @@ public abstract class IPlugin<Input, Output, Parameter> {
     /**
      * @see IPlugin#transform(Object)
      */
-    public Observable.Transformer<Input, Output> transform() {
+    public final Observable.Transformer<Input, Output> transform() {
         return transform(null);
     }
 
@@ -163,7 +163,7 @@ public abstract class IPlugin<Input, Output, Parameter> {
      *
      * @see {@link IPlugin#process(Object, Observable[])}
      */
-    public Observable<Output> process(Observable<? extends Object>... streams) {
+    public final Observable<Output> process(Observable<? extends Object>... streams) {
         return process(null, streams);
     }
 
