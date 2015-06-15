@@ -17,3 +17,4 @@
 net.frakbot.crowdpulse.social.facebook.extraction.FacebookExtractor
 net.frakbot.crowdpulse.social.facebook.profile.FacebookProfiler
 net.frakbot.crowdpulse.social.facebook.profile.FacebookProfileGrapher
+net.frakbot.crowdpulse.social.facebook.extraction.FacebookReplyExtractor
