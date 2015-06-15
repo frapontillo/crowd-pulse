@@ -68,4 +68,11 @@ public class StringUtil {
         }
         return s.substring(0,i+1);
     }
+
+    public static String ellipsize(String s, int count) {
+        if (isNullOrEmpty(s)) {
+            return s;
+        }
+        return s.substring(0, Math.min(s.length()-1, 20));
+    }
 }
