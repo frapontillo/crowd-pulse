@@ -16,18 +16,22 @@
 
 package net.frakbot.crowdpulse.data.entity;
 
+import net.frakbot.crowdpulse.common.util.StringUtil;
+
 import java.util.*;
 
 /**
  * @author Francesco Pontillo
  */
 public class Message extends Entity {
+    private String oId;
     private String text;
     private String source;
     private String fromUser;
     private List<String> toUsers;
     private List<String> refUsers;
     private Date date;
+    private String parent;
     private List<String> customTags;
     private String language;
     private Double latitude;
@@ -37,6 +41,14 @@ public class Message extends Entity {
     private Set<Tag> tags;
     private List<Token> tokens;
     private double sentiment;
+
+    public String getoId() {
+        return oId;
+    }
+
+    public void setoId(String oId) {
+        this.oId = oId;
+    }
 
     public String getText() {
         return text;
@@ -76,6 +88,14 @@ public class Message extends Entity {
 
     public void setDate(Date date) {
         this.date = date;
+    }
+
+    public String getParent() {
+        return parent;
+    }
+
+    public void setParent(String parent) {
+        this.parent = parent;
     }
 
     public List<String> getRefUsers() {
@@ -172,7 +192,7 @@ public class Message extends Entity {
     @Override public String toString() {
         return getId().toString() + ":"
                 + getSource() + ":"
-                + getText().substring(0, Math.min(getText().length()-1, 20))
+                + StringUtil.ellipsize(getText(), 20)
                 + "...";
     }
 }
