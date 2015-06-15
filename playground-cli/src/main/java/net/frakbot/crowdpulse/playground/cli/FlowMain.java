@@ -36,6 +36,7 @@ import net.frakbot.crowdpulse.remstopword.simple.SimpleStopWordRemover;
 import net.frakbot.crowdpulse.sentiment.sentit.SentitSentimentAnalyzer;
 import net.frakbot.crowdpulse.social.extraction.ExtractionParameters;
 import net.frakbot.crowdpulse.social.twitter.extraction.TwitterExtractor;
+import net.frakbot.crowdpulse.social.twitter.extraction.TwitterReplyExtractor;
 import net.frakbot.crowdpulse.social.twitter.profile.TwitterProfileGrapher;
 import net.frakbot.crowdpulse.social.twitter.profile.TwitterProfiler;
 import net.frakbot.crowdpulse.tag.wikipediaminer.WikipediaMinerTagger;
@@ -67,6 +68,7 @@ public class FlowMain {
     public void run(String args[]) throws ClassNotFoundException {
         // get all tasks according to some criteria
         IPlugin<Object, Message, ExtractionParameters> messageExtractor = PluginProvider.getPlugin(TwitterExtractor.PLUGIN_NAME);
+        IPlugin<Object, Message, ExtractionParameters> repliesExtractor = PluginProvider.getPlugin(TwitterReplyExtractor.PLUGIN_NAME);
         IPlugin<Message, Message, MessagePersisterOptions> messagePersister = PluginProvider.getPlugin(MessagePersister.PLUGIN_NAME);
         IPlugin<Message, Profile, Void> profileExtractor = PluginProvider.getPlugin(TwitterProfiler.PLUGIN_NAME);
         IPlugin<Message, Profile, Void> profileGraphBldr = PluginProvider.getPlugin(TwitterProfileGrapher.PLUGIN_NAME);
@@ -93,6 +95,7 @@ public class FlowMain {
 
         // extract messages
         messageStream = messageExtractor.process(getExtractionParams());
+        messageStream = repliesExtractor.process(messageStream);
         messageStream = messagePersister.process(messageStream).cache();
 
         // right after, extract and process profiles
@@ -159,7 +162,7 @@ public class FlowMain {
     private ExtractionParameters getExtractionParams() {
         ExtractionParameters extractionParameters = new ExtractionParameters();
         extractionParameters.setFromUser("frapontillo");
-        extractionParameters.setSince(new GregorianCalendar(2015, 5, 14).getTime());
+        extractionParameters.setSince(new GregorianCalendar(2015, 5, 15).getTime());
         extractionParameters.setUntil(new GregorianCalendar().getTime());
         return extractionParameters;
     }
