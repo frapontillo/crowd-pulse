@@ -13,12 +13,14 @@ Every task **must** inherit from `IPlugin<Input, Output, Config>` where:
 - `Output` is the class of the output `Observable` that the task returns
 - `Config` is the (optional) class for the configuration object that will be passed to the plugin
 
-Here is a typical Crowd Pulse flow:
+Here is a complete Crowd Pulse flow:
 
 1. `IPlugin<Void, Message, ExtractionParameters>` takes care of extracting messages according to some configuration
+1. `IPlugin<Message, Message, Void>` extracts all the replies for the input messages
 1. `IPlugin<Message, Profile, Void>` extracts all the profiles for the input messages
+1. `IPlugin<Profile, Profile, Void>` extracts all connections for the input profiles
 1. `IPlugin<Profile, Profile, Void>` fixes the geolocation for every extracted profile
-1. `IPlugin<?, Message, Void>` waits for the input stream completion and selects all the messages from the database
+1. `IPlugin<IPlugin, Message, Void>` waits for some given streams to complete and then emits another stream at once
 1. `IPlugin<Message, Message, Void>` fixes the geolocation for messages according to the info contained in authors' profiles
 1. `IPlugin<Message, Message, Void>` detects and sets the language for every message
 1. `IPlugin<Message, Message, Void>` tags every message in the stream
@@ -33,12 +35,12 @@ Here is a typical Crowd Pulse flow:
 ## Module descriptions
 
 - `admin-cli`: Command Line Interface to handle the core functions of the platform
-- `common-util`: shared Java utility classes
+- `common-util`: shared Java/RxJava utility classes
 - `data-java`: data access layer for Java modules
 - `data-nodejs`: data access layer for NodeJS modules
 - `oauth-service`: OAuth 2.0 Web Service for authenticating users and apps
 - `web-service`: RESTful Web Service to expose stored data
-- `playground-cli`: Command Line Interface containing multiple programs to test some features
+- `playground-cli`: Command Line Interface containing a CLI to test features
 - `social`: generic social network module to handle message extraction and user profiling
   - `social-facebook`: specific implementation of `social` for Facebook
   - `social-twitter`: specific implementation of `social` for Twitter
