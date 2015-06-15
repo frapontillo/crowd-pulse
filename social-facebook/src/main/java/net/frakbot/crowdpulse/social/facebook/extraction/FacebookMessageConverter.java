@@ -24,24 +24,34 @@ import net.frakbot.crowdpulse.social.extraction.ExtractionParameters;
 import net.frakbot.crowdpulse.social.extraction.MessageConverter;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
  * @author Francesco Pontillo
  */
 public class FacebookMessageConverter extends MessageConverter<Post> {
+
     public FacebookMessageConverter(ExtractionParameters parameters) {
         super(parameters);
     }
 
-    @Override public Message fromSpecificExtractor(Post original) {
+    @Override public Message fromSpecificExtractor(Post original, HashMap<String, Object> additionalData) {
         Message message = new Message();
-        message.setSource(FacebookExtractor.PLUGIN_NAME);
+        message.setoId(original.getId());
         message.setText(original.getMessage());
         message.setFromUser(original.getFrom().getId());
 
+        // if the current message is a comment to another message, set its parent here
+        if (additionalData != null) {
+            String parent = (String) additionalData.get(DATA_REPLY_TO_COMMENT);
+            if (parent != null) {
+                message.setParent(parent);
+            }
+        }
+
         // the "to" user is, by convention, the first user in the "to" list
-        List<String> toIds = new ArrayList<String>(original.getTo().size());
+        List<String> toIds = new ArrayList<>(original.getTo().size());
         for (IdNameEntity to : original.getTo()) {
             toIds.add(to.getId());
         }
@@ -55,7 +65,7 @@ public class FacebookMessageConverter extends MessageConverter<Post> {
         }
 
         // convert the referenced users
-        List<String> refUsers = new ArrayList<String>(original.getMessageTags().size());
+        List<String> refUsers = new ArrayList<>(original.getMessageTags().size());
         for (Tag tag : original.getMessageTags()) {
             refUsers.add(tag.getId());
         }

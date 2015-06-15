@@ -181,6 +181,7 @@ public abstract class IExtractor extends IPlugin<Void, Message, ExtractionParame
     }
 
     @Override public Observable<Message> process(ExtractionParameters params, Observable<?>... streams) {
+        params.setSource(getName());
         return getMessages(params);
     }
 

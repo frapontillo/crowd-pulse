@@ -23,6 +23,7 @@ import net.frakbot.crowdpulse.common.util.StringUtil;
 import twitter4j.Status;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -34,13 +35,22 @@ public class TwitterMessageConverter extends MessageConverter<Status> {
         super(parameters);
     }
 
-    @Override public Message fromSpecificExtractor(Status original) {
+    @Override public Message fromSpecificExtractor(Status original, HashMap<String, Object> additionalData) {
         Message message = new Message();
-        message.setSource(TwitterExtractor.PLUGIN_NAME);
+        message.setoId(Long.toString(original.getId()));
         message.setText(original.getText());
         message.setFromUser(original.getUser().getScreenName());
+
+        // if the current message is a comment to another message, set its parent here
+        if (additionalData != null) {
+            String parent = (String) additionalData.get(DATA_REPLY_TO_COMMENT);
+            if (parent != null) {
+                message.setParent(parent);
+            }
+        }
+
         if (!StringUtil.isNullOrEmpty(original.getInReplyToScreenName())) {
-            List<String> toIds = new ArrayList<String>();
+            List<String> toIds = new ArrayList<>();
             toIds.add(original.getInReplyToScreenName());
             message.setToUsers(toIds);
         }
@@ -52,6 +62,7 @@ public class TwitterMessageConverter extends MessageConverter<Status> {
         message.setLanguage(original.getLang());
         message.setFavs(original.getFavoriteCount());
         message.setShares(original.getRetweetCount());
+
         return message;
     }
 }

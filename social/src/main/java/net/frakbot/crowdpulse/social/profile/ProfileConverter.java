@@ -54,6 +54,7 @@ public abstract class ProfileConverter<T> {
         }
         return addToList;
     }
+
     public <L extends List> List<Profile> addFromExtractor(L originalList, List<Profile> addToList) {
         return addFromExtractor(originalList, addToList, null);
     }

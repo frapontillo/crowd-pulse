@@ -50,7 +50,7 @@ public abstract class IProfileGrapher extends IPlugin<Profile, Profile, Void> {
             @Override public void onNext(Profile profile) {
                 // build the appropriate profile parameters
                 ProfileParameters params = new ProfileParameters();
-                params.setSource(profile.getSource());
+                params.setSource(getName());
                 params.setTags(profile.getTags());
                 // get the profiles and emit them
                 List<Profile> connections = getConnections(profile, params);
