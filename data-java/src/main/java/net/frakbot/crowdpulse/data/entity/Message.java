@@ -192,7 +192,6 @@ public class Message extends Entity {
     @Override public String toString() {
         return getId().toString() + ":"
                 + getSource() + ":"
-                + StringUtil.ellipsize(getText(), 20)
-                + "...";
+                + StringUtil.ellipsize(getText(), 20);
     }
 }

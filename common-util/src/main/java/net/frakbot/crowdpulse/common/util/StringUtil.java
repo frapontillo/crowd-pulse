@@ -73,6 +73,10 @@ public class StringUtil {
         if (isNullOrEmpty(s)) {
             return s;
         }
-        return s.substring(0, Math.min(s.length()-1, 20));
+        String newString = s.substring(0, Math.min(s.length() - 1, count));
+        if (s.length() - 1 > count) {
+            newString += "…";
+        }
+        return newString;
     }
 }
