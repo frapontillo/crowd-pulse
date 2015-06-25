@@ -29,8 +29,8 @@ import java.util.List;
  *      "texts": [
  *          {
  *              "id": "id001",
- *              "text": "Grillo Mi fa paura la gente che urla. Ne abbiamo gi‡ visti almeno un paio,
- *                      ed Ë finita com'Ë finita. Niente urla per me, grazie."
+ *              "text": "Grillo Mi fa paura la gente che urla. Ne abbiamo gi√† visti almeno un paio,
+ *                      ed √® finita com'√® finita. Niente urla per me, grazie."
  *          },
  *          {
  *              "id": "id002",
