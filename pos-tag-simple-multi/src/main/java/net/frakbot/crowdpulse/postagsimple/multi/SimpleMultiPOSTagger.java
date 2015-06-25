@@ -63,7 +63,7 @@ public class SimpleMultiPOSTagger extends IPlugin<Message, Message, Void> {
             logger.warn("Could not find a Simple POS Tagger implementation for the language \"{}\".", language);
         }
         if (actualTagger != null && actualTagger instanceof ISingleablePlugin) {
-            return ((ISingleablePlugin<Message, Void>) actualTagger).singleProcess(message).getTokens();
+            return ((ISingleablePlugin<Message, Void>) actualTagger).singleItemProcess(message).getTokens();
         }
         return message.getTokens();
     }

@@ -17,22 +17,26 @@
 package net.frakbot.crowdpulse.common.util.spi;
 
 /**
- * Advanced abstract class for {@link IPlugin<T>} that expose a method for processing single elements,
- * beyond regular {@link rx.Observable<T>} streams.
- *
- * This kind of class can be useful when writing a meta-implementation of an {@link IPlugin<T>} that may rely on one
- * or more different implementations.
+ * Simple abstract class, child of {@link IPlugin}, that exposes a method for processing single elements,
+ * beyond regular {@link rx.Observable} streams.
+ * <p>
+ * This kind of class can be useful when writing a meta-implementation of an {@link IPlugin} that may rely on one
+ * or more different implementations to delegate the actual calls to.
+ * <p>
+ * This "simpler" plugin emits objects of the same class as the input ones.
  *
  * @author Francesco Pontillo
  */
-public abstract class ISingleablePlugin<T, P> extends IPlugin<T, T, P> {
+public abstract class ISingleablePlugin<InputOutput, Parameter> extends IPlugin<InputOutput, InputOutput, Parameter> {
 
     /**
-     * Process a single element according to the task of this {@link IPlugin<T>}.
+     * Process a single element according to the task of this {@link IPlugin}.
+     * This method may be re-used by actual implementations of {@link #getOperator(Parameter)}, or different
+     * overrided methods.
      *
-     * @param object The input element, of generic class {@link T}.
+     * @param object The input element, of generic class {@link InputOutput}.
      * @return The processed input element, eventually modified.
      */
-    public abstract T singleProcess(T object);
+    public abstract InputOutput singleItemProcess(InputOutput object);
 
 }

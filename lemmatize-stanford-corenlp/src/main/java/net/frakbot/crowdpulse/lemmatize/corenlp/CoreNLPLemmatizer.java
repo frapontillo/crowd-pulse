@@ -44,12 +44,12 @@ public class CoreNLPLemmatizer extends ISingleablePlugin<Message, Void> {
         CoreNLPLemmatizer currentLemmatizer = this;
         return new ILemmatizerOperator() {
             @Override public List<Token> lemmatizeMessageTokens(Message message) {
-                return currentLemmatizer.singleProcess(message).getTokens();
+                return currentLemmatizer.singleItemProcess(message).getTokens();
             }
         };
     }
 
-    @Override public Message singleProcess(Message message) {
+    @Override public Message singleItemProcess(Message message) {
         if (message.getTokens() != null) {
             message.getTokens().forEach(token -> {
                 if (!token.isStopWord()) {

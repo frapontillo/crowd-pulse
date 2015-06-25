@@ -38,12 +38,12 @@ public class EnglishSimplePOSTagger extends ISingleablePlugin<Message, Void> {
         EnglishSimplePOSTagger actualTagger = this;
         return new ISimplePOSTaggerOperator() {
             @Override public List<Token> posTagMessageTokens(Message message) {
-                return actualTagger.singleProcess(message).getTokens();
+                return actualTagger.singleItemProcess(message).getTokens();
             }
         };
     }
 
-    @Override public Message singleProcess(Message message) {
+    @Override public Message singleItemProcess(Message message) {
         if (message.getTokens() == null) {
             return null;
         }

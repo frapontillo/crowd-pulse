@@ -77,7 +77,7 @@ public class MultiLanguageLemmatizer extends IPlugin<Message, Message, Void> {
                 // find or instantiate the lemmatizer
                 IPlugin<Message, Message, Void> lemmatizer = getLemmatizerForMessage(message);
                 if (lemmatizer instanceof ISingleablePlugin) {
-                    return ((ISingleablePlugin<Message, Void>) lemmatizer).singleProcess(message).getTokens();
+                    return ((ISingleablePlugin<Message, Void>) lemmatizer).singleItemProcess(message).getTokens();
                 }
                 return null;
             }

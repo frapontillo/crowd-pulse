@@ -107,12 +107,12 @@ public class MorphITLemmatizer extends ISingleablePlugin<Message, Void> {
         MorphITLemmatizer currentLemmatizer = this;
         return new ILemmatizerOperator() {
             @Override public List<Token> lemmatizeMessageTokens(Message message) {
-                return currentLemmatizer.singleProcess(message).getTokens();
+                return currentLemmatizer.singleItemProcess(message).getTokens();
             }
         };
     }
 
-    @Override public Message singleProcess(Message message) {
+    @Override public Message singleItemProcess(Message message) {
         List<Token> tokens = message.getTokens();
         tokens.forEach(this::lemmatizeToken);
         return message;

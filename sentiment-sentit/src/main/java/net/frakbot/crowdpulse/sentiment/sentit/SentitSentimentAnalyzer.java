@@ -18,7 +18,7 @@ package net.frakbot.crowdpulse.sentiment.sentit;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import net.frakbot.crowdpulse.common.util.rx.Transformers;
+import net.frakbot.crowdpulse.common.util.rx.RxUtil;
 import net.frakbot.crowdpulse.common.util.spi.IPlugin;
 import net.frakbot.crowdpulse.data.entity.Message;
 import net.frakbot.crowdpulse.sentiment.sentit.rest.*;
@@ -73,7 +73,7 @@ public class SentitSentimentAnalyzer extends IPlugin<Message, Message, Void> {
                 .buffer(MAX_MESSAGES_PER_REQ)
                 .lift(new SentitOperator())
                 // flatten the sequence of Observables back into one single Observable
-                .compose(Transformers.flatten());
+                .compose(RxUtil.flatten());
     }
 
     private class SentitOperator implements Observable.Operator<List<Message>, List<Message>> {

@@ -16,18 +16,35 @@
 
 package net.frakbot.crowdpulse.common.util.rx;
 
-import rx.Subscription;
+import rx.Observable;
+import rx.functions.Func1;
 
 /**
+ * Utility RxJava methods.
+ *
  * @author Francesco Pontillo
  */
 public class RxUtil {
-    public static boolean isSubscribedAtLeastOnce(Subscription... subscriptions) {
-        for (Subscription subscription : subscriptions) {
-            if (!subscription.isUnsubscribed()) {
-                return true;
-            }
-        }
-        return false;
+
+    /**
+     * Lambda functions whose input parameters are returned "as is".
+     *
+     * @param <T> Type parameter of the input/output object.
+     * @return A lambda identity function.
+     */
+    public static <T> Func1<T, T> identity() {
+        return (x -> x);
     }
+
+    /**
+     * Custom {@link rx.Observable.Transformer} that flattens a sequence of {@link Observable} in a single {@link
+     * Observable}.
+     *
+     * @param <T> Type parameter of the input/output object.
+     * @return A {@link rx.Observable.Transformer} to be applied on sequences of {@link Observable}s.
+     */
+    public static <T> Observable.Transformer<Iterable<T>, T> flatten() {
+        return observable -> observable.flatMapIterable(identity());
+    }
+
 }
