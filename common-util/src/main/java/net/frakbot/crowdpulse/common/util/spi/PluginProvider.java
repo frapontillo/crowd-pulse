@@ -19,6 +19,11 @@ package net.frakbot.crowdpulse.common.util.spi;
 import java.util.ServiceLoader;
 
 /**
+ * Basic provider for CrowdPulse {@link IPlugin} implementations.
+ * This provider simply retrieves the first {@link IPlugin} implementation whose name matches the asked one.
+ * <p>
+ * TODO: the provider can be improved by implementing a criteria based system.
+ *
  * @author Francesco Pontillo
  */
 public class PluginProvider {
@@ -28,13 +33,13 @@ public class PluginProvider {
         serviceLoader = ServiceLoader.load(IPlugin.class);
     }
 
-    public static <I, O, P, T extends IPlugin<I, O, P>> T getPlugin(String name) throws ClassNotFoundException {
+    public static <Input, Output, Parameter, Plugin extends IPlugin<Input, Output, Parameter>> Plugin getPlugin(
+            String name) throws ClassNotFoundException {
         for (IPlugin implementation : serviceLoader) {
-            // TODO: implement a better criteria-based loading logic
             if (implementation.getName().equals(name)) {
-                return (T) implementation;
+                return (Plugin) implementation;
             }
         }
-        throw new ClassNotFoundException("Can't found a valid implementation for plugin named \"" + name + "\"");
+        throw new ClassNotFoundException("Can't found a valid implementation for plugin named \"" + name + "\".");
     }
 }

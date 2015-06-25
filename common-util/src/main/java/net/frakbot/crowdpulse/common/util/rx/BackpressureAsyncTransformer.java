@@ -20,6 +20,13 @@ import rx.Observable;
 import rx.schedulers.Schedulers;
 
 /**
+ * Custom {@link rx.Observable.Transformer} that makes the {@link Observable} it is applied on:
+ * <ul>
+ * <li>subscribe on the computation thread</li>
+ * <li>buffer incoming items on backpressure</li>
+ * <li>observe on the I/O thread</li>
+ * </ul>
+ *
  * @author Francesco Pontillo
  */
 public class BackpressureAsyncTransformer<T> implements Observable.Transformer<T, T> {

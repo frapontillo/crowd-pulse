@@ -1,4 +1,4 @@
-package net.frakbot.crowdpulse.common.util;/*
+/*
  * Copyright 2015 Francesco Pontillo
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,45 +14,93 @@ package net.frakbot.crowdpulse.common.util;/*
  * limitations under the License.
  */
 
+package net.frakbot.crowdpulse.common.util;
+
 import java.util.Arrays;
 import java.util.List;
 
 /**
+ * String utility methods.
+ *
  * @author Francesco Pontillo
  */
 public class StringUtil {
+
+    /**
+     * Check if a {@link String} is {@code null} or empty.
+     *
+     * @param string The {@link String} to check.
+     * @return {@code true} if the string is {@code null} or empty, {@code false} otherwise.
+     */
     public static boolean isNullOrEmpty(String string) {
         return (string == null || string.equals(""));
     }
 
+    /**
+     * Join a {@link List} of {@link String}s with a separator, optionally skipping {@code null} or empty values.
+     *
+     * @param list     The {@link List<String>} to join.
+     * @param with     The separator {@link String} to use (e.g. ", ").
+     * @param skipNull {@code true} if {@code null} or empty strings must be skipped.
+     * @return The resulting {@link String} created by joining input strings with the separator.
+     */
     public static String join(List<String> list, String with, boolean skipNull) {
         StringBuilder builder = new StringBuilder();
         if (list == null) {
             return "";
         }
-        for (String el : list) {
-            if (!(skipNull && isNullOrEmpty(el))) {
-                builder.append(el).append(with);
-            }
-        }
+        list.stream().filter(el -> !(skipNull && isNullOrEmpty(el))).forEach(el -> {
+            builder.append(el).append(with);
+        });
         if (builder.length() - with.length() > 0) {
             builder.replace(builder.length() - with.length(), builder.length() - 1 + with.length(), "");
         }
         return builder.toString();
     }
 
+    /**
+     * Join a {@link List} of {@link String}s with a separator, without skipping {@code null} or empty values.
+     *
+     * @param list The {@link List<String>} to join.
+     * @param with The separator {@link String} to use (e.g. ", ").
+     * @return The resulting {@link String} created by joining input strings with the separator.
+     * @see StringUtil#join(List, String, boolean)
+     */
     public static String join(List<String> list, String with) {
         return join(list, with, false);
     }
 
+    /**
+     * Join an array of params {@link String}s with a separator, optionally skipping {@code null} or empty values.
+     *
+     * @param with     The separator {@link String} to use (e.g. ", ").
+     * @param skipNull {@code true} if {@code null} or empty strings must be skipped.
+     * @param params   The array of {@link String}s to join.
+     * @return The resulting {@link String} created by joining input strings with the separator.
+     * @see StringUtil#join(List, String, boolean)
+     */
     public static String join(String with, boolean skipNull, String... params) {
         return join(Arrays.asList(params), with, skipNull);
     }
 
+    /**
+     * Join an array of params {@link String}s with a separator, without skipping {@code null} or empty values.
+     *
+     * @param with   The separator {@link String} to use (e.g. ", ").
+     * @param params The array of {@link String}s to join.
+     * @return The resulting {@link String} created by joining input strings with the separator.
+     * @see StringUtil#join(String, boolean, String...)
+     */
     public static String join(String with, String... params) {
         return join(with, false, params);
     }
 
+    /**
+     * Remove whitespace characters at the beginning of a {@link String}.
+     *
+     * @param s The {@link String} to cleanse.
+     * @return The resulting {@link String} without whitespace characters at the beginning.
+     */
     public static String leftTrim(String s) {
         int i = 0;
         while (i < s.length() && Character.isWhitespace(s.charAt(i))) {
@@ -61,14 +109,28 @@ public class StringUtil {
         return s.substring(i);
     }
 
+    /**
+     * Remove whitespace characters at the end of a {@link String}.
+     *
+     * @param s The {@link String} to cleanse.
+     * @return The resulting {@link String} without whitespace characters at the end.
+     */
     public static String rightTrim(String s) {
-        int i = s.length()-1;
+        int i = s.length() - 1;
         while (i >= 0 && Character.isWhitespace(s.charAt(i))) {
             i--;
         }
-        return s.substring(0,i+1);
+        return s.substring(0, i + 1);
     }
 
+    /**
+     * Trim a {@link String} at a given character count (or less if the length is less than the input count),
+     * then adds the "ellipsis" character.
+     *
+     * @param s     The {@link String} that will be ellipsized.
+     * @param count The maximum number of characters from the input {@link String} that will be preserved.
+     * @return A new, ellipsized {@link String}.
+     */
     public static String ellipsize(String s, int count) {
         if (isNullOrEmpty(s)) {
             return s;

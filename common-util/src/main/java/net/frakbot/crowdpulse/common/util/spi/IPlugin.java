@@ -24,18 +24,58 @@ import rx.observables.ConnectableObservable;
 import java.util.Arrays;
 
 /**
- * Simple interface for Plugins.
+ * Advanced base class for CrowdPulse plugins.
  * <p>
- * A plugin should return an {@link rx.Observable.Operator}
+ * A {@link IPlugin} implementation is based on:
+ * <ul>
+ * <li>an {@link Input} generic type, that is the class of the objects that will be handled by the plugin</li>
+ * <li>an {@link Output} type, the class of the objects returned by the plugin ({@link Output} may equal {@link
+ * Input})</li>
+ * <li>a {@link Parameter} generic type that defines the option object class that the plugin accepts for transforming
+ * {@link Input} objects into {@link Output} objects.</li>
+ * </ul>
  * <p>
- * Each plugin should also declare a name so that it can be retrieved by the {@link java.util.ServiceLoader}.
+ * Implementing the {@link IPlugin} class allows for different use cases.
+ * <p>
+ * <ol>
+ * <li>
+ * If you want to handle every {@link Input} object (maybe by enriching them or by transforming them into different
+ * objects), you can simply implement the {@link #getOperator(Parameter)} and transform every object there.
+ * </li>
+ * <li>
+ * If you want to apply more than one {@link rx.Observable.Operator} on your data stream, you can override
+ * {@link #transform(Parameter)} and return your custom {@link rx.Observable.Transformer}.
+ * </li>
+ * <li>
+ * If you want to use more than one {@link rx.Observable.Transformer} on your data stream, you can override
+ * {@link #processSingle(Parameter, Observable)}.
+ * If you override this method, keep in mind that the default implementation first applies the result of the
+ * {@link #transform(Parameter)} method, then composes the stream with a {@link BackpressureAsyncTransformer}.
+ * </li>
+ * <li>
+ * If you want to handle more than one input stream, you can override the {@link #process(Parameter, Observable[])}
+ * method and handle the input {@link Observable} yourself. Please note that the default implementation uses the
+ * first {@link Observable} as the one to transform, and the optional following ones as streams that must be waited
+ * before the first element in the transformed {@link Observable} is emitted (for more information, see {@link
+ * #process(Parameter, Observable[])}).
+ * </li>
+ * </ol>
+ * <p>
+ * Plugins should be lazy: when instantiated, they should do the least possible work, delaying the nested object
+ * instantiations when the first relevant method is called (e.g. when the first element has to be processed in the
+ * {@link rx.Observable.Operator} returned by {@link #getOperator(Parameter)}.
+ * Plugins, in fact, are instantiated by {@link java.util.ServiceLoader} when they have to be analyzed to check if
+ * they must be used for the specific task instance (e.g., a task may prefer a Foo plugin instead of a Bar plugin,
+ * but both plugins are actually instantiated to check which one will have to be used).
  *
  * @author Francesco Pontillo
  */
 public abstract class IPlugin<Input, Output, Parameter> {
 
     /**
-     * @return the name of the plugin implementation
+     * Retrieve the name of the specific plugin implementation.
+     *
+     * @return The name of the plugin implementation.
      */
     public abstract String getName();
 
@@ -50,6 +90,8 @@ public abstract class IPlugin<Input, Output, Parameter> {
     protected abstract Observable.Operator<Output, Input> getOperator(Parameter parameters);
 
     /**
+     * Return the plugin {@link rx.Observable.Operator<Input, Output>} with a <code>null</code> parameter object.
+     *
      * @see IPlugin#getOperator(Object)
      */
     protected final Observable.Operator<Output, Input> getOperator() {
@@ -61,8 +103,8 @@ public abstract class IPlugin<Input, Output, Parameter> {
      * provided by {@link IPlugin#getOperator()} via {@link Observable#lift(Observable.Operator)}.
      * <p>
      * If the {@link IPlugin<Input>} doesn't use a single {@link rx.Observable.Operator}, you can override this method
-     * and provide your own transformation rules. In this case, {@link IPlugin#getOperator()} should return {@code null}
-     * and you have to override {@link IPlugin#transform(Object)}.
+     * and provide your own transformation flow. In this case, {@link IPlugin#getOperator()} <i>should</i> return
+     * {@code null} to keep your code clearer.
      *
      * @param params Parameters to perform the specific task with.
      * @return A {@link rx.Observable.Transformer} that defines the proper transformations applied by this plugin
@@ -78,7 +120,12 @@ public abstract class IPlugin<Input, Output, Parameter> {
     }
 
     /**
-     * @see IPlugin#transform(Object)
+     * Transform a stream of {@link Input} elements by applying the series of transformations defined by {@link
+     * #transform(Parameter)} but with a {@code null} parameters object.
+     *
+     * @return A {@link rx.Observable.Transformer} that defines the proper transformations applied by this plugin
+     * to the stream.
+     * @see #transform(Parameter)
      */
     public final Observable.Transformer<Input, Output> transform() {
         return transform(null);
@@ -106,7 +153,8 @@ public abstract class IPlugin<Input, Output, Parameter> {
     }
 
     /**
-     * Process an {@link Observable<Input>} stream just as in {@link IPlugin#processSingle(Object, Observable)} but with
+     * Process an {@link Observable<Input>} stream just as in {@link IPlugin#processSingle(Object, Observable)} but
+     * with
      * {@code null} parameters.
      *
      * @param stream The {@link Observable<Input>} to process.
@@ -143,14 +191,17 @@ public abstract class IPlugin<Input, Output, Parameter> {
         Observable[] waitStreams = Arrays.copyOfRange(streams, 1, streams.length);
         Observable<Object> waitObservables = Observable.merge(waitStreams);
         waitObservables.subscribe(new Observer<Object>() {
-            @Override public void onCompleted() {
+            @Override
+            public void onCompleted() {
                 ((ConnectableObservable<Input>) streams[0]).connect();
             }
 
-            @Override public void onError(Throwable e) {
+            @Override
+            public void onError(Throwable e) {
             }
 
-            @Override public void onNext(Object o) {
+            @Override
+            public void onNext(Object o) {
             }
         });
 
@@ -158,10 +209,10 @@ public abstract class IPlugin<Input, Output, Parameter> {
     }
 
     /**
-     * Process an {@link Observable<Object>} stream array just as in {@link IPlugin#process(Object, Observable[])} but
-     * with {@code null} parameters.
+     * Process an {@link Observable<Object>} stream array just as in {@link IPlugin#process(Parameter, Observable[])}
+     * but with {@code null} parameters.
      *
-     * @see {@link IPlugin#process(Object, Observable[])}
+     * @see {@link IPlugin#process(Parameter, Observable[])}
      */
     public final Observable<Output> process(Observable<? extends Object>... streams) {
         return process(null, streams);
