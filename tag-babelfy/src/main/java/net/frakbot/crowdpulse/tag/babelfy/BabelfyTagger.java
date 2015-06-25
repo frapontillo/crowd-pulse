@@ -32,15 +32,17 @@ import java.util.List;
 public class BabelfyTagger extends IPlugin<Message, Message, Void> {
     public final static String PLUGIN_NAME = "babelfy";
     private final static String BABELFY_ENDPOINT = "http://babelfy.io/v1";
-    private final static BabelfyService service;
+    private static BabelfyService service;
 
-    static {
-        // build the REST client
-        RestAdapter restAdapter = new RestAdapter.Builder()
-                .setEndpoint(BABELFY_ENDPOINT)
-                .setRequestInterceptor(new BabelfyInterceptor())
-                .build();
-        service = restAdapter.create(BabelfyService.class);
+    private BabelfyService getService() {
+        if (service == null) {
+            RestAdapter restAdapter = new RestAdapter.Builder()
+                    .setEndpoint(BABELFY_ENDPOINT)
+                    .setRequestInterceptor(new BabelfyInterceptor())
+                    .build();
+            service = restAdapter.create(BabelfyService.class);
+        }
+        return service;
     }
 
     @Override public String getName() {
@@ -53,7 +55,7 @@ public class BabelfyTagger extends IPlugin<Message, Message, Void> {
                 BabelfyResponse response;
                 List<Tag> tags = new ArrayList<>();
                 try {
-                    response = service.tag(text, language != null ? language.toUpperCase() : null);
+                    response = getService().tag(text, language != null ? language.toUpperCase() : null);
                     for (String annotation : response.getTags(text)) {
                         Tag tag = new Tag();
                         tag.setText(annotation);
