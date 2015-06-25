@@ -1,5 +1,5 @@
 {
-  "configuraation": {
+  "configuration": {
     "status": "debug",
     "appenders": {
       "Console": {

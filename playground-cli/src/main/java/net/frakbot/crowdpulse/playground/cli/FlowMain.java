@@ -162,7 +162,7 @@ public class FlowMain {
     private ExtractionParameters getExtractionParams() {
         ExtractionParameters extractionParameters = new ExtractionParameters();
         extractionParameters.setFromUser("frapontillo");
-        extractionParameters.setSince(new GregorianCalendar(2015, 5, 15).getTime());
+        extractionParameters.setSince(new GregorianCalendar(2015, 5, 20).getTime());
         extractionParameters.setUntil(new GregorianCalendar().getTime());
         return extractionParameters;
     }
