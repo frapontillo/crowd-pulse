@@ -16,20 +16,20 @@
 
 package net.frakbot.crowdpulse.data.entity;
 
-import org.bson.types.ObjectId;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
 /**
+ * Profiles are entities describing the user information available on the social network being analyzed.
+ *
  * @author Francesco Pontillo
  */
 public class Profile extends Entity implements Comparable<Profile> {
     private String source;
     private String username;
-    private List<String> tags;
+    private List<String> customTags;
     private Date activationDate;
     private long followers;
     private long followings;
@@ -59,12 +59,12 @@ public class Profile extends Entity implements Comparable<Profile> {
         this.username = username;
     }
 
-    public List<String> getTags() {
-        return tags;
+    public List<String> getCustomTags() {
+        return customTags;
     }
 
-    public void setTags(List<String> tags) {
-        this.tags = tags;
+    public void setCustomTags(List<String> customTags) {
+        this.customTags = customTags;
     }
 
     public Date getActivationDate() {

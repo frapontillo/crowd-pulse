@@ -38,7 +38,7 @@ public abstract class ProfileConverter<T> {
         Profile converted = fromSpecificExtractor(original, additionalData);
         if (parameters != null) {
             converted.setSource(parameters.getSource());
-            converted.setTags(parameters.getTags());
+            converted.setCustomTags(parameters.getTags());
         }
         return converted;
     }

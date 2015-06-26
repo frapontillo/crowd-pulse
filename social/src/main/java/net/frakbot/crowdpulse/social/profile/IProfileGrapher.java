@@ -51,7 +51,7 @@ public abstract class IProfileGrapher extends IPlugin<Profile, Profile, Void> {
                 // build the appropriate profile parameters
                 ProfileParameters params = new ProfileParameters();
                 params.setSource(getName());
-                params.setTags(profile.getTags());
+                params.setTags(profile.getCustomTags());
                 // get the profiles and emit them
                 List<Profile> connections = getConnections(profile, params);
                 connections.forEach(connection -> profile.addConnections(connection.getUsername()));
