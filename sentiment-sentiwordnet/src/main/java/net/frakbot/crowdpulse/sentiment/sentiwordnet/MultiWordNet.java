@@ -31,9 +31,9 @@ import java.util.stream.Collectors;
 /**
  * MultiWordNet implementation based on text files.
  *
+ * @author Francesco Pontillo
  * @see <a href="https://github.com/frapontillo/multiwordnet-simple">A simpler MultiWordNet format</a>
  * @see <a href="http://multiwordnet.fbk.eu/english/home.php">MultiWordNet homepage</a>
- * @author Francesco Pontillo
  */
 public class MultiWordNet {
     private final static Pattern mainDivider = Pattern.compile("\t");
@@ -66,8 +66,8 @@ public class MultiWordNet {
      * If the simple POS tag is specified, the synsets will be filtered to match it (e.g., if the lemma has been
      * tagged as a noun - the "n" tag - only synsets starting with "n#" will be returned).
      *
-     * @param lemma The lemma to retrieve.
-     * @param language The language of the lemma.
+     * @param lemma     The lemma to retrieve.
+     * @param language  The language of the lemma.
      * @param simplePos The (optional) simple POS tag for the lemma ("n", "v", "a", "r").
      * @return a {@link String} array containing all the synsets of the lemma.
      */
@@ -94,19 +94,20 @@ public class MultiWordNet {
     private HashMap<String, String[]> loadDictionary(String language) {
         HashMap<String, String[]> dict = new HashMap<>();
         InputStream model = getClass().getClassLoader().getResourceAsStream(language + "_index");
-        if (model != null) {try {
-            List<String> lines = IOUtils.readLines(model, Charset.forName("UTF-8"));
-            lines.forEach(s -> {
-                String[] components = mainDivider.split(s);
-                if (components.length == 2) {
-                    String lemma = components[0];
-                    String[] synsets = subDivider.split(components[1]);
-                    dict.put(lemma, synsets);
-                }
-            });
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        if (model != null) {
+            try {
+                List<String> lines = IOUtils.readLines(model, Charset.forName("UTF-8"));
+                lines.forEach(s -> {
+                    String[] components = mainDivider.split(s);
+                    if (components.length == 2) {
+                        String lemma = components[0];
+                        String[] synsets = subDivider.split(components[1]);
+                        dict.put(lemma, synsets);
+                    }
+                });
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
 
         return dict;

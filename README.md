@@ -20,7 +20,7 @@ Here is a complete Crowd Pulse flow:
 1. `IPlugin<Message, Profile, Void>` extracts all the profiles for the input messages
 1. `IPlugin<Profile, Profile, Void>` extracts all connections for the input profiles
 1. `IPlugin<Profile, Profile, Void>` fixes the geolocation for every extracted profile
-1. `IPlugin<IPlugin, Message, Void>` waits for some given streams to complete and then emits another stream at once
+1. `IPlugin<Object, Message, Void>` waits for some given streams to complete and then emits another stream at once
 1. `IPlugin<Message, Message, Void>` fixes the geolocation for messages according to the info contained in authors' profiles
 1. `IPlugin<Message, Message, Void>` detects and sets the language for every message
 1. `IPlugin<Message, Message, Void>` tags every message in the stream
