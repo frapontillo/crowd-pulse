@@ -63,7 +63,7 @@ public class TwitterExtractorRunner {
                     logger.info("SEARCH: started.");
                     getOldMessagesBySearch(parameters, subscriber);
                 }
-            });
+            }).onBackpressureBuffer();
         } else {
             // otherwise, we can use the author's timeline, but we have to manually filter on:
             // query, location, to user, referenced users, since, until, language, locale
@@ -72,7 +72,7 @@ public class TwitterExtractorRunner {
                     logger.info("SEARCH: started.");
                     getOldMessagesByTimeline(parameters, subscriber);
                 }
-            });
+            }).onBackpressureBuffer();;
         }
 
         // create the new messages (streamed) Observable
@@ -81,7 +81,7 @@ public class TwitterExtractorRunner {
                 logger.info("STREAMING: started.");
                 getNewMessages(parameters, subscriber);
             }
-        });
+        }).onBackpressureBuffer();
         // filter the new messages to properly match the extraction parameters
         newMessages = newMessages
                 .filter(Checker.checkFromUser(parameters))
@@ -425,17 +425,18 @@ public class TwitterExtractorRunner {
                     users.add(user);
                 }
             }
+
+            // convert user names into user IDs (long) using the Twitter API
+            ResponseList<User> twitterUsers = getTwitterInstance().users().lookupUsers(users.toArray(new String[users
+                    .size()]));
+            long[] twitterUserIds = new long[twitterUsers.size()];
+            int i = 0;
+            for (User user : twitterUsers) {
+                twitterUserIds[i] = user.getId();
+                i += 1;
+            }
+            filterQuery.follow(twitterUserIds);
         }
-        // convert user names into user IDs (long) using the Twitter API
-        ResponseList<User> twitterUsers = getTwitterInstance().users().lookupUsers(users.toArray(new String[users
-                .size()]));
-        long[] twitterUserIds = new long[twitterUsers.size()];
-        int i = 0;
-        for (User user : twitterUsers) {
-            twitterUserIds[i] = user.getId();
-            i += 1;
-        }
-        filterQuery.follow(twitterUserIds);
 
         // set the terms to search for
         if (!StringUtil.isNullOrEmpty(parameters.getQuery())) {
