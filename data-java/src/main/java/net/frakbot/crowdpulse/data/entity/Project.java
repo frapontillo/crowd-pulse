@@ -23,9 +23,11 @@ import java.util.List;
 
 /**
  * Holds project-level information:
- *  - name of the project
- *  - list of steps to perform sequentially
- *  - creation user and date
+ * <ul>
+ * <li>name of the project</li>
+ * <li>list of steps to perform</li>
+ * <li>creation user and date</li>
+ * </ul>
  *
  * @author Francesco Pontillo
  */
@@ -35,34 +37,74 @@ public class Project extends Entity {
     @Reference private User creationUser;
     private Date creationDate;
 
+    /**
+     * Get the name of the Project.
+     *
+     * @return The name of the Project.
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * Set the name of the Project.
+     *
+     * @param name The name of the Project.
+     */
     public void setName(String name) {
         this.name = name;
     }
 
+    /**
+     * Get the {@link List} of {@link Step}s to perform.
+     *
+     * @return A {@link List} of {@link Step}s.
+     */
     public List<Step> getSteps() {
         return steps;
     }
 
+    /**
+     * Set the {@link List} of {@link Step}s to perform for the Project.
+     *
+     * @param steps A new {@link List} of {@link Step}s.
+     */
     public void setSteps(List<Step> steps) {
         this.steps = steps;
     }
 
+    /**
+     * Get the {@link User} who created the Project.
+     *
+     * @return The {@link User} who created the Project.
+     */
     public User getCreationUser() {
         return creationUser;
     }
 
+    /**
+     * Set the {@link User} who created the Project.
+     *
+     * @param creationUser The {@link User} who created the Project.
+     */
     public void setCreationUser(User creationUser) {
         this.creationUser = creationUser;
     }
 
+    /**
+     * Get the Project {@link Date} of creation.
+     *
+     * @return The {@link Date} of creation of the Project.
+     */
     public Date getCreationDate() {
         return creationDate;
     }
 
+    /**
+     * Set the Project {@link Date} of creation.
+     *
+     * @param creationDate The {@link Date} of creation of the Project.
+     */
     public void setCreationDate(Date creationDate) {
         this.creationDate = creationDate;
     }

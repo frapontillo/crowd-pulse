@@ -50,15 +50,17 @@ public class DataLayer {
     private static final String PROP_DATABASE_PASSWORD = "database.password";
 
     /**
-     * Get a singleton instance of {@link DataLayer}, by reading a
-     * {@code database.properties} file in the classpath. The configuration file must have the following:
-     * - database.host, the server host of the DB instance
-     * - database.port, the server port of the DB instance
-     * - database.name, the name of the DB collection
-     * - database.username, the username with access to the collection
-     * - database.password, the password of the user with access to the collection
+     * Get a singleton instance of DataLayer, by reading a {@code database.properties} file in the classpath.
+     * The configuration file must have the following:
+     * <ul>
+     * <li>{@code database.host}, the server host of the DB instance</li>
+     * <li>{@code database.port}, the server port of the DB instance</li>
+     * <li>{@code database.name}, the name of the DB collection</li>
+     * <li>{@code database.username}, the username with access to the collection</li>
+     * <li>{@code database.password}, the password of the user with access to the collection</li>
+     * </ul>
      *
-     * @return A setup instance of {@link DataLayer}.
+     * @return A setup instance of DataLayer.
      */
     public static synchronized DataLayer getDataLayer() {
         if (dataLayer == null) {
@@ -108,8 +110,7 @@ public class DataLayer {
     /**
      * Returns the only available instance of the datastore.
      *
-     * @return The {@link org.mongodb.morphia.Datastore} instance associated with the {@link net.frakbot.crowdpulse
-     * .data.repository.DataLayer}.
+     * @return The {@link org.mongodb.morphia.Datastore} instance associated with the DataLayer.
      */
     public Datastore getDatastore() {
         return datastore;

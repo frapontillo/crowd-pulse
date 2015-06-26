@@ -37,8 +37,8 @@ public class BufferedProfileListObserver implements Observer<List<Profile>> {
     private SubscriptionGroupLatch allSubscriptions;
 
     /**
-     * Construct a new {@link BufferedProfileListObserver} that takes care of saving profiles into the database
-     * as soon as they arrive, buffered in {@link List}s.
+     * Construct a new BufferedProfileListObserver that takes care of saving profiles into the database as soon as they
+     * arrive, buffered in {@link List}s.
      *
      * @param subscriptionGroupLatch A {@link SubscriptionGroupLatch} whose counter will be decremented as soon as
      *                               all {@link Profile}s are processed or if an exception is thrown.

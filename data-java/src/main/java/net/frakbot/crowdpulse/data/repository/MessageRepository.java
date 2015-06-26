@@ -20,6 +20,8 @@ import net.frakbot.crowdpulse.data.entity.Message;
 import org.bson.types.ObjectId;
 
 /**
+ * {@link Repository} for {@link Message}s.
+ *
  * @author Francesco Pontillo
  */
 public class MessageRepository extends Repository<Message, ObjectId> {

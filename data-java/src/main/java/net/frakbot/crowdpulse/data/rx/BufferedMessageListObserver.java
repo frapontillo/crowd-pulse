@@ -36,8 +36,8 @@ public class BufferedMessageListObserver implements Observer<List<Message>> {
     private SubscriptionGroupLatch allSubscriptions;
 
     /**
-     * Construct a new {@link BufferedMessageListObserver} that takes care of saving messages into the database
-     * as soon as they arrive, buffered in {@link List}s.
+     * Construct a new BufferedMessageListObserver that takes care of saving messages into the database as soon as they
+     * arrive, buffered in {@link List}s.
      *
      * @param subscriptionGroupLatch A {@link SubscriptionGroupLatch} whose counter will be decremented as soon as
      *                               all {@link Message}s are processed or if an exception is thrown.

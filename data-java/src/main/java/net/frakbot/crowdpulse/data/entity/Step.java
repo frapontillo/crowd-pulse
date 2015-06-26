@@ -19,6 +19,13 @@ package net.frakbot.crowdpulse.data.entity;
 import java.util.HashMap;
 
 /**
+ * Step contains all the information related to the step to perform:
+ * <ul>
+ * <li>name of the step</li>
+ * <li>type of step (where applicable)</li>
+ * <li>a {@link HashMap} of generic configurations</li>
+ * </ul>
+ *
  * @author Francesco Pontillo
  */
 public class Step extends Entity {
@@ -26,26 +33,56 @@ public class Step extends Entity {
     private String type;
     private HashMap<String, Object> config;
 
+    /**
+     * Get the name of the Step.
+     *
+     * @return The name of the Step.
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * Set the name of the Step.
+     *
+     * @param name A new name for the Step.
+     */
     public void setName(String name) {
         this.name = name;
     }
 
+    /**
+     * Get the type of the Step.
+     *
+     * @return The type of the Step.
+     */
     public String getType() {
         return type;
     }
 
+    /**
+     * Set the type of the Step.
+     *
+     * @param type The type of the Step.
+     */
     public void setType(String type) {
         this.type = type;
     }
 
+    /**
+     * Get the configuration {@link HashMap} for the Step.
+     *
+     * @return The configuration of the Step.
+     */
     public HashMap<String, Object> getConfig() {
         return config;
     }
 
+    /**
+     * Set a configuration for the Step as a {@link HashMap}.
+     *
+     * @param config The new configuration for the Step.
+     */
     public void setConfig(HashMap<String, Object> config) {
         this.config = config;
     }

@@ -20,6 +20,8 @@ import net.frakbot.crowdpulse.data.entity.Step;
 import org.bson.types.ObjectId;
 
 /**
+ * {@link Repository} for {@link Step}s.
+ *
  * @author Francesco Pontillo
  */
 public class StepRepository extends Repository<Step, ObjectId> {

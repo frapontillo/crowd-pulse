@@ -24,15 +24,18 @@ import org.mongodb.morphia.query.UpdateResults;
 import java.util.ArrayList;
 
 /**
+ * {@link Repository} for {@link Tag}s.
+ *
  * @author Francesco Pontillo
  */
 public class TagRepository extends Repository<Tag, String> {
 
     /**
-     * Insert or update a tag by matching its _id and eventually saving it for the first time or updating its
-     * sources list.
-     * @param tag The {@link Tag} to be inserted or updated
-     * @return The updated {@link Tag}
+     * Insert or update a {@link Tag} by matching its {@link Tag#id} and eventually saving it for the first time or
+     * updating its {@link Tag#sources} list.
+     *
+     * @param tag The {@link Tag} to be inserted or updated.
+     * @return The updated {@link Tag}.
      */
     public Tag insertOrUpdate(Tag tag) {
         Query<Tag> query = createQuery().field("_id").equal(tag.getId());

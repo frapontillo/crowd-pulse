@@ -20,6 +20,8 @@ import net.frakbot.crowdpulse.data.entity.User;
 import org.bson.types.ObjectId;
 
 /**
+ * {@link Repository} for {@link User}s.
+ *
  * @author Francesco Pontillo
  */
 public class UserRepository extends Repository<User, ObjectId> {

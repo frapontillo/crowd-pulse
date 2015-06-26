@@ -23,13 +23,30 @@ import rx.Observable;
 import java.util.List;
 
 /**
+ * Generic repository for MongoDB collections, where:
+ * <ul>
+ * <li>{@link T} is the class of stored objects</li>
+ * <li>{@link K} is the class of the object IDs</li>
+ * </ul>
+ *
  * @author Francesco Pontillo
  */
-public class Repository<T,K> extends BasicDAO<T,K> {
+public class Repository<T, K> extends BasicDAO<T, K> {
+
+    /**
+     * Create a new Repository.
+     */
     protected Repository() {
         super(DataLayer.getDataLayer().getDatastore());
     }
 
+    /**
+     * Create a {@link Query} to retrieve elements between two {@link K} representations of object IDs.
+     *
+     * @param from The ID to start retrieve elements from.
+     * @param to   The Id to stop retrieve elements at.
+     * @return A {@link Query} to retrieve elements between two IDs.
+     */
     public Query<T> findBetweenKeys(K from, K to) {
         Query<T> query = createQuery();
         if (from != null) {
@@ -41,10 +58,22 @@ public class Repository<T,K> extends BasicDAO<T,K> {
         return query;
     }
 
+    /**
+     * Get all the elements of the collection as an {@link Observable}<{@link T}>.
+     *
+     * @return {@link Observable}<{@link T}> that will emit all of the objects in the Collection.
+     */
     public Observable<T> get() {
         return Observable.from(findBetweenKeys(null, null).fetch());
     }
 
+    /**
+     * Get the elements of the collection with IDs between {@code from} and {@code to} as a {@link List}<{@link T}>.
+     *
+     * @param from The ID to start retrieve elements from.
+     * @param to   The Id to stop retrieve elements at.
+     * @return {@link List}<{@link T}> that will contain all of the objects in the Collection.
+     */
     public List<T> getBetweenKeys(K from, K to) {
         return findBetweenKeys(from, to).asList();
     }

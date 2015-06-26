@@ -21,6 +21,8 @@ import org.mongodb.morphia.annotations.Reference;
 import java.util.Date;
 
 /**
+ * Model for the OAuth 2.0 access token.
+ *
  * @author Francesco Pontillo
  */
 public class AccessToken extends Entity {
@@ -29,34 +31,74 @@ public class AccessToken extends Entity {
     @Reference private User user;
     private Date expires;
 
+    /**
+     * Get the access token.
+     *
+     * @return The access token.
+     */
     public String getAccessToken() {
         return accessToken;
     }
 
+    /**
+     * Set the access token.
+     *
+     * @param accessToken The access token.
+     */
     public void setAccessToken(String accessToken) {
         this.accessToken = accessToken;
     }
 
+    /**
+     * Get the {@link App} the token was issued for.
+     *
+     * @return The {@link App} the token was issued for.
+     */
     public App getApp() {
         return app;
     }
 
+    /**
+     * Set the {@link App} the token was issued for.
+     *
+     * @param app The {@link App} the token was issued for.
+     */
     public void setApp(App app) {
         this.app = app;
     }
 
+    /**
+     * Get the {@link User} the token was issued for.
+     *
+     * @return The {@link User} the token was issued for.
+     */
     public User getUser() {
         return user;
     }
 
+    /**
+     * Set the {@link User} the token was issued for.
+     *
+     * @param user The {@link User} the token was issued for.
+     */
     public void setUser(User user) {
         this.user = user;
     }
 
+    /**
+     * Get the {@link Date} of expiration for the access token. A new token will have to be generated.
+     *
+     * @return The {@link Date} of expiration of the access token.
+     */
     public Date getExpires() {
         return expires;
     }
 
+    /**
+     * Get the {@link Date} of expiration for the access token.
+     *
+     * @param expires The {@link Date} of expiration of the access token.
+     */
     public void setExpires(Date expires) {
         this.expires = expires;
     }

@@ -36,8 +36,8 @@ public class BufferedTagListObserver implements Observer<List<Tag>> {
     private SubscriptionGroupLatch allSubscriptions;
 
     /**
-     * Construct a new {@link BufferedTagListObserver} that takes care of saving tags into the database
-     * as soon as they arrive, buffered in {@link List}s.
+     * Construct a new BufferedTagListObserver that takes care of saving tags into the database as soon as they arrive,
+     * buffered in {@link List}s.
      *
      * @param subscriptionGroupLatch A {@link SubscriptionGroupLatch} whose counter will be decremented as soon as
      *                               all {@link Tag}s are processed or if an exception is thrown.

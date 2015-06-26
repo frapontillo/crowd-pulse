@@ -23,12 +23,20 @@ import org.apache.logging.log4j.Logger;
 import rx.Observer;
 
 /**
+ * Generic {@link Observer} for {@link Profile} that prints streamed {@link Profile}s.
+ *
  * @author Francesco Pontillo
  */
 public class ProfilePrintObserver implements Observer<Profile> {
     private static final Logger logger = CrowdLogger.getLogger(ProfilePrintObserver.class);
     private final SubscriptionGroupLatch latch;
 
+    /**
+     * Construct a new ProfilePrintObserver.
+     *
+     * @param latch A {@link SubscriptionGroupLatch} whose counter will be decremented as soon as
+     *              all {@link Profile}s are processed or if an exception is thrown.
+     */
     public ProfilePrintObserver(SubscriptionGroupLatch latch) {
         this.latch = latch;
     }

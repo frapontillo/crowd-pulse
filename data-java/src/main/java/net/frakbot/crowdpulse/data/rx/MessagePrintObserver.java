@@ -23,12 +23,20 @@ import org.apache.logging.log4j.Logger;
 import rx.Observer;
 
 /**
+ * Generic {@link Observer} for {@link Message} that prints streamed {@link Message}s.
+ *
  * @author Francesco Pontillo
  */
 public class MessagePrintObserver implements Observer<Message> {
     private static final Logger logger = CrowdLogger.getLogger(MessagePrintObserver.class);
     private final SubscriptionGroupLatch latch;
 
+    /**
+     * Construct a new MessagePrintObserver.
+     *
+     * @param latch A {@link SubscriptionGroupLatch} whose counter will be decremented as soon as
+     *              all {@link Message}s are processed or if an exception is thrown.
+     */
     public MessagePrintObserver(SubscriptionGroupLatch latch) {
         this.latch = latch;
     }
