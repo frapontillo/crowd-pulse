@@ -16,7 +16,6 @@
 
 package net.frakbot.crowdpulse.data.repository;
 
-import org.bson.types.ObjectId;
 import org.mongodb.morphia.dao.BasicDAO;
 import org.mongodb.morphia.query.Query;
 import rx.Observable;
@@ -31,17 +30,6 @@ public class Repository<T,K> extends BasicDAO<T,K> {
         super(DataLayer.getDataLayer().getDatastore());
     }
 
-    public Query<T> findBetweenIds(String fromId, String toId) {
-        Query<T> query = createQuery();
-        if (fromId != null) {
-            query.field("_id").greaterThanOrEq(new ObjectId(fromId));
-        }
-        if (toId != null) {
-            query.field("_id").lessThanOrEq(new ObjectId(toId));
-        }
-        return query;
-    }
-
     public Query<T> findBetweenKeys(K from, K to) {
         Query<T> query = createQuery();
         if (from != null) {
@@ -53,16 +41,8 @@ public class Repository<T,K> extends BasicDAO<T,K> {
         return query;
     }
 
-    public List<T> getBetweenIds(String fromId, String toId) {
-        return findBetweenIds(fromId, toId).asList();
-    }
-
-    public Observable<T> getBetweenIdsAsObservable(String fromId, String toId) {
-        return Observable.from(findBetweenIds(fromId, toId).fetch());
-    }
-
     public Observable<T> get() {
-        return Observable.from(findBetweenIds(null, null).fetch());
+        return Observable.from(findBetweenKeys(null, null).fetch());
     }
 
     public List<T> getBetweenKeys(K from, K to) {

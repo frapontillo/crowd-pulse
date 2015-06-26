@@ -16,16 +16,15 @@
 
 package net.frakbot.crowdpulse.data.entity;
 
-import java.util.List;
+import java.util.HashMap;
 
 /**
  * @author Francesco Pontillo
  */
 public class Step extends Entity {
     private String name;
-    Integer notifyEvery;
-    boolean waitPrevStep;
-    private List<Job> jobs;
+    private String type;
+    private HashMap<String, Object> config;
 
     public String getName() {
         return name;
@@ -35,27 +34,19 @@ public class Step extends Entity {
         this.name = name;
     }
 
-    public Integer getNotifyEvery() {
-        return notifyEvery;
+    public String getType() {
+        return type;
     }
 
-    public void setNotifyEvery(Integer notifyEvery) {
-        this.notifyEvery = notifyEvery;
+    public void setType(String type) {
+        this.type = type;
     }
 
-    public boolean isWaitPrevStep() {
-        return waitPrevStep;
+    public HashMap<String, Object> getConfig() {
+        return config;
     }
 
-    public void setWaitPrevStep(boolean waitPrevStep) {
-        this.waitPrevStep = waitPrevStep;
-    }
-
-    public List<Job> getJobs() {
-        return jobs;
-    }
-
-    public void setJobs(List<Job> jobs) {
-        this.jobs = jobs;
+    public void setConfig(HashMap<String, Object> config) {
+        this.config = config;
     }
 }

@@ -16,12 +16,10 @@
 
 package net.frakbot.crowdpulse.data.rx;
 
-import net.frakbot.crowdpulse.common.util.CrowdLogger;
 import net.frakbot.crowdpulse.common.util.rx.CrowdSubscriber;
 import net.frakbot.crowdpulse.common.util.spi.IPlugin;
 import net.frakbot.crowdpulse.data.entity.Message;
 import net.frakbot.crowdpulse.data.repository.MessageRepository;
-import org.apache.logging.log4j.Logger;
 import rx.Observable;
 
 import java.util.ArrayList;
@@ -33,7 +31,6 @@ import java.util.List;
 public class MessagePersister extends IPlugin<Message, Message, MessagePersister.MessagePersisterOptions> {
     public final static String PLUGIN_NAME = "message-persist";
     private final MessageRepository messageRepository;
-    private final Logger logger = CrowdLogger.getLogger(MessagePersister.class);
 
     public MessagePersister() {
         messageRepository = new MessageRepository();

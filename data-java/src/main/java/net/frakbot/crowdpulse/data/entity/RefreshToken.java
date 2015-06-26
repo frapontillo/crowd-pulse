@@ -25,8 +25,8 @@ import java.util.Date;
  */
 public class RefreshToken extends Entity {
     private String refreshToken;
-    @Reference private App appId;
-    @Reference private User userId;
+    @Reference private App app;
+    @Reference private User user;
     private Date expires;
 
     public String getRefreshToken() {
@@ -37,20 +37,20 @@ public class RefreshToken extends Entity {
         this.refreshToken = refreshToken;
     }
 
-    public App getAppId() {
-        return appId;
+    public App getApp() {
+        return app;
     }
 
-    public void setAppId(App appId) {
-        this.appId = appId;
+    public void setApp(App app) {
+        this.app = app;
     }
 
-    public User getUserId() {
-        return userId;
+    public User getUser() {
+        return user;
     }
 
-    public void setUserId(User userId) {
-        this.userId = userId;
+    public void setUser(User user) {
+        this.user = user;
     }
 
     public Date getExpires() {

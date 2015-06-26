@@ -19,28 +19,11 @@ package net.frakbot.crowdpulse.data.repository;
 import net.frakbot.crowdpulse.data.entity.Profile;
 import org.bson.types.ObjectId;
 import org.mongodb.morphia.query.Query;
-import rx.Observable;
-
-import java.util.List;
 
 /**
  * @author Francesco Pontillo
  */
 public class ProfileRepository extends Repository<Profile, ObjectId> {
-
-    public Query<Profile> getGeoConsolidationCandidatesQuery(String fromId, String toId) {
-        Query<Profile> query = findBetweenIds(fromId, toId);
-        query.field("latitude").doesNotExist();
-        query.field("longitude").doesNotExist();
-        query.field("location").exists();
-        query.field("location").notEqual("");
-        return query;
-    }
-
-    public Observable<Profile> getGeoConsolidationCandidatesObservable(String fromId, String toId) {
-        Query<Profile> query = getGeoConsolidationCandidatesQuery(fromId, toId);
-        return Observable.from(query.fetch());
-    }
 
     public Profile getByUsername(String username) {
         Query<Profile> query = createQuery();
