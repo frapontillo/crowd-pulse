@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package net.frakbot.crowdpulse.data.rx;
+package net.frakbot.crowdpulse.data.plugin;
 
 import net.frakbot.crowdpulse.common.util.spi.IPlugin;
 import rx.Observable;
@@ -22,6 +22,9 @@ import rx.Subscriber;
 import rx.observers.SafeSubscriber;
 
 /**
+ * An implementation of {@link IPlugin} that has no effect on input elements, emitting them untouched. Error and
+ * completion events are notified as well.
+ *
  * @author Francesco Pontillo
  */
 public class Streamer extends IPlugin<Object, Object, Void> {

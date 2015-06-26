@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package net.frakbot.crowdpulse.data.rx;
+package net.frakbot.crowdpulse.data.plugin;
 
 import net.frakbot.crowdpulse.common.util.CrowdLogger;
 import net.frakbot.crowdpulse.common.util.spi.IPlugin;
@@ -29,7 +29,7 @@ import rx.observers.SafeSubscriber;
  * An implementation of {@link IPlugin} that, no matter the input stream, waits for its completion and then emits
  * all of the {@link Message}s stored in the database, eventually completing or erroring.
  * <p>
- * Use this plugin for transforming every stream into a stream containing all previously stored {@link Message}s.
+ * Use this plugin for transforming any stream into a stream containing all previously stored {@link Message}s.
  *
  * @author Francesco Pontillo
  */

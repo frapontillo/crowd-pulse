@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package net.frakbot.crowdpulse.data.rx;
+package net.frakbot.crowdpulse.data.plugin;
 
 import net.frakbot.crowdpulse.common.util.CrowdLogger;
 import net.frakbot.crowdpulse.common.util.rx.CrowdSubscriber;
@@ -25,6 +25,8 @@ import org.apache.logging.log4j.Logger;
 import rx.Observable;
 
 /**
+ * An implementation of {@link IPlugin} that persists all streamed {@link Profile}s, eventually completing or erroring.
+ *
  * @author Francesco Pontillo
  */
 public class ProfilePersister extends IPlugin<Profile, Profile, Void> {

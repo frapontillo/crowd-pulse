@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package net.frakbot.crowdpulse.data.rx;
+package net.frakbot.crowdpulse.data.plugin;
 
 import net.frakbot.crowdpulse.common.util.rx.CrowdSubscriber;
 import net.frakbot.crowdpulse.common.util.spi.IPlugin;
@@ -26,6 +26,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * An implementation of {@link IPlugin} that persists all streamed {@link Message}s with a custom tag defined in its
+ * initialization options, eventually completing or erroring.
+ *
  * @author Francesco Pontillo
  */
 public class MessagePersister extends IPlugin<Message, Message, MessagePersister.MessagePersisterOptions> {
@@ -54,17 +57,35 @@ public class MessagePersister extends IPlugin<Message, Message, MessagePersister
         };
     }
 
+    /**
+     * Persisting options including the custom tag to persist with the {@link Message}.
+     */
     public static class MessagePersisterOptions {
         private String tag;
 
+        /**
+         * Init persisting options with the custom tag to be persisted with the {@link Message}.
+         *
+         * @param tag The custom tag to persist.
+         */
         public MessagePersisterOptions(String tag) {
             this.tag = tag;
         }
 
+        /**
+         * Get the custom tag to be persisted with the {@link Message}.
+         *
+         * @return The custom tag to persist.
+         */
         public String getTag() {
             return tag;
         }
 
+        /**
+         * Set the custom tag to be persisted with the {@link Message}.
+         *
+         * @param tag The custom tag to persist.
+         */
         public void setTag(String tag) {
             this.tag = tag;
         }

@@ -14,7 +14,7 @@
 # limitations under the License.
 #
 
-net.frakbot.crowdpulse.data.rx.MessagePersister
-net.frakbot.crowdpulse.data.rx.MessageFetcher
-net.frakbot.crowdpulse.data.rx.ProfilePersister
-net.frakbot.crowdpulse.data.rx.Streamer
+net.frakbot.crowdpulse.data.plugin.MessagePersister
+net.frakbot.crowdpulse.data.plugin.MessageFetcher
+net.frakbot.crowdpulse.data.plugin.ProfilePersister
+net.frakbot.crowdpulse.data.plugin.Streamer
