@@ -7,7 +7,7 @@ Crowd Pulse: social extraction and analysis system
 
 Crowd Pulse uses an event/flow architecture based on RxJava and several extraction and processing tasks.
 
-Every task **must** inherit from `IPlugin<Input, Output, Config>` where:
+Every task **must** inherit from `IPlugin<Input, Output, IPluginConfig>` where:
 
 - `Input` is the class of the input `Observable` the task has to process
 - `Output` is the class of the output `Observable` that the task returns
@@ -16,21 +16,21 @@ Every task **must** inherit from `IPlugin<Input, Output, Config>` where:
 Here is a complete Crowd Pulse flow:
 
 1. `IPlugin<Void, Message, ExtractionParameters>` takes care of extracting messages according to some configuration
-1. `IPlugin<Message, Message, Void>` extracts all the replies for the input messages
-1. `IPlugin<Message, Profile, Void>` extracts all the profiles for the input messages
-1. `IPlugin<Profile, Profile, Void>` extracts all connections for the input profiles
-1. `IPlugin<Profile, Profile, Void>` fixes the geolocation for every extracted profile
-1. `IPlugin<Object, Message, Void>` waits for some given streams to complete and then emits another stream at once
-1. `IPlugin<Message, Message, Void>` fixes the geolocation for messages according to the info contained in authors' profiles
-1. `IPlugin<Message, Message, Void>` detects and sets the language for every message
-1. `IPlugin<Message, Message, Void>` tags every message in the stream
-1. `IPlugin<Message, Message, Void>` categorizes all tags for each message in the stream
-1. `IPlugin<Message, Message, Void>` tokenizes every message in the stream
-1. `IPlugin<Message, Message, Void>` sets some tokens as stop words for every message in the stream
-1. `IPlugin<Message, Message, Void>` lemmatizes every token for each message in the stream
-1. `IPlugin<Message, Message, Void>` tags every message token with a Part of Speech (POS) tag
-1. `IPlugin<Message, Message, Void>` simplifies every POS tag into simpler ones
-1. `IPlugin<Message, Message, Void>` performs sentiment analysis on every message in the stream
+1. `IPlugin<Message, Message, VoidConfig>` extracts all the replies for the input messages
+1. `IPlugin<Message, Profile, VoidConfig>` extracts all the profiles for the input messages
+1. `IPlugin<Profile, Profile, VoidConfig>` extracts all connections for the input profiles
+1. `IPlugin<Profile, Profile, VoidConfig>` fixes the geolocation for every extracted profile
+1. `IPlugin<Object, Message, VoidConfig>` waits for some given streams to complete and then emits another stream at once
+1. `IPlugin<Message, Message, VoidConfig>` fixes the geolocation for messages according to the info contained in authors' profiles
+1. `IPlugin<Message, Message, VoidConfig>` detects and sets the language for every message
+1. `IPlugin<Message, Message, VoidConfig>` tags every message in the stream
+1. `IPlugin<Message, Message, VoidConfig>` categorizes all tags for each message in the stream
+1. `IPlugin<Message, Message, VoidConfig>` tokenizes every message in the stream
+1. `IPlugin<Message, Message, VoidConfig>` sets some tokens as stop words for every message in the stream
+1. `IPlugin<Message, Message, VoidConfig>` lemmatizes every token for each message in the stream
+1. `IPlugin<Message, Message, VoidConfig>` tags every message token with a Part of Speech (POS) tag
+1. `IPlugin<Message, Message, VoidConfig>` simplifies every POS tag into simpler ones
+1. `IPlugin<Message, Message, VoidConfig>` performs sentiment analysis on every message in the stream
 
 ## Module descriptions
 
