@@ -17,6 +17,7 @@
 package net.frakbot.crowdpulse.tag.babelfy;
 
 import net.frakbot.crowdpulse.common.util.spi.IPlugin;
+import net.frakbot.crowdpulse.common.util.spi.VoidConfig;
 import net.frakbot.crowdpulse.data.entity.Message;
 import net.frakbot.crowdpulse.data.entity.Tag;
 import net.frakbot.crowdpulse.tag.ITaggerOperator;
@@ -25,11 +26,12 @@ import rx.Observable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Francesco Pontillo
  */
-public class BabelfyTagger extends IPlugin<Message, Message, Void> {
+public class BabelfyTagger extends IPlugin<Message, Message, VoidConfig> {
     public final static String PLUGIN_NAME = "babelfy";
     private final static String BABELFY_ENDPOINT = "http://babelfy.io/v1";
     private static BabelfyService service;
@@ -49,7 +51,11 @@ public class BabelfyTagger extends IPlugin<Message, Message, Void> {
         return PLUGIN_NAME;
     }
 
-    @Override protected Observable.Operator<Message, Message> getOperator(Void parameters) {
+    @Override public VoidConfig buildConfiguration(Map<String, String> configurationMap) {
+        return new VoidConfig().buildFromMap(configurationMap);
+    }
+
+    @Override protected Observable.Operator<Message, Message> getOperator(VoidConfig parameters) {
         return new ITaggerOperator() {
             @Override protected List<Tag> getTagsImpl(String text, String language) {
                 BabelfyResponse response;

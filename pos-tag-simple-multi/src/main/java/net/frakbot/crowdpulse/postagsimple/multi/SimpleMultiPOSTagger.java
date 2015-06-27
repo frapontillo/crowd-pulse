@@ -20,6 +20,7 @@ import net.frakbot.crowdpulse.common.util.CrowdLogger;
 import net.frakbot.crowdpulse.common.util.spi.IPlugin;
 import net.frakbot.crowdpulse.common.util.spi.ISingleablePlugin;
 import net.frakbot.crowdpulse.common.util.spi.PluginProvider;
+import net.frakbot.crowdpulse.common.util.spi.VoidConfig;
 import net.frakbot.crowdpulse.data.entity.Message;
 import net.frakbot.crowdpulse.data.entity.Token;
 import net.frakbot.crowdpulse.postagsimple.ISimplePOSTaggerOperator;
@@ -27,6 +28,7 @@ import org.apache.logging.log4j.Logger;
 import rx.Observable;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Simple POS tagger that relies on external simple POS taggers based on the language they support.
@@ -34,7 +36,7 @@ import java.util.List;
  *
  * @author Francesco Pontillo
  */
-public class SimpleMultiPOSTagger extends IPlugin<Message, Message, Void> {
+public class SimpleMultiPOSTagger extends IPlugin<Message, Message, VoidConfig> {
     public static final String PLUGIN_NAME = "simplepostagger-multi";
     private final static Logger logger = CrowdLogger.getLogger(SimpleMultiPOSTagger.class);
 
@@ -42,7 +44,11 @@ public class SimpleMultiPOSTagger extends IPlugin<Message, Message, Void> {
         return PLUGIN_NAME;
     }
 
-    @Override public Observable.Operator<Message, Message> getOperator(Void parameters) {
+    @Override public VoidConfig buildConfiguration(Map<String, String> configurationMap) {
+        return new VoidConfig().buildFromMap(configurationMap);
+    }
+
+    @Override public Observable.Operator<Message, Message> getOperator(VoidConfig parameters) {
         SimpleMultiPOSTagger actualTagger = this;
         return new ISimplePOSTaggerOperator() {
             @Override public List<Token> posTagMessageTokens(Message message) {
@@ -56,14 +62,14 @@ public class SimpleMultiPOSTagger extends IPlugin<Message, Message, Void> {
             return null;
         }
         String language = message.getLanguage();
-        IPlugin<Message, Message, Void> actualTagger = null;
+        IPlugin<Message, Message, VoidConfig> actualTagger = null;
         try {
             actualTagger = PluginProvider.getPlugin("simplepostagger-" + language);
         } catch (ClassNotFoundException e) {
             logger.warn("Could not find a Simple POS Tagger implementation for the language \"{}\".", language);
         }
         if (actualTagger != null && actualTagger instanceof ISingleablePlugin) {
-            return ((ISingleablePlugin<Message, Void>) actualTagger).singleItemProcess(message).getTokens();
+            return ((ISingleablePlugin<Message, VoidConfig>) actualTagger).singleItemProcess(message).getTokens();
         }
         return message.getTokens();
     }

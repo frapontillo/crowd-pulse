@@ -21,11 +21,12 @@ import net.frakbot.crowdpulse.common.util.CrowdLogger;
 import net.frakbot.crowdpulse.common.util.rx.SubscriptionGroupLatch;
 import net.frakbot.crowdpulse.common.util.spi.IPlugin;
 import net.frakbot.crowdpulse.common.util.spi.PluginProvider;
+import net.frakbot.crowdpulse.common.util.spi.VoidConfig;
 import net.frakbot.crowdpulse.data.entity.Message;
 import net.frakbot.crowdpulse.data.entity.Profile;
-import net.frakbot.crowdpulse.data.rx.MessagePersister;
-import net.frakbot.crowdpulse.data.rx.ProfilePersister;
-import net.frakbot.crowdpulse.data.rx.Streamer;
+import net.frakbot.crowdpulse.data.plugin.MessagePersister;
+import net.frakbot.crowdpulse.data.plugin.ProfilePersister;
+import net.frakbot.crowdpulse.data.plugin.Streamer;
 import net.frakbot.crowdpulse.detectlanguage.optimaize.OptimaizeLanguageDetector;
 import net.frakbot.crowdpulse.fixgeomessage.fromprofile.FromProfileMessageGeoFixer;
 import net.frakbot.crowdpulse.fixgeoprofile.googlemaps.GoogleMapsProfileGeoFixer;
@@ -51,7 +52,7 @@ import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import java.util.List;
 
-import static net.frakbot.crowdpulse.data.rx.MessagePersister.MessagePersisterOptions;
+import static net.frakbot.crowdpulse.data.plugin.MessagePersister.MessagePersisterOptions;
 
 /**
  * Playground to test stream composability.
@@ -70,21 +71,21 @@ public class FlowMain {
         IPlugin<Object, Message, ExtractionParameters> messageExtractor = PluginProvider.getPlugin(TwitterExtractor.PLUGIN_NAME);
         IPlugin<Object, Message, ExtractionParameters> repliesExtractor = PluginProvider.getPlugin(TwitterReplyExtractor.PLUGIN_NAME);
         IPlugin<Message, Message, MessagePersisterOptions> messagePersister = PluginProvider.getPlugin(MessagePersister.PLUGIN_NAME);
-        IPlugin<Message, Profile, Void> profileExtractor = PluginProvider.getPlugin(TwitterProfiler.PLUGIN_NAME);
-        IPlugin<Message, Profile, Void> profileGraphBldr = PluginProvider.getPlugin(TwitterProfileGrapher.PLUGIN_NAME);
-        IPlugin<Profile, Profile, Void> profileGLocFixer = PluginProvider.getPlugin(GoogleMapsProfileGeoFixer.PLUGIN_NAME);
-        IPlugin<Profile, Profile, Void> profilePersister = PluginProvider.getPlugin(ProfilePersister.PLUGIN_NAME);
-        IPlugin<Object, Message, Void> messageSimpleSel = PluginProvider.getPlugin(Streamer.PLUGIN_NAME);
-        IPlugin<Message, Message, Void> messageGLocFixer = PluginProvider.getPlugin(FromProfileMessageGeoFixer.PLUGIN_NAME);
-        IPlugin<Message, Message, Void> messageLangFixer = PluginProvider.getPlugin(OptimaizeLanguageDetector.PLUGIN_NAME);
-        IPlugin<Message, Message, Void> messageCtxTagger = PluginProvider.getPlugin(WikipediaMinerTagger.PLUGIN_NAME);
-        IPlugin<Message, Message, Void> messageTagCatgrz = PluginProvider.getPlugin(WikipediaTagCategorizer.PLUGIN_NAME);
-        IPlugin<Message, Message, Void> messageTokenizer = PluginProvider.getPlugin(OpenNLPTokenizer.PLUGIN_NAME);
-        IPlugin<Message, Message, Void> messageStopWrdRm = PluginProvider.getPlugin(SimpleStopWordRemover.PLUGIN_NAME);
-        IPlugin<Message, Message, Void> messageLemmatizr = PluginProvider.getPlugin(MultiLanguageLemmatizer.PLUGIN_NAME);
-        IPlugin<Message, Message, Void> messagePosTagger = PluginProvider.getPlugin(OpenNLPPOSTagger.PLUGIN_NAME);
-        IPlugin<Message, Message, Void> messageSimPosTgr = PluginProvider.getPlugin(SimpleMultiPOSTagger.PLUGIN_NAME);
-        IPlugin<Message, Message, Void> messageSentiment = PluginProvider.getPlugin(SentitSentimentAnalyzer.PLUGIN_NAME);
+        IPlugin<Message, Profile, VoidConfig> profileExtractor = PluginProvider.getPlugin(TwitterProfiler.PLUGIN_NAME);
+        IPlugin<Message, Profile, VoidConfig> profileGraphBldr = PluginProvider.getPlugin(TwitterProfileGrapher.PLUGIN_NAME);
+        IPlugin<Profile, Profile, VoidConfig> profileGLocFixer = PluginProvider.getPlugin(GoogleMapsProfileGeoFixer.PLUGIN_NAME);
+        IPlugin<Profile, Profile, VoidConfig> profilePersister = PluginProvider.getPlugin(ProfilePersister.PLUGIN_NAME);
+        IPlugin<Object, Message, VoidConfig> messageSimpleSel = PluginProvider.getPlugin(Streamer.PLUGIN_NAME);
+        IPlugin<Message, Message, VoidConfig> messageGLocFixer = PluginProvider.getPlugin(FromProfileMessageGeoFixer.PLUGIN_NAME);
+        IPlugin<Message, Message, VoidConfig> messageLangFixer = PluginProvider.getPlugin(OptimaizeLanguageDetector.PLUGIN_NAME);
+        IPlugin<Message, Message, VoidConfig> messageCtxTagger = PluginProvider.getPlugin(WikipediaMinerTagger.PLUGIN_NAME);
+        IPlugin<Message, Message, VoidConfig> messageTagCatgrz = PluginProvider.getPlugin(WikipediaTagCategorizer.PLUGIN_NAME);
+        IPlugin<Message, Message, VoidConfig> messageTokenizer = PluginProvider.getPlugin(OpenNLPTokenizer.PLUGIN_NAME);
+        IPlugin<Message, Message, VoidConfig> messageStopWrdRm = PluginProvider.getPlugin(SimpleStopWordRemover.PLUGIN_NAME);
+        IPlugin<Message, Message, VoidConfig> messageLemmatizr = PluginProvider.getPlugin(MultiLanguageLemmatizer.PLUGIN_NAME);
+        IPlugin<Message, Message, VoidConfig> messagePosTagger = PluginProvider.getPlugin(OpenNLPPOSTagger.PLUGIN_NAME);
+        IPlugin<Message, Message, VoidConfig> messageSimPosTgr = PluginProvider.getPlugin(SimpleMultiPOSTagger.PLUGIN_NAME);
+        IPlugin<Message, Message, VoidConfig> messageSentiment = PluginProvider.getPlugin(SentitSentimentAnalyzer.PLUGIN_NAME);
 
         // main stream
         Observable<Message> messageStream;

@@ -18,10 +18,13 @@ package net.frakbot.crowdpulse.sentiment.sentiwordnet;
 
 import net.frakbot.crowdpulse.common.util.StringUtil;
 import net.frakbot.crowdpulse.common.util.spi.IPlugin;
+import net.frakbot.crowdpulse.common.util.spi.VoidConfig;
 import net.frakbot.crowdpulse.data.entity.Message;
 import net.frakbot.crowdpulse.data.entity.Token;
 import net.frakbot.crowdpulse.sentiment.ISentimentAnalyzerOperator;
 import rx.Observable;
+
+import java.util.Map;
 
 /**
  * Sentiment Analyzer based on MultiWordNet and SentiWordNet.
@@ -44,7 +47,7 @@ import rx.Observable;
  *
  * @author Francesco Pontillo
  */
-public class SentiWordNetSentimentAnalyzer extends IPlugin<Message, Message, Void> {
+public class SentiWordNetSentimentAnalyzer extends IPlugin<Message, Message, VoidConfig> {
     public final static String PLUGIN_NAME = "sentiwordnet";
     private final MultiWordNet multiWordNet;
     private final SentiWordNet sentiWordNet;
@@ -58,7 +61,11 @@ public class SentiWordNetSentimentAnalyzer extends IPlugin<Message, Message, Voi
         return PLUGIN_NAME;
     }
 
-    @Override protected Observable.Operator<Message, Message> getOperator(Void parameters) {
+    @Override public VoidConfig buildConfiguration(Map<String, String> configurationMap) {
+        return new VoidConfig().buildFromMap(configurationMap);
+    }
+
+    @Override protected Observable.Operator<Message, Message> getOperator(VoidConfig parameters) {
         return new ISentimentAnalyzerOperator() {
             @Override public Message sentimentAnalyze(Message message) {
                 double totalScore = 0;

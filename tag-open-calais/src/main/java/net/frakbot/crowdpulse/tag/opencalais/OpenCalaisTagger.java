@@ -19,6 +19,7 @@ package net.frakbot.crowdpulse.tag.opencalais;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import net.frakbot.crowdpulse.common.util.spi.IPlugin;
+import net.frakbot.crowdpulse.common.util.spi.VoidConfig;
 import net.frakbot.crowdpulse.data.entity.Message;
 import net.frakbot.crowdpulse.data.entity.Tag;
 import net.frakbot.crowdpulse.tag.ITaggerOperator;
@@ -28,12 +29,13 @@ import rx.Observable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @see {@link "http://www.opencalais.com/documentation/calais-web-service-api/api-invocation/rest"}
  * @author Francesco Pontillo
  */
-public class OpenCalaisTagger extends IPlugin<Message, Message, Void> {
+public class OpenCalaisTagger extends IPlugin<Message, Message, VoidConfig> {
     public final static String PLUGIN_NAME = "opencalais";
     private final static String OPEN_CALAIS_ENDPOINT = "http://api.opencalais.com/tag/rs";
     private final static OpenCalaisService service;
@@ -55,7 +57,11 @@ public class OpenCalaisTagger extends IPlugin<Message, Message, Void> {
         return PLUGIN_NAME;
     }
 
-    @Override protected Observable.Operator<Message, Message> getOperator(Void parameters) {
+    @Override public VoidConfig buildConfiguration(Map<String, String> configurationMap) {
+        return new VoidConfig().buildFromMap(configurationMap);
+    }
+
+    @Override protected Observable.Operator<Message, Message> getOperator(VoidConfig parameters) {
         return new ITaggerOperator() {
             @Override protected List<Tag> getTagsImpl(String text, String language) {
                 OpenCalaisResponse response;

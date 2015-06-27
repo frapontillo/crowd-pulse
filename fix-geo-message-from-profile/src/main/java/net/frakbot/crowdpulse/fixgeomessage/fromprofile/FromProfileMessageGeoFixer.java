@@ -17,6 +17,7 @@
 package net.frakbot.crowdpulse.fixgeomessage.fromprofile;
 
 import net.frakbot.crowdpulse.common.util.spi.IPlugin;
+import net.frakbot.crowdpulse.common.util.spi.VoidConfig;
 import net.frakbot.crowdpulse.data.entity.Message;
 import net.frakbot.crowdpulse.data.entity.Profile;
 import net.frakbot.crowdpulse.data.repository.ProfileRepository;
@@ -24,10 +25,12 @@ import net.frakbot.crowdpulse.fixgeomessage.IMessageGeoFixerOperator;
 import rx.Observable;
 import rx.Subscriber;
 
+import java.util.Map;
+
 /**
  * @author Francesco Pontillo
  */
-public class FromProfileMessageGeoFixer extends IPlugin<Message, Message, Void> {
+public class FromProfileMessageGeoFixer extends IPlugin<Message, Message, VoidConfig> {
     public final static String PLUGIN_NAME = "fromprofile";
     private final ProfileRepository profileRepository;
 
@@ -39,7 +42,11 @@ public class FromProfileMessageGeoFixer extends IPlugin<Message, Message, Void> 
         return PLUGIN_NAME;
     }
 
-    @Override public Observable.Operator<Message, Message> getOperator(Void parameters) {
+    @Override public VoidConfig buildConfiguration(Map<String, String> configurationMap) {
+        return new VoidConfig().buildFromMap(configurationMap);
+    }
+
+    @Override public Observable.Operator<Message, Message> getOperator(VoidConfig parameters) {
         return new IMessageGeoFixerOperator() {
             @Override public Double[] getCoordinates(Message message) {
                 Profile user = profileRepository.getByUsername(message.getFromUser());

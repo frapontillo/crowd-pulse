@@ -17,6 +17,7 @@
 package net.frakbot.crowdpulse.tag.tagme;
 
 import net.frakbot.crowdpulse.common.util.spi.IPlugin;
+import net.frakbot.crowdpulse.common.util.spi.VoidConfig;
 import net.frakbot.crowdpulse.data.entity.Message;
 import net.frakbot.crowdpulse.data.entity.Tag;
 import net.frakbot.crowdpulse.tag.ITaggerOperator;
@@ -27,12 +28,13 @@ import rx.Observable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Francesco Pontillo
  * @see {@link "http://tagme.di.unipi.it/tagme_help.html#tagging"}
  */
-public class TagMeTagger extends IPlugin<Message, Message, Void> {
+public class TagMeTagger extends IPlugin<Message, Message, VoidConfig> {
     public final static String PLUGIN_NAME = "tagme";
     private final static String TAG_ME_ENDPOINT = "http://tagme.di.unipi.it";
     private final static TagMeService service;
@@ -51,7 +53,11 @@ public class TagMeTagger extends IPlugin<Message, Message, Void> {
         return PLUGIN_NAME;
     }
 
-    @Override protected Observable.Operator<Message, Message> getOperator(Void parameters) {
+    @Override public VoidConfig buildConfiguration(Map<String, String> configurationMap) {
+        return new VoidConfig().buildFromMap(configurationMap);
+    }
+
+    @Override protected Observable.Operator<Message, Message> getOperator(VoidConfig parameters) {
         return new ITaggerOperator() {
             @Override protected List<Tag> getTagsImpl(String text, String language) {
                 // get the tags

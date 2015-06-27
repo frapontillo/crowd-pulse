@@ -18,17 +18,19 @@ package net.frakbot.crowdpulse.social.profile;
 
 import net.frakbot.crowdpulse.common.util.rx.CrowdSubscriber;
 import net.frakbot.crowdpulse.common.util.spi.IPlugin;
+import net.frakbot.crowdpulse.common.util.spi.VoidConfig;
 import net.frakbot.crowdpulse.data.entity.Profile;
 import rx.Observable;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Crowd Pulse plugin that enables fetching of a stream's profiles connections.
  *
  * @author Francesco Pontillo
  */
-public abstract class IProfileGrapher extends IPlugin<Profile, Profile, Void> {
+public abstract class IProfileGrapher extends IPlugin<Profile, Profile, VoidConfig> {
 
     /**
      * Retrieve the {@link Profile}s connected to a given {@link Profile}.
@@ -45,7 +47,7 @@ public abstract class IProfileGrapher extends IPlugin<Profile, Profile, Void> {
      */
     public abstract List<Profile> getConnections(Profile profile, ProfileParameters parameters);
 
-    @Override protected Observable.Operator<Profile, Profile> getOperator(Void parameters) {
+    @Override protected Observable.Operator<Profile, Profile> getOperator(VoidConfig parameters) {
         return subscriber -> new CrowdSubscriber<Profile>(subscriber) {
             @Override public void onNext(Profile profile) {
                 // build the appropriate profile parameters
@@ -59,5 +61,9 @@ public abstract class IProfileGrapher extends IPlugin<Profile, Profile, Void> {
                 subscriber.onNext(profile);
             }
         };
+    }
+
+    @Override public VoidConfig buildConfiguration(Map<String, String> configurationMap) {
+        return new VoidConfig().buildFromMap(configurationMap);
     }
 }

@@ -20,6 +20,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import net.frakbot.crowdpulse.common.util.rx.RxUtil;
 import net.frakbot.crowdpulse.common.util.spi.IPlugin;
+import net.frakbot.crowdpulse.common.util.spi.VoidConfig;
 import net.frakbot.crowdpulse.data.entity.Message;
 import net.frakbot.crowdpulse.sentiment.sentit.rest.*;
 import retrofit.RestAdapter;
@@ -30,11 +31,12 @@ import rx.Subscriber;
 import rx.observers.SafeSubscriber;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Francesco Pontillo
  */
-public class SentitSentimentAnalyzer extends IPlugin<Message, Message, Void> {
+public class SentitSentimentAnalyzer extends IPlugin<Message, Message, VoidConfig> {
     public final static String PLUGIN_NAME = "sentiment-sentit";
     private final static String SENTIT_ENDPOINT = "http://sentit.cloudapp.net:9100/sentit/v2";
     private final static int MAX_MESSAGES_PER_REQ = 10;
@@ -58,17 +60,21 @@ public class SentitSentimentAnalyzer extends IPlugin<Message, Message, Void> {
         return PLUGIN_NAME;
     }
 
+    @Override public VoidConfig buildConfiguration(Map<String, String> configurationMap) {
+        return new VoidConfig().buildFromMap(configurationMap);
+    }
+
     /**
      * This plugin doesn't give any {@link rx.Observable.Operator} as output, as it will only expose a custom
      * {@link rx.Observable.Transformer} that has to be applied to a stream of {@link Message}s.
      *
      * @return Always {@code null}.
      */
-    @Override public Observable.Operator<Message, Message> getOperator(Void parameters) {
+    @Override public Observable.Operator<Message, Message> getOperator(VoidConfig parameters) {
         return null;
     }
 
-    @Override public Observable.Transformer<Message, Message> transform(Void params) {
+    @Override public Observable.Transformer<Message, Message> transform(VoidConfig params) {
         return messages -> messages
                 .buffer(MAX_MESSAGES_PER_REQ)
                 .lift(new SentitOperator())

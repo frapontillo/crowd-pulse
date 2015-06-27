@@ -18,14 +18,17 @@ package net.frakbot.crowdpulse.social.profile;
 
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
+import net.frakbot.crowdpulse.common.util.spi.IPluginConfig;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Francesco Pontillo
  */
 @Parameters(separators = "=")
-public class ProfileParameters {
+public class ProfileParameters implements IPluginConfig {
     @Parameter(names = "-source", description = "Source for extraction")
     private String source;
 
@@ -57,5 +60,16 @@ public class ProfileParameters {
 
     public void setTags(List<String> tags) {
         this.tags = tags;
+    }
+
+    @Override public ProfileParameters buildFromMap(Map<String, String> mapConfig) {
+        if (mapConfig != null) {
+            this.setSource(mapConfig.get("source"));
+            this.setProfile(mapConfig.get("profile"));
+            if (mapConfig.get("tags") != null) {
+                this.setTags(Arrays.asList(mapConfig.get("tags").split(",")));
+            }
+        }
+        return this;
     }
 }

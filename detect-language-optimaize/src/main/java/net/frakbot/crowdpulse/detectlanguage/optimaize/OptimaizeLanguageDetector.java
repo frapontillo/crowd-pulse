@@ -26,17 +26,19 @@ import com.optimaize.langdetect.text.CommonTextObjectFactories;
 import com.optimaize.langdetect.text.TextObject;
 import com.optimaize.langdetect.text.TextObjectFactory;
 import net.frakbot.crowdpulse.common.util.spi.IPlugin;
+import net.frakbot.crowdpulse.common.util.spi.VoidConfig;
 import net.frakbot.crowdpulse.data.entity.Message;
 import net.frakbot.crowdpulse.detectlanguage.ILanguageDetectorOperator;
 import rx.Observable;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Francesco Pontillo
  */
-public class OptimaizeLanguageDetector extends IPlugin<Message, Message, Void> {
+public class OptimaizeLanguageDetector extends IPlugin<Message, Message, VoidConfig> {
     public final static String PLUGIN_NAME = "optimaize";
     private final LanguageDetector languageDetector;
     private final TextObjectFactory textObjectFactory;
@@ -61,7 +63,11 @@ public class OptimaizeLanguageDetector extends IPlugin<Message, Message, Void> {
         return PLUGIN_NAME;
     }
 
-    @Override public Observable.Operator<Message, Message> getOperator(Void parameters) {
+    @Override public VoidConfig buildConfiguration(Map<String, String> configurationMap) {
+        return new VoidConfig().buildFromMap(configurationMap);
+    }
+
+    @Override public Observable.Operator<Message, Message> getOperator(VoidConfig parameters) {
         return new ILanguageDetectorOperator() {
             @Override public String getLanguage(Message message) {
                 TextObject textObject = textObjectFactory.forText(message.getText());

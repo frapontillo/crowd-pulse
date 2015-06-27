@@ -23,6 +23,7 @@ import net.frakbot.crowdpulse.categorize.wikipedia.rest.WikipediaResponse;
 import net.frakbot.crowdpulse.categorize.wikipedia.rest.WikipediaResponseDeserializer;
 import net.frakbot.crowdpulse.categorize.wikipedia.rest.WikipediaService;
 import net.frakbot.crowdpulse.common.util.spi.IPlugin;
+import net.frakbot.crowdpulse.common.util.spi.VoidConfig;
 import net.frakbot.crowdpulse.data.entity.Message;
 import net.frakbot.crowdpulse.data.entity.Tag;
 import retrofit.RestAdapter;
@@ -37,7 +38,7 @@ import java.util.Map;
 /**
  * @author Francesco Pontillo
  */
-public class WikipediaTagCategorizer extends IPlugin<Message, Message, Void> {
+public class WikipediaTagCategorizer extends IPlugin<Message, Message, VoidConfig> {
     public static final String PLUGIN_NAME = "wikipedia";
     private static final String WIKIPEDIA_ENDPOINT_1 = "http://";
     private static final String WIKIPEDIA_ENDPOINT_2 = ".wikipedia.org/w";
@@ -57,7 +58,11 @@ public class WikipediaTagCategorizer extends IPlugin<Message, Message, Void> {
         return PLUGIN_NAME;
     }
 
-    @Override public Observable.Operator<Message, Message> getOperator(Void parameters) {
+    @Override public VoidConfig buildConfiguration(Map<String, String> configurationMap) {
+        return new VoidConfig().buildFromMap(configurationMap);
+    }
+
+    @Override public Observable.Operator<Message, Message> getOperator(VoidConfig parameters) {
         return new ITagCategorizerOperator() {
             @Override public List<String> getCategories(Tag tag) {
                 WikipediaService wikipediaService = getService(tag.getLanguage());

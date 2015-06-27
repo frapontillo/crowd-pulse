@@ -18,12 +18,15 @@ package net.frakbot.crowdpulse.data.plugin;
 
 import net.frakbot.crowdpulse.common.util.CrowdLogger;
 import net.frakbot.crowdpulse.common.util.spi.IPlugin;
+import net.frakbot.crowdpulse.common.util.spi.VoidConfig;
 import net.frakbot.crowdpulse.data.entity.Message;
 import net.frakbot.crowdpulse.data.repository.MessageRepository;
 import org.apache.logging.log4j.Logger;
 import rx.Observable;
 import rx.Subscriber;
 import rx.observers.SafeSubscriber;
+
+import java.util.Map;
 
 /**
  * An implementation of {@link IPlugin} that, no matter the input stream, waits for its completion and then emits
@@ -33,7 +36,7 @@ import rx.observers.SafeSubscriber;
  *
  * @author Francesco Pontillo
  */
-public class MessageFetcher extends IPlugin<Object, Message, Void> {
+public class MessageFetcher extends IPlugin<Object, Message, VoidConfig> {
     public final static String PLUGIN_NAME = "message-fetch";
     private final MessageRepository messageRepository;
     private final Logger logger = CrowdLogger.getLogger(MessageFetcher.class);
@@ -46,7 +49,11 @@ public class MessageFetcher extends IPlugin<Object, Message, Void> {
         return PLUGIN_NAME;
     }
 
-    @Override protected Observable.Operator<Message, Object> getOperator(Void parameters) {
+    @Override public VoidConfig buildConfiguration(Map<String, String> configurationMap) {
+        return new VoidConfig().buildFromMap(configurationMap);
+    }
+
+    @Override protected Observable.Operator<Message, Object> getOperator(VoidConfig parameters) {
         return subscriber -> new SafeSubscriber<>(new Subscriber<Object>() {
             @Override public void onCompleted() {
                 // fetch all messages from the database and subscribe view the new subscriber

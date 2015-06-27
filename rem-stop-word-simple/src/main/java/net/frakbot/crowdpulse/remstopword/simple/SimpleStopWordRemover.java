@@ -17,6 +17,7 @@
 package net.frakbot.crowdpulse.remstopword.simple;
 
 import net.frakbot.crowdpulse.common.util.spi.IPlugin;
+import net.frakbot.crowdpulse.common.util.spi.VoidConfig;
 import net.frakbot.crowdpulse.data.entity.Message;
 import net.frakbot.crowdpulse.data.entity.Token;
 import net.frakbot.crowdpulse.remstopword.IStopWordRemoverOperator;
@@ -24,15 +25,12 @@ import org.apache.commons.io.IOUtils;
 import rx.Observable;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 
 /**
  * @author Francesco Pontillo
  */
-public class SimpleStopWordRemover extends IPlugin<Message, Message, Void> {
+public class SimpleStopWordRemover extends IPlugin<Message, Message, VoidConfig> {
     public final static String PLUGIN_NAME = "simple";
     private final HashMap<String, HashSet<String>> dictionaries;
     private final List<String> punctuation = Arrays.asList(".",",",":",";","?","!","(",")","[","]","{","}");
@@ -45,7 +43,11 @@ public class SimpleStopWordRemover extends IPlugin<Message, Message, Void> {
         return PLUGIN_NAME;
     }
 
-    @Override public Observable.Operator<Message, Message> getOperator(Void parameters) {
+    @Override public VoidConfig buildConfiguration(Map<String, String> configurationMap) {
+        return new VoidConfig().buildFromMap(configurationMap);
+    }
+
+    @Override public Observable.Operator<Message, Message> getOperator(VoidConfig parameters) {
         return new IStopWordRemoverOperator() {
             @Override public List<Token> stopWordRemoveMessageTokens(Message message) {
                 List<Token> tokens = message.getTokens();

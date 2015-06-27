@@ -17,24 +17,30 @@
 package net.frakbot.crowdpulse.postagsimple.en;
 
 import net.frakbot.crowdpulse.common.util.spi.ISingleablePlugin;
+import net.frakbot.crowdpulse.common.util.spi.VoidConfig;
 import net.frakbot.crowdpulse.data.entity.Message;
 import net.frakbot.crowdpulse.data.entity.Token;
 import net.frakbot.crowdpulse.postagsimple.ISimplePOSTaggerOperator;
 import rx.Observable;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Francesco Pontillo
  */
-public class EnglishSimplePOSTagger extends ISingleablePlugin<Message, Void> {
+public class EnglishSimplePOSTagger extends ISingleablePlugin<Message, VoidConfig> {
     public final static String PLUGIN_NAME = "simplepostagger-en";
 
     @Override public String getName() {
         return PLUGIN_NAME;
     }
 
-    @Override public Observable.Operator<Message, Message> getOperator(Void parameters) {
+    @Override public VoidConfig buildConfiguration(Map<String, String> configurationMap) {
+        return new VoidConfig().buildFromMap(configurationMap);
+    }
+
+    @Override public Observable.Operator<Message, Message> getOperator(VoidConfig parameters) {
         EnglishSimplePOSTagger actualTagger = this;
         return new ISimplePOSTaggerOperator() {
             @Override public List<Token> posTagMessageTokens(Message message) {

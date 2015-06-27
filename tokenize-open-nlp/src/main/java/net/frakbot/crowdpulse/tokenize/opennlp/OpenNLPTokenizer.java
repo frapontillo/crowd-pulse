@@ -17,6 +17,7 @@
 package net.frakbot.crowdpulse.tokenize.opennlp;
 
 import net.frakbot.crowdpulse.common.util.spi.IPlugin;
+import net.frakbot.crowdpulse.common.util.spi.VoidConfig;
 import net.frakbot.crowdpulse.data.entity.Message;
 import net.frakbot.crowdpulse.data.entity.Token;
 import net.frakbot.crowdpulse.tokenize.ITokenizerOperator;
@@ -36,7 +37,7 @@ import java.util.stream.Collectors;
 /**
  * @author Francesco Pontillo
  */
-public class OpenNLPTokenizer extends IPlugin<Message, Message, Void> {
+public class OpenNLPTokenizer extends IPlugin<Message, Message, VoidConfig> {
     public final static String PLUGIN_NAME = "tokenizer-opennlp";
     private Map<String, TokenizerModel> models;
 
@@ -48,7 +49,11 @@ public class OpenNLPTokenizer extends IPlugin<Message, Message, Void> {
         return PLUGIN_NAME;
     }
 
-    @Override protected Observable.Operator<Message, Message> getOperator(Void parameters) {
+    @Override public VoidConfig buildConfiguration(Map<String, String> configurationMap) {
+        return new VoidConfig().buildFromMap(configurationMap);
+    }
+
+    @Override protected Observable.Operator<Message, Message> getOperator(VoidConfig parameters) {
         return new ITokenizerOperator() {
             @Override public List<Token> getTokens(Message message) {
                 TokenizerModel tokenizerModel = getModel(message.getLanguage());

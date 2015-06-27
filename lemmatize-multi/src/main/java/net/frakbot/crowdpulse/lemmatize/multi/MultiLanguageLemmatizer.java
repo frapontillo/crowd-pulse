@@ -19,6 +19,7 @@ package net.frakbot.crowdpulse.lemmatize.multi;
 import net.frakbot.crowdpulse.common.util.spi.IPlugin;
 import net.frakbot.crowdpulse.common.util.spi.ISingleablePlugin;
 import net.frakbot.crowdpulse.common.util.spi.PluginProvider;
+import net.frakbot.crowdpulse.common.util.spi.VoidConfig;
 import net.frakbot.crowdpulse.data.entity.Message;
 import net.frakbot.crowdpulse.data.entity.Token;
 import net.frakbot.crowdpulse.lemmatize.ILemmatizerOperator;
@@ -26,6 +27,7 @@ import rx.Observable;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * A multi-language implementation for {@link IPlugin<Message>}.
@@ -46,11 +48,11 @@ import java.util.List;
  *
  * @author Francesco Pontillo
  */
-public class MultiLanguageLemmatizer extends IPlugin<Message, Message, Void> {
+public class MultiLanguageLemmatizer extends IPlugin<Message, Message, VoidConfig> {
     public final static String PLUGIN_NAME = "lemmatizer-multi";
     private final static String LEMMATIZER_WILDCARD = "*";
     private final HashMap<String, String> lemmatizerMap;
-    private final HashMap<String, IPlugin<Message, Message, Void>> lemmatizers;
+    private final HashMap<String, IPlugin<Message, Message, VoidConfig>> lemmatizers;
 
     public MultiLanguageLemmatizer() {
         lemmatizerMap = new HashMap<>();
@@ -71,21 +73,25 @@ public class MultiLanguageLemmatizer extends IPlugin<Message, Message, Void> {
         return PLUGIN_NAME;
     }
 
-    @Override public Observable.Operator<Message, Message> getOperator(Void parameters) {
+    @Override public VoidConfig buildConfiguration(Map<String, String> configurationMap) {
+        return new VoidConfig().buildFromMap(configurationMap);
+    }
+
+    @Override public Observable.Operator<Message, Message> getOperator(VoidConfig parameters) {
         return new ILemmatizerOperator() {
             @Override public List<Token> lemmatizeMessageTokens(Message message) {
                 // find or instantiate the lemmatizer
-                IPlugin<Message, Message, Void> lemmatizer = getLemmatizerForMessage(message);
+                IPlugin<Message, Message, VoidConfig> lemmatizer = getLemmatizerForMessage(message);
                 if (lemmatizer instanceof ISingleablePlugin) {
-                    return ((ISingleablePlugin<Message, Void>) lemmatizer).singleItemProcess(message).getTokens();
+                    return ((ISingleablePlugin<Message, VoidConfig>) lemmatizer).singleItemProcess(message).getTokens();
                 }
                 return null;
             }
         };
     }
 
-    private IPlugin<Message, Message, Void> getLemmatizerForMessage(Message message) {
-        IPlugin<Message, Message, Void> lemmatizer;
+    private IPlugin<Message, Message, VoidConfig> getLemmatizerForMessage(Message message) {
+        IPlugin<Message, Message, VoidConfig> lemmatizer;
         String lang = message.getLanguage();
         // find or instantiate the lemmatizer
         if ((lemmatizer = lemmatizers.get(lang)) == null) {

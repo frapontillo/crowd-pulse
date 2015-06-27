@@ -25,6 +25,7 @@ import net.frakbot.crowdpulse.social.exception.SocialException;
 import rx.Observable;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Francesco
@@ -178,6 +179,10 @@ public abstract class IExtractor extends IPlugin<Void, Message, ExtractionParame
     // TODO: the operator isn't used in the Extractor since this is an entry point plugin (for now)
     @Override protected Observable.Operator<Message, Void> getOperator(ExtractionParameters parameters) {
         return null;
+    }
+
+    @Override public ExtractionParameters buildConfiguration(Map<String, String> configurationMap) {
+        return new ExtractionParameters().buildFromMap(configurationMap);
     }
 
     @Override public Observable<Message> process(ExtractionParameters params, Observable<?>... streams) {

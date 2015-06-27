@@ -18,17 +18,19 @@ package net.frakbot.crowdpulse.social.extraction;
 
 import net.frakbot.crowdpulse.common.util.rx.CrowdSubscriber;
 import net.frakbot.crowdpulse.common.util.spi.IPlugin;
+import net.frakbot.crowdpulse.common.util.spi.VoidConfig;
 import net.frakbot.crowdpulse.data.entity.Message;
 import rx.Observable;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Crowd Pulse plugin to fetch message replies.
  *
  * @author Francesco Pontillo
  */
-public abstract class IReplyExtractor extends IPlugin<Message, Message, Void> {
+public abstract class IReplyExtractor extends IPlugin<Message, Message, VoidConfig> {
 
     /**
      * Retrieve the replies for the given {@link Message}.
@@ -40,7 +42,7 @@ public abstract class IReplyExtractor extends IPlugin<Message, Message, Void> {
      */
     public abstract List<Message> getReplies(Message message, ExtractionParameters parameters);
 
-    @Override protected Observable.Operator<Message, Message> getOperator(Void parameters) {
+    @Override protected Observable.Operator<Message, Message> getOperator(VoidConfig parameters) {
         return subscriber -> new CrowdSubscriber<Message>(subscriber) {
             @Override public void onNext(Message message) {
                 ExtractionParameters newParams = new ExtractionParameters();
@@ -51,6 +53,10 @@ public abstract class IReplyExtractor extends IPlugin<Message, Message, Void> {
                 replies.forEach(subscriber::onNext);
             }
         };
+    }
+
+    @Override public VoidConfig buildConfiguration(Map<String, String> configurationMap) {
+        return new VoidConfig().buildFromMap(configurationMap);
     }
 
 }

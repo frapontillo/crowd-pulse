@@ -22,6 +22,8 @@ import rx.Observer;
 import rx.observables.ConnectableObservable;
 
 import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Advanced base class for CrowdPulse plugins.
@@ -70,7 +72,7 @@ import java.util.Arrays;
  *
  * @author Francesco Pontillo
  */
-public abstract class IPlugin<Input, Output, Parameter> {
+public abstract class IPlugin<Input, Output, Parameter extends IPluginConfig> {
 
     /**
      * Retrieve the name of the specific plugin implementation.
@@ -78,6 +80,16 @@ public abstract class IPlugin<Input, Output, Parameter> {
      * @return The name of the plugin implementation.
      */
     public abstract String getName();
+
+    /**
+     * Build the {@link Parameter} configuration object. You should delegate this to the actual implementation of
+     * {@link
+     * Parameter#buildFromMap(Map)}.
+     *
+     * @param configurationMap The {@link Map} to convert.
+     * @return A {@link Parameter} configuration object.
+     */
+    public abstract Parameter buildConfiguration(Map<String, String> configurationMap);
 
     /**
      * Returns the appropriate {@link rx.Observable.Operator<Input, Output>} exposed by the plugin, which will work
@@ -92,7 +104,7 @@ public abstract class IPlugin<Input, Output, Parameter> {
     /**
      * Return the plugin {@link rx.Observable.Operator<Input, Output>} with a <code>null</code> parameter object.
      *
-     * @see IPlugin#getOperator(Object)
+     * @see IPlugin#getOperator(IPluginConfig)
      */
     protected final Observable.Operator<Output, Input> getOperator() {
         return getOperator(null);
@@ -133,15 +145,15 @@ public abstract class IPlugin<Input, Output, Parameter> {
 
     /**
      * Default implementation that takes an {@link Observable<Input>} stream and transforms it applying the
-     * {@link rx.Observable.Transformer} returned by {@link IPlugin#transform(Object)}.
+     * {@link rx.Observable.Transformer} returned by {@link IPlugin#transform(IPluginConfig)}.
      * <p>
      * You should override this method only when the plugin generates a stream and when the
-     * {@link IPlugin#processSingle(Object, Observable)} method accepts {@code null} as valid input.
+     * {@link IPlugin#processSingle(IPluginConfig, Observable)} method accepts {@code null} as valid input.
      *
      * @param params An optional parameter object of type {@link Parameter}.
      * @param stream The {@link Observable<Input>} to process.
      * @return A new {@link Observable<Output>} built by applying the {@link rx.Observable.Transformer} returned by
-     * {@link IPlugin#transform(Object)}.
+     * {@link IPlugin#transform(IPluginConfig)}.
      */
     public Observable<Output> processSingle(Parameter params, Observable<Input> stream) {
         if (stream != null) {
@@ -153,14 +165,15 @@ public abstract class IPlugin<Input, Output, Parameter> {
     }
 
     /**
-     * Process an {@link Observable<Input>} stream just as in {@link IPlugin#processSingle(Object, Observable)} but
+     * Process an {@link Observable<Input>} stream just as in {@link IPlugin#processSingle(IPluginConfig, Observable)}
+     * but
      * with
      * {@code null} parameters.
      *
      * @param stream The {@link Observable<Input>} to process.
      * @return A new {@link Observable<Output>} built by applying the {@link rx.Observable.Transformer} returned by
-     * {@link IPlugin#transform(Object)}.
-     * @see {@link IPlugin#processSingle(Object, Observable)}
+     * {@link IPlugin#transform(IPluginConfig)}.
+     * @see {@link IPlugin#processSingle(IPluginConfig, Observable)}
      */
     public final Observable<Output> processSingle(Observable<Input> stream) {
         return processSingle(null, stream);
@@ -169,7 +182,8 @@ public abstract class IPlugin<Input, Output, Parameter> {
     /**
      * Default implementation for processing multiple generic {@link Observable<Object>}s:
      * <ul>
-     * <li>the first element is the one to process by {@link IPlugin#processSingle(Object, Observable)} and return</li>
+     * <li>the first element is the one to process by {@link IPlugin#processSingle(IPluginConfig, Observable)} and
+     * return</li>
      * <li>the remaining elements are the ones whose completion must be waited before streaming elements</li>
      * </ul>
      * <p>
@@ -178,7 +192,7 @@ public abstract class IPlugin<Input, Output, Parameter> {
      *
      * @param params  An optional parameter object of type {@link Parameter}.
      * @param streams The array of {@link Observable}s to use (only the first one will be processed).
-     * @return A new {@link Observable<Output>} built by {@link IPlugin#processSingle(Object, Observable)}.
+     * @return A new {@link Observable<Output>} built by {@link IPlugin#processSingle(IPluginConfig, Observable)}.
      */
     public Observable<Output> process(Parameter params, Observable<? extends Object>... streams) {
         if (streams.length == 1) {
@@ -210,12 +224,56 @@ public abstract class IPlugin<Input, Output, Parameter> {
 
     /**
      * Process an {@link Observable<Object>} stream array just as in {@link IPlugin#process(Parameter, Observable[])}
+     * but with parameters in the form of a {@link Map}.
+     *
+     * @param params  An optional parameter object of type {@link Map}.
+     * @param streams The array of {@link Observable}s to use (only the first one will be processed).
+     * @return A new {@link Observable<Output>} built by applying the {@link rx.Observable.Transformer} returned by
+     * {@link IPlugin#transform(IPluginConfig)}.
+     * @see {@link IPlugin#process(Parameter, Observable[])}
+     */
+    public Observable<Output> process(Map<String, String> params, Observable<? extends Object>... streams) {
+        return process(buildConfiguration(params), streams);
+    }
+
+    /**
+     * Process a {@link List} of {@link Observable} streams just as in {@link IPlugin#process(Parameter,
+     * Observable[])}.
+     *
+     * @param params  An optional parameter object of type {@link Parameter}.
+     * @param streams The {@link List} of {@link Observable}s to use (only the first one will be processed).
+     * @return A new {@link Observable<Output>} built by {@link IPlugin#process(IPluginConfig, Observable[])}.
+     */
+    public Observable<Output> process(Parameter params, List<Observable<? extends Object>> streams) {
+        if (streams != null) {
+            return process(params, streams.toArray(new Observable[]{}));
+        }
+        return process(params);
+    }
+
+    /**
+     * Process a {@link List} of {@link Observable} streams just as in {@link IPlugin#process(Parameter,
+     * Observable[])} but with parameters in the form of a {@link Map}.
+     *
+     * @param params  An optional parameter object of type {@link Map}.
+     * @param streams The {@link List} of {@link Observable}s to use (only the first one will be processed).
+     * @return A new {@link Observable<Output>} built by {@link IPlugin#process(Map, Observable[])}.
+     */
+    public Observable<Output> process(Map<String, String> params, List<Observable<? extends Object>> streams) {
+        if (streams != null) {
+            return process(params, streams.toArray(new Observable[]{}));
+        }
+        return process(params);
+    }
+
+    /**
+     * Process an {@link Observable<Object>} stream array just as in {@link IPlugin#process(Parameter, Observable[])}
      * but with {@code null} parameters.
      *
      * @see {@link IPlugin#process(Parameter, Observable[])}
      */
     public final Observable<Output> process(Observable<? extends Object>... streams) {
-        return process(null, streams);
+        return process((Parameter) null, streams);
     }
 
 }

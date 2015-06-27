@@ -21,17 +21,19 @@ import com.google.maps.GeocodingApi;
 import com.google.maps.model.GeocodingResult;
 import net.frakbot.crowdpulse.common.util.CrowdLogger;
 import net.frakbot.crowdpulse.common.util.spi.IPlugin;
+import net.frakbot.crowdpulse.common.util.spi.VoidConfig;
 import net.frakbot.crowdpulse.data.entity.Profile;
 import net.frakbot.crowdpulse.fixgeoprofile.IProfileGeoFixerOperator;
 import rx.Observable;
 
 import java.io.InputStream;
+import java.util.Map;
 import java.util.Properties;
 
 /**
  * @author Francesco Pontillo
  */
-public class GoogleMapsProfileGeoFixer extends IPlugin<Profile, Profile, Void> {
+public class GoogleMapsProfileGeoFixer extends IPlugin<Profile, Profile, VoidConfig> {
     public final static String PLUGIN_NAME = "googlemaps";
     private final static String PROP_GEOCODING_APIKEY = "geocoding.apiKey";
     private final GeoApiContext context;
@@ -44,7 +46,11 @@ public class GoogleMapsProfileGeoFixer extends IPlugin<Profile, Profile, Void> {
         return PLUGIN_NAME;
     }
 
-    @Override protected Observable.Operator<Profile, Profile> getOperator(Void parameters) {
+    @Override public VoidConfig buildConfiguration(Map<String, String> configurationMap) {
+        return new VoidConfig().buildFromMap(configurationMap);
+    }
+
+    @Override protected Observable.Operator<Profile, Profile> getOperator(VoidConfig parameters) {
         return new IProfileGeoFixerOperator() {
             @Override public Double[] getCoordinates(Profile profile) {
                 GeocodingResult[] results = null;

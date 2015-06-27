@@ -17,6 +17,7 @@
 package net.frakbot.crowdpulse.categorize.test;
 
 import net.frakbot.crowdpulse.categorize.wikipedia.WikipediaTagCategorizer;
+import net.frakbot.crowdpulse.common.util.spi.VoidConfig;
 import net.frakbot.crowdpulse.data.entity.Tag;
 import net.frakbot.crowdpulse.common.util.spi.IPlugin;
 import net.frakbot.crowdpulse.common.util.spi.PluginProvider;
@@ -31,7 +32,7 @@ public class WikipediaTagCategorizerTest {
 
     @Test
     public void testSPI() throws ClassNotFoundException {
-        IPlugin<Tag, Tag, Void> wikipediaTagCategorizer = PluginProvider.getPlugin(WikipediaTagCategorizer.PLUGIN_NAME);
+        IPlugin<Tag, Tag, VoidConfig> wikipediaTagCategorizer = PluginProvider.getPlugin(WikipediaTagCategorizer.PLUGIN_NAME);
         assertTrue(wikipediaTagCategorizer.getName().equals(WikipediaTagCategorizer.PLUGIN_NAME));
     }
 

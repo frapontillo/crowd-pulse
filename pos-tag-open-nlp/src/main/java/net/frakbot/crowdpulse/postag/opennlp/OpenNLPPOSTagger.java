@@ -17,6 +17,7 @@
 package net.frakbot.crowdpulse.postag.opennlp;
 
 import net.frakbot.crowdpulse.common.util.spi.IPlugin;
+import net.frakbot.crowdpulse.common.util.spi.VoidConfig;
 import net.frakbot.crowdpulse.data.entity.Message;
 import net.frakbot.crowdpulse.data.entity.Token;
 import net.frakbot.crowdpulse.postag.IPOSTaggerOperator;
@@ -34,7 +35,7 @@ import java.util.stream.Collectors;
 /**
  * @author Francesco Pontillo
  */
-public class OpenNLPPOSTagger extends IPlugin<Message, Message, Void> {
+public class OpenNLPPOSTagger extends IPlugin<Message, Message, VoidConfig> {
     public final static String PLUGIN_NAME = "postagger-opennlp";
     private Map<String, POSModel> models;
 
@@ -46,7 +47,11 @@ public class OpenNLPPOSTagger extends IPlugin<Message, Message, Void> {
         return PLUGIN_NAME;
     }
 
-    @Override public Observable.Operator<Message, Message> getOperator(Void parameters) {
+    @Override public VoidConfig buildConfiguration(Map<String, String> configurationMap) {
+        return new VoidConfig().buildFromMap(configurationMap);
+    }
+
+    @Override public Observable.Operator<Message, Message> getOperator(VoidConfig parameters) {
         return new IPOSTaggerOperator() {
             @Override public List<Token> posTagMessageTokens(Message message) {
                 if (message.getTokens() == null) {

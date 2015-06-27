@@ -17,6 +17,7 @@
 package net.frakbot.crowdpulse.lemmatize.morphit;
 
 import net.frakbot.crowdpulse.common.util.spi.ISingleablePlugin;
+import net.frakbot.crowdpulse.common.util.spi.VoidConfig;
 import net.frakbot.crowdpulse.data.entity.Message;
 import net.frakbot.crowdpulse.data.entity.Token;
 import net.frakbot.crowdpulse.lemmatize.ILemmatizerOperator;
@@ -44,7 +45,7 @@ import java.util.regex.Pattern;
  *
  * @author Francesco Pontillo
  */
-public class MorphITLemmatizer extends ISingleablePlugin<Message, Void> {
+public class MorphITLemmatizer extends ISingleablePlugin<Message, VoidConfig> {
     public static final String PLUGIN_NAME = "lemmatizer-it";
     private static final Pattern spacePattern = Pattern.compile("\\s+");
 
@@ -103,7 +104,11 @@ public class MorphITLemmatizer extends ISingleablePlugin<Message, Void> {
         return PLUGIN_NAME;
     }
 
-    @Override public Observable.Operator<Message, Message> getOperator(Void parameters) {
+    @Override public VoidConfig buildConfiguration(Map<String, String> configurationMap) {
+        return new VoidConfig().buildFromMap(configurationMap);
+    }
+
+    @Override public Observable.Operator<Message, Message> getOperator(VoidConfig parameters) {
         MorphITLemmatizer currentLemmatizer = this;
         return new ILemmatizerOperator() {
             @Override public List<Token> lemmatizeMessageTokens(Message message) {

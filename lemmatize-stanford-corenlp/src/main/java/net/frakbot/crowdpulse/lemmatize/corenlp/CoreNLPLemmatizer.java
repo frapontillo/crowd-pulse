@@ -18,17 +18,19 @@ package net.frakbot.crowdpulse.lemmatize.corenlp;
 
 import edu.stanford.nlp.process.Morphology;
 import net.frakbot.crowdpulse.common.util.spi.ISingleablePlugin;
+import net.frakbot.crowdpulse.common.util.spi.VoidConfig;
 import net.frakbot.crowdpulse.data.entity.Message;
 import net.frakbot.crowdpulse.data.entity.Token;
 import net.frakbot.crowdpulse.lemmatize.ILemmatizerOperator;
 import rx.Observable;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Francesco Pontillo
  */
-public class CoreNLPLemmatizer extends ISingleablePlugin<Message, Void> {
+public class CoreNLPLemmatizer extends ISingleablePlugin<Message, VoidConfig> {
     public final static String PLUGIN_NAME = "lemmatizer-stanford";
     private final Morphology morphology;
 
@@ -40,7 +42,11 @@ public class CoreNLPLemmatizer extends ISingleablePlugin<Message, Void> {
         return PLUGIN_NAME;
     }
 
-    @Override public Observable.Operator<Message, Message> getOperator(Void parameters) {
+    @Override public VoidConfig buildConfiguration(Map<String, String> configurationMap) {
+        return new VoidConfig().buildFromMap(configurationMap);
+    }
+
+    @Override public Observable.Operator<Message, Message> getOperator(VoidConfig parameters) {
         CoreNLPLemmatizer currentLemmatizer = this;
         return new ILemmatizerOperator() {
             @Override public List<Token> lemmatizeMessageTokens(Message message) {

@@ -19,17 +19,20 @@ package net.frakbot.crowdpulse.data.plugin;
 import net.frakbot.crowdpulse.common.util.CrowdLogger;
 import net.frakbot.crowdpulse.common.util.rx.CrowdSubscriber;
 import net.frakbot.crowdpulse.common.util.spi.IPlugin;
+import net.frakbot.crowdpulse.common.util.spi.VoidConfig;
 import net.frakbot.crowdpulse.data.entity.Profile;
 import net.frakbot.crowdpulse.data.repository.ProfileRepository;
 import org.apache.logging.log4j.Logger;
 import rx.Observable;
+
+import java.util.Map;
 
 /**
  * An implementation of {@link IPlugin} that persists all streamed {@link Profile}s, eventually completing or erroring.
  *
  * @author Francesco Pontillo
  */
-public class ProfilePersister extends IPlugin<Profile, Profile, Void> {
+public class ProfilePersister extends IPlugin<Profile, Profile, VoidConfig> {
     public final static String PLUGIN_NAME = "profile-persist";
     private final ProfileRepository profileRepository;
     private final Logger logger = CrowdLogger.getLogger(ProfilePersister.class);
@@ -42,7 +45,11 @@ public class ProfilePersister extends IPlugin<Profile, Profile, Void> {
         return PLUGIN_NAME;
     }
 
-    @Override protected Observable.Operator<Profile, Profile> getOperator(Void parameters) {
+    @Override public VoidConfig buildConfiguration(Map<String, String> configurationMap) {
+        return new VoidConfig().buildFromMap(configurationMap);
+    }
+
+    @Override protected Observable.Operator<Profile, Profile> getOperator(VoidConfig parameters) {
         return subscriber -> new CrowdSubscriber<Profile>(subscriber) {
             @Override public void onNext(Profile profile) {
                 profileRepository.save(profile);

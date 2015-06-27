@@ -17,9 +17,12 @@
 package net.frakbot.crowdpulse.data.plugin;
 
 import net.frakbot.crowdpulse.common.util.spi.IPlugin;
+import net.frakbot.crowdpulse.common.util.spi.VoidConfig;
 import rx.Observable;
 import rx.Subscriber;
 import rx.observers.SafeSubscriber;
+
+import java.util.Map;
 
 /**
  * An implementation of {@link IPlugin} that has no effect on input elements, emitting them untouched. Error and
@@ -27,14 +30,18 @@ import rx.observers.SafeSubscriber;
  *
  * @author Francesco Pontillo
  */
-public class Streamer extends IPlugin<Object, Object, Void> {
+public class Streamer extends IPlugin<Object, Object, VoidConfig> {
     public final static String PLUGIN_NAME = "streamer";
 
     @Override public String getName() {
         return PLUGIN_NAME;
     }
 
-    @Override protected Observable.Operator<Object, Object> getOperator(Void parameters) {
+    @Override public VoidConfig buildConfiguration(Map<String, String> configurationMap) {
+        return new VoidConfig().buildFromMap(configurationMap);
+    }
+
+    @Override protected Observable.Operator<Object, Object> getOperator(VoidConfig parameters) {
         return subscriber -> new SafeSubscriber<>(new Subscriber<Object>() {
             @Override public void onCompleted() {
                 subscriber.onCompleted();
