@@ -1,0 +1,26 @@
+{
+  "nodes": {
+    "message-extractor": {
+      "plugin": "extractor-twitter",
+      "config": {
+        "since": "2015-06-21",
+        "until": "2015-06-26",
+        "from": "frapontillo"
+      }
+    },
+    "message-persister-1": {
+      "plugin": "message-persist"
+    },
+    "profile-extractor": {
+      "plugin": "profiler-twitter"
+    },
+    "profile-persister": {
+      "plugin": "profile-persist"
+    }
+  },
+  "edges": {
+    "message-extractor": ["message-persister-1"],
+    "message-persister-1": ["profile-extractor"],
+    "profile-extractor": ["profile-persister"]
+  }
+}
