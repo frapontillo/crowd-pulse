@@ -189,14 +189,22 @@ public abstract class IPlugin<Input, Output, Parameter extends IPluginConfig> {
      * <p>
      * Since all the "wait" streams are merged and subscribed on, you may want to make them cached via
      * {@link Observable#cache()} before passing them to the processing method.
+     * <p>
+     * If there's no input stream, a new empty, immediately completing stream will be created.
      *
      * @param params  An optional parameter object of type {@link Parameter}.
      * @param streams The array of {@link Observable}s to use (only the first one will be processed).
      * @return A new {@link Observable<Output>} built by {@link IPlugin#processSingle(IPluginConfig, Observable)}.
      */
     public Observable<Output> process(Parameter params, Observable<? extends Object>... streams) {
-        if (streams.length == 1) {
-            return processSingle(params, (Observable<Input>) streams[0]);
+        if (streams.length <= 1) {
+            Observable<Input> singleStream;
+            if (streams.length == 0) {
+                singleStream = Observable.empty();
+            } else {
+                singleStream = (Observable<Input>) streams[0];
+            }
+            return processSingle(params, singleStream);
         }
 
         // the first element must be processed but must emit items
