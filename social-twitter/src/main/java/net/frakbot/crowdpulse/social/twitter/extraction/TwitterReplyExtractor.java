@@ -16,6 +16,7 @@
 
 package net.frakbot.crowdpulse.social.twitter.extraction;
 
+import net.frakbot.crowdpulse.common.util.CrowdLogger;
 import net.frakbot.crowdpulse.data.entity.Message;
 import net.frakbot.crowdpulse.social.extraction.ExtractionParameters;
 import net.frakbot.crowdpulse.social.extraction.IReplyExtractor;
@@ -32,6 +33,7 @@ import java.util.stream.Collectors;
  */
 public class TwitterReplyExtractor extends IReplyExtractor {
     public final static String PLUGIN_NAME = "reply-extractor-twitter";
+    private static final org.apache.logging.log4j.Logger logger = CrowdLogger.getLogger(TwitterReplyExtractor.class);
 
     @Override public List<Message> getReplies(Message message, ExtractionParameters parameters) {
         List<Message> messages = new ArrayList<>();
@@ -42,9 +44,16 @@ public class TwitterReplyExtractor extends IReplyExtractor {
         map.put(TwitterMessageConverter.DATA_SOURCE, parameters.getSource());
         Query query = buildQuery(message);
         try {
+            Twitter twitter = TwitterFactory.getTwitterInstance();
             do {
-                Twitter twitter = TwitterFactory.getTwitterInstance();
-                QueryResult result = twitter.search(query);
+                QueryResult result = null;
+                try {
+                    result = twitter.search(query);
+                } catch (TwitterException timeout) {
+                    if (net.frakbot.crowdpulse.social.twitter.TwitterFactory.waitForTwitterTimeout(timeout, logger)) {
+                        continue;
+                    }
+                }
                 List<Status> statuses = result.getTweets();
                 // filter the statuses by returning only the ones in reply to the current message
                 statuses = statuses.stream()
@@ -53,7 +62,7 @@ public class TwitterReplyExtractor extends IReplyExtractor {
                 converter.addFromExtractor(statuses, messages, map);
                 query = result.nextQuery();
             } while (query != null);
-        } catch (TwitterException e) {
+        } catch (TwitterException | InterruptedException e) {
             e.printStackTrace();
         }
         return messages;
@@ -65,8 +74,8 @@ public class TwitterReplyExtractor extends IReplyExtractor {
      * {@link Message}s must then be manually filtered in order to include only the ones in reply to the original
      * {@link Message}.
      *
-     * @param message   The {@link Message} to retrieve replies for.
-     * @return          A Twitter {@link Query} to fetch a superset of replies to the input {@link Message}.
+     * @param message The {@link Message} to retrieve replies for.
+     * @return A Twitter {@link Query} to fetch a superset of replies to the input {@link Message}.
      */
     private Query buildQuery(Message message) {
         Query query = new Query();

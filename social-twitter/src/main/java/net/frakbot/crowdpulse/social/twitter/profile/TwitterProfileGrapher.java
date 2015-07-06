@@ -16,11 +16,14 @@
 
 package net.frakbot.crowdpulse.social.twitter.profile;
 
+import net.frakbot.crowdpulse.common.util.CrowdLogger;
 import net.frakbot.crowdpulse.data.entity.Profile;
 import net.frakbot.crowdpulse.social.profile.IProfileGrapher;
 import net.frakbot.crowdpulse.social.profile.ProfileParameters;
 import net.frakbot.crowdpulse.social.twitter.TwitterFactory;
+import org.apache.logging.log4j.Logger;
 import twitter4j.PagableResponseList;
+import twitter4j.Twitter;
 import twitter4j.TwitterException;
 import twitter4j.User;
 
@@ -33,21 +36,35 @@ import java.util.List;
 public class TwitterProfileGrapher extends IProfileGrapher {
     public final static String PLUGIN_NAME = "twitter-profile-grapher";
     private final static int MAX_FRIENDS_PER_REQUEST = 200;
+    private static final Logger logger = CrowdLogger.getLogger(TwitterProfileGrapher.class);
 
     @Override public List<Profile> getConnections(Profile profile, ProfileParameters parameters) {
         TwitterProfileConverter converter = new TwitterProfileConverter(parameters);
         List<Profile> profiles = new ArrayList<>();
-        PagableResponseList<User> friends;
-        long cursor = -1;
+        PagableResponseList<User> friends = null;
+        Long cursor = null;
         try {
-            // loop until there's a next cursor
+            Twitter twitter = TwitterFactory.getTwitterInstance();
+            // loop until there's a next valid cursor
             do {
-                friends = TwitterFactory.getTwitterInstance().getFriendsList(
-                        profile.getUsername(), cursor, MAX_FRIENDS_PER_REQUEST, true, false);
+                try {
+                    long actualCursor = cursor != null ? cursor : -1;
+                    friends = twitter
+                            .getFriendsList(profile.getUsername(), actualCursor, MAX_FRIENDS_PER_REQUEST, true, false);
+                } catch (TwitterException timeout) {
+                    if (TwitterFactory.waitForTwitterTimeout(timeout, logger)) {
+                        continue;
+                    }
+                }
                 converter.addFromExtractor(friends, profiles);
-                cursor = friends.getNextCursor();
-            } while (cursor > 0);
-        } catch (TwitterException e) {
+                // if friends were indeed found, get the next cursor, otherwise default to -1
+                if (friends != null) {
+                    cursor = friends.getNextCursor();
+                } else {
+                    cursor = -1L;
+                }
+            } while (cursor == null || cursor > 0);
+        } catch (TwitterException | InterruptedException e) {
             e.printStackTrace();
         }
         return profiles;

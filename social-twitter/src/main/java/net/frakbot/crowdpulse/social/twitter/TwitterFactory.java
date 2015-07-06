@@ -16,6 +16,7 @@
 
 package net.frakbot.crowdpulse.social.twitter;
 
+import org.apache.logging.log4j.Logger;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
 import twitter4j.TwitterStream;
@@ -58,5 +59,30 @@ public class TwitterFactory {
             twitterStream = new TwitterStreamFactory().getInstance();
         }
         return twitterStream;
+    }
+
+    /**
+     * Stops the current thread for the amount of time needed to recover from a "rate limit exceeded"
+     * error on the Twitter API side.
+     *
+     * @param exception The original rate limit exception to retrieve the amount of time to wait from.
+     * @param logger    The logger to use to print messages.
+     * @return {@code true} when the rate limit should be expired, {@code false} if the exception was not
+     * rate limit related.
+     * @throws InterruptedException if there's an issue with the current thread sleeping.
+     */
+    public static boolean waitForTwitterTimeout(TwitterException exception, Logger logger)
+            throws InterruptedException {
+        int remaining = exception.getRateLimitStatus().getRemaining();
+        if (remaining <= 0) {
+            int secondsToWait = exception.getRateLimitStatus().getSecondsUntilReset() + 5;
+            logger.warn("Encountered Twitter rate limit, waiting for {} seconds...", secondsToWait);
+            Thread.sleep(1000 * secondsToWait);
+            logger.warn("{} seconds have elapsed, now retrying the Twitter call...", secondsToWait);
+            // return true if the exception was rate limit related
+            return true;
+        }
+        // return false otherwise
+        return false;
     }
 }

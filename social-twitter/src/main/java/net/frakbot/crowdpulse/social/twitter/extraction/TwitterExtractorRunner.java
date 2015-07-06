@@ -21,6 +21,7 @@ import net.frakbot.crowdpulse.common.util.DateUtil;
 import net.frakbot.crowdpulse.common.util.StringUtil;
 import net.frakbot.crowdpulse.data.entity.Message;
 import net.frakbot.crowdpulse.social.extraction.ExtractionParameters;
+import net.frakbot.crowdpulse.social.twitter.*;
 import net.frakbot.crowdpulse.social.util.Checker;
 import rx.Observable;
 import rx.Subscriber;
@@ -72,7 +73,8 @@ public class TwitterExtractorRunner {
                     logger.info("SEARCH: started.");
                     getOldMessagesByTimeline(parameters, subscriber);
                 }
-            }).onBackpressureBuffer();;
+            }).onBackpressureBuffer();
+            ;
         }
 
         // create the new messages (streamed) Observable
@@ -130,7 +132,8 @@ public class TwitterExtractorRunner {
 
     /**
      * Get the appropriate {@link rx.Observable} that will either complete after a certain amount of time (depending
-     * on the input {@link net.frakbot.crowdpulse.social.extraction.ExtractionParameters#getUntil()}) or never complete.
+     * on the input {@link net.frakbot.crowdpulse.social.extraction.ExtractionParameters#getUntil()}) or never
+     * complete.
      *
      * @param parameters The parameters, as set by the user, that can contain a null or valid "until date".
      * @return {@link rx.Observable} that can complete after some time, or will never complete.
@@ -142,20 +145,6 @@ public class TwitterExtractorRunner {
             return Observable.timer(timeToDeath, TimeUnit.MILLISECONDS, Schedulers.io());
         }
         return Observable.never();
-    }
-
-    private boolean waitForTwitterTimeout(TwitterException exception) throws InterruptedException {
-        int remaining = exception.getRateLimitStatus().getRemaining();
-        if (remaining <= 0) {
-            int secondsToWait = exception.getRateLimitStatus().getSecondsUntilReset() + 5;
-            logger.warn("Encountered Twitter rate limit, waiting for {} seconds...", secondsToWait);
-            Thread.sleep(1000 * secondsToWait);
-            logger.warn("{} seconds have elapsed, now retrying the Twitter call...", secondsToWait);
-            // return true if the exception was rate limit related
-            return true;
-        }
-        // return false otherwise
-        return false;
     }
 
     /**
@@ -173,11 +162,11 @@ public class TwitterExtractorRunner {
             // query can be null if we reach the end of the search result pages
             while (query != null) {
                 // get the tweets and convert them
-                QueryResult result = null;
+                QueryResult result;
                 try {
                     result = twitter.search(query);
                 } catch (TwitterException timeout) {
-                    if (waitForTwitterTimeout(timeout)) {
+                    if (net.frakbot.crowdpulse.social.twitter.TwitterFactory.waitForTwitterTimeout(timeout, logger)) {
                         continue;
                     }
                     throw timeout;
@@ -218,7 +207,7 @@ public class TwitterExtractorRunner {
                 try {
                     tweetList = twitter.getUserTimeline(parameters.getFromUser(), paging);
                 } catch (TwitterException timeout) {
-                    if (waitForTwitterTimeout(timeout)) {
+                    if (net.frakbot.crowdpulse.social.twitter.TwitterFactory.waitForTwitterTimeout(timeout, logger)) {
                         continue;
                     }
                 }
@@ -265,15 +254,15 @@ public class TwitterExtractorRunner {
     }
 
     /**
-     * Open up a stream to Twitter, listening to new tweets according to the {@link net.frakbot.crowdpulse.social.extraction.ExtractionParameters}.
+     * Open up a stream to Twitter, listening to new tweets according to the {@link
+     * net.frakbot.crowdpulse.social.extraction.ExtractionParameters}.
      *
      * @param parameters The {@link net.frakbot.crowdpulse.social.extraction.ExtractionParameters} with all extraction
      *                   settings.
      * @param subscriber The {@link rx.Subscriber} that will be notified of new tweets, errors and completion.
      */
     private void getNewMessages(ExtractionParameters parameters, final Subscriber<? super Message> subscriber) {
-        long timeToDeath = parameters.getUntil().getTime() - new Date().getTime();
-        if (timeToDeath <= 0) {
+        if (parameters.getUntil() == null || (parameters.getUntil().getTime() - new Date().getTime() <= 0)) {
             subscriber.onCompleted();
             return;
         }
@@ -396,7 +385,8 @@ public class TwitterExtractorRunner {
      *
      * @param parameters The source-independent search parameters.
      * @return A {@link twitter4j.FilterQuery} Twitter object.
-     * @throws TwitterException if the query could not be built because of some issues instantiating the regular client.
+     * @throws TwitterException if the query could not be built because of some issues instantiating the regular
+     *                          client.
      */
     private FilterQuery buildFilterQuery(ExtractionParameters parameters) throws TwitterException {
         FilterQuery filterQuery = new FilterQuery();
