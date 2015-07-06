@@ -24,11 +24,12 @@ import net.frakbot.crowdpulse.data.repository.MessageRepository;
 import rx.Observable;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
 /**
- * An implementation of {@link IPlugin} that persists all streamed {@link Message}s with a custom tag defined in its
+ * An implementation of {@link IPlugin} that persists all streamed {@link Message}s with a custom tags defined in its
  * initialization options, eventually completing or erroring.
  *
  * @author Francesco Pontillo
@@ -52,10 +53,8 @@ public class MessagePersister extends IPlugin<Message, Message, MessagePersister
     @Override protected Observable.Operator<Message, Message> getOperator(MessagePersisterOptions parameters) {
         return subscriber -> new CrowdSubscriber<Message>(subscriber) {
             @Override public void onNext(Message message) {
-                if (parameters != null) {
-                    List<String> tags = new ArrayList<>();
-                    tags.add(parameters.getTag());
-                    message.setCustomTags(tags);
+                if (parameters != null && parameters.getTags() != null) {
+                    message.setCustomTags(Arrays.asList(parameters.getTags().split(",")));
                 }
                 messageRepository.save(message);
                 subscriber.onNext(message);
@@ -64,44 +63,44 @@ public class MessagePersister extends IPlugin<Message, Message, MessagePersister
     }
 
     /**
-     * Persisting options including the custom tag to persist with the {@link Message}.
+     * Persisting options including the custom tags to persist with the {@link Message}.
      */
     public static class MessagePersisterOptions implements IPluginConfig {
-        private String tag;
+        private String tags;
 
         /**
-         * Init persisting options with the custom tag to be persisted with the {@link Message}.
+         * Init persisting options with the custom tags to be persisted with the {@link Message}.
          *
-         * @param tag The custom tag to persist.
+         * @param tags The custom tags to persist (multiple tags must be concatenated with a comma).
          */
-        public MessagePersisterOptions(String tag) {
-            this.tag = tag;
+        public MessagePersisterOptions(String tags) {
+            this.tags = tags;
         }
 
         public MessagePersisterOptions() {
         }
 
         /**
-         * Get the custom tag to be persisted with the {@link Message}.
+         * Get the custom tags to be persisted with the {@link Message}.
          *
-         * @return The custom tag to persist.
+         * @return The custom tags to persist (multiple tags are concatenated with a comma).
          */
-        public String getTag() {
-            return tag;
+        public String getTags() {
+            return tags;
         }
 
         /**
-         * Set the custom tag to be persisted with the {@link Message}.
+         * Set the custom tags to be persisted with the {@link Message}.
          *
-         * @param tag The custom tag to persist.
+         * @param tags The custom tags to persist (multiple tags must be concatenated with a comma).
          */
-        public void setTag(String tag) {
-            this.tag = tag;
+        public void setTags(String tags) {
+            this.tags = tags;
         }
 
         @Override public MessagePersisterOptions buildFromMap(Map<String, String> mapConfig) {
             if (mapConfig != null) {
-                this.setTag(mapConfig.get("tag"));
+                this.setTags(mapConfig.get("tags"));
             }
             return this;
         }
