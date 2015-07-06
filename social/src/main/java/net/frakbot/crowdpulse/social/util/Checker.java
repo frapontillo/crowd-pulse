@@ -61,11 +61,11 @@ public class Checker {
     }
 
     public static Func1<Message, Boolean> checkUntilDate(final ExtractionParameters parameters) {
-        return message -> message.getDate().compareTo(parameters.getUntil()) <= 0;
+        return message -> parameters.getUntil() == null || message.getDate().compareTo(parameters.getUntil()) <= 0;
     }
 
     public static Func1<Message, Boolean> checkSinceDate(final ExtractionParameters parameters) {
-        return message -> message.getDate().compareTo(parameters.getSince()) >= 0;
+        return message -> parameters.getSince() == null || message.getDate().compareTo(parameters.getSince()) >= 0;
     }
 
     public static Func1<Message, Boolean> checkLanguage(final ExtractionParameters parameters) {
