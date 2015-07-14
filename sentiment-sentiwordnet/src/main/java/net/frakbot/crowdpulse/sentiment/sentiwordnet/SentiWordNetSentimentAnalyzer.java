@@ -69,6 +69,7 @@ public class SentiWordNetSentimentAnalyzer extends IPlugin<Message, Message, Voi
         return new ISentimentAnalyzerOperator() {
             @Override public Message sentimentAnalyze(Message message) {
                 double totalScore = 0;
+                double lemmatizedTokens = 0;
                 if (message.getTokens() == null) {
                     return message;
                 }
@@ -79,10 +80,15 @@ public class SentiWordNetSentimentAnalyzer extends IPlugin<Message, Message, Voi
                         // TODO: add weights for simple POS according to some specific configuration
                         double synsetScore = sentiWordNet.getScore(synsets);
                         totalScore += synsetScore;
+                        lemmatizedTokens += 1;
                         token.setScore(synsetScore);
                     }
                 }
-                message.setSentiment(totalScore / message.getTokens().size());
+                if (lemmatizedTokens > 0) {
+                    message.setSentiment(totalScore / lemmatizedTokens);
+                } else {
+                    message.setSentiment(0);
+                }
                 return message;
             }
         };
