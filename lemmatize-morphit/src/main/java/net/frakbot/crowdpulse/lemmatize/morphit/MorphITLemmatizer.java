@@ -124,6 +124,10 @@ public class MorphITLemmatizer extends ISingleablePlugin<Message, VoidConfig> {
     }
 
     private void lemmatizeToken(Token token) {
+        if (token.isStopWord()) {
+            return;
+        }
+
         String word = token.getText().toLowerCase();
         String pos = token.getPos();
 
