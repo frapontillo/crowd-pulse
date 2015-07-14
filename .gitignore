@@ -6,7 +6,7 @@
 build/
 gradle/
 temp/
-*/src/main/resources/*.properties
-*/src/main/resources/*.bin
 */src/test/resources/*.properties
-playground-cli/src/main/resources/stop-words-*
+playground-cli/src/main/resources/*
+!playground-cli/src/main/resources/*.sample
+!playground-cli/src/main/resources/*.json
