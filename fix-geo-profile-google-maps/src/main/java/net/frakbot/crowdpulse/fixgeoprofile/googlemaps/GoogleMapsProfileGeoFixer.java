@@ -20,6 +20,7 @@ import com.google.maps.GeoApiContext;
 import com.google.maps.GeocodingApi;
 import com.google.maps.model.GeocodingResult;
 import net.frakbot.crowdpulse.common.util.CrowdLogger;
+import net.frakbot.crowdpulse.common.util.StringUtil;
 import net.frakbot.crowdpulse.common.util.spi.IPlugin;
 import net.frakbot.crowdpulse.common.util.spi.VoidConfig;
 import net.frakbot.crowdpulse.data.entity.Profile;
@@ -53,6 +54,9 @@ public class GoogleMapsProfileGeoFixer extends IPlugin<Profile, Profile, VoidCon
     @Override protected Observable.Operator<Profile, Profile> getOperator(VoidConfig parameters) {
         return new IProfileGeoFixerOperator() {
             @Override public Double[] getCoordinates(Profile profile) {
+                if (StringUtil.isNullOrEmpty(profile.getLocation())) {
+                    return null;
+                }
                 GeocodingResult[] results = null;
                 Double[] coordinates = null;
                 // attempt a forward geocoding (from address to lat-lng)
