@@ -24,5 +24,5 @@ import retrofit.http.Query;
  */
 public interface WikipediaMinerService {
     @GET("/services/wikify?responseFormat=json")
-    WikifyResponse wikify(@Query("source") String text);
+    WikifyResponse wikify(@Query("source") String text, @Query("wikipedia") String language);
 }

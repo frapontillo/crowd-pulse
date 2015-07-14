@@ -60,7 +60,7 @@ public class WikipediaMinerTagger extends IPlugin<Message, Message, VoidConfig> 
                 WikifyResponse response;
                 List<Tag> tags = new ArrayList<>();
                 try {
-                    response = service.wikify(text);
+                    response = service.wikify(text, language);
                     for (WikifyResponse.DetectedTopic topic : response.getDetectedTopics()) {
                         Tag tag = new Tag();
                         tag.setText(topic.getTitle());
