@@ -54,8 +54,11 @@ public class Blade {
     }
 
     public Blade(String args[]) throws ClassNotFoundException {
-        // TODO: use args to get path of graph config JSON
-        Graph graph = GraphUtil.readGraph("config.json", Blade.class);
+        String configFile = "config.json";
+        if (args != null && args.length > 0) {
+            configFile = args[0];
+        }
+        Graph graph = GraphUtil.readGraph(configFile, Blade.class);
 
         observableMap = new HashMap<>(graph.getNodes().size());
         terminalObservables = new ArrayList<>();
