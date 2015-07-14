@@ -226,6 +226,7 @@ public class TwitterExtractorRunner {
                 for (Message message : messageList) {
                     if (Checker.checkQuery(parameters).call(message) &&
                             Checker.checkLocation(parameters).call(message) &&
+                            Checker.checkFromUser(parameters).call(message) &&
                             Checker.checkToUser(parameters).call(message) &&
                             Checker.checkReferencedUsers(parameters).call(message) &&
                             Checker.checkSinceDate(parameters).call(message) &&
