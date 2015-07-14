@@ -30,17 +30,18 @@ public class Checker {
     }
 
     public static Func1<Message, Boolean> checkQuery(final ExtractionParameters parameters) {
-        return message -> (StringUtil.isNullOrEmpty(parameters.getQuery()) || message.getText().contains(parameters.getQuery()));
+        return message -> (StringUtil.isNullOrEmpty(parameters.getQuery())
+                || message.getText().contains(parameters.getQuery()));
     }
 
     public static Func1<Message, Boolean> checkFromUser(final ExtractionParameters parameters) {
-        return message -> (StringUtil.isNullOrEmpty(parameters.getFromUser()) || parameters.getFromUser().equals(message
-                .getFromUser()));
+        return message -> (StringUtil.isNullOrEmpty(parameters.getFromUser()) ||
+                parameters.getFromUser().equals(message.getFromUser()));
     }
 
     public static Func1<Message, Boolean> checkToUser(final ExtractionParameters parameters) {
-        return message -> (StringUtil.isNullOrEmpty(parameters.getToUser())
-                || message.getToUsers().contains(parameters.getToUser()));
+        return message -> (StringUtil.isNullOrEmpty(parameters.getToUser()) ||
+                message.getToUsers().contains(parameters.getToUser()));
     }
 
     public static Func1<Message, Boolean> checkReferencedUsers(final ExtractionParameters parameters) {
