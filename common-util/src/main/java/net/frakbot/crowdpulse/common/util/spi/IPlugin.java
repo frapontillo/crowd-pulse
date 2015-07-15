@@ -20,6 +20,7 @@ import net.frakbot.crowdpulse.common.util.rx.BackpressureAsyncTransformer;
 import rx.Observable;
 import rx.Observer;
 import rx.observables.ConnectableObservable;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.Arrays;
 import java.util.List;
@@ -55,11 +56,9 @@ import java.util.Map;
  * {@link #transform(Parameter)} method, then composes the stream with a {@link BackpressureAsyncTransformer}.
  * </li>
  * <li>
- * If you want to handle more than one input stream, you can override the {@link #process(Parameter, Observable[])}
- * method and handle the input {@link Observable} yourself. Please note that the default implementation uses the
- * first {@link Observable} as the one to transform, and the optional following ones as streams that must be waited
- * before the first element in the transformed {@link Observable} is emitted (for more information, see {@link
- * #process(Parameter, Observable[])}).
+ * If you want to handle more than one input stream, you can override the {@link #processMulti(IPluginConfig,
+ * Observable[])} method and handle the input {@link Observable}s yourself.
+ * Please note that the default implementation throws an {@link UnsupportedOperationException} if it isn't implemented.
  * </li>
  * </ol>
  * <p>
@@ -125,7 +124,7 @@ public abstract class IPlugin<Input, Output, Parameter extends IPluginConfig> {
     public Observable.Transformer<Input, Output> transform(Parameter params) {
         Observable.Operator<Output, Input> operator = getOperator(params);
         if (operator != null) {
-            return inputObservable -> inputObservable.lift(operator);
+            return inputObservable -> inputObservable.lift(getOperator(params));
         }
         // if there is no operator, return null
         return null;
@@ -166,9 +165,7 @@ public abstract class IPlugin<Input, Output, Parameter extends IPluginConfig> {
 
     /**
      * Process an {@link Observable<Input>} stream just as in {@link IPlugin#processSingle(IPluginConfig, Observable)}
-     * but
-     * with
-     * {@code null} parameters.
+     * but with {@code null} parameters.
      *
      * @param stream The {@link Observable<Input>} to process.
      * @return A new {@link Observable<Output>} built by applying the {@link rx.Observable.Transformer} returned by
@@ -182,19 +179,18 @@ public abstract class IPlugin<Input, Output, Parameter extends IPluginConfig> {
     /**
      * Default implementation for processing multiple generic {@link Observable<Object>}s:
      * <ul>
-     * <li>the first element is the one to process by {@link IPlugin#processSingle(IPluginConfig, Observable)} and
-     * return</li>
-     * <li>the remaining elements are the ones whose completion must be waited before streaming elements</li>
+     * <li>if there is only one input stream, it will be processed by {@link IPlugin#processSingle(IPluginConfig,
+     * Observable)}, then it will be returned</li>
+     * <li>if there is more than one input stream, they will be handled by {@link IPlugin#processMulti(IPluginConfig,
+     * Observable[])}</li>
      * </ul>
-     * <p>
-     * Since all the "wait" streams are merged and subscribed on, you may want to make them cached via
-     * {@link Observable#cache()} before passing them to the processing method.
      * <p>
      * If there's no input stream, a new empty, immediately completing stream will be created.
      *
      * @param params  An optional parameter object of type {@link Parameter}.
-     * @param streams The array of {@link Observable}s to use (only the first one will be processed).
-     * @return A new {@link Observable<Output>} built by {@link IPlugin#processSingle(IPluginConfig, Observable)}.
+     * @param streams The array of {@link Observable}s to use.
+     * @return A new {@link Observable<Output>} built by {@link IPlugin#processSingle(IPluginConfig, Observable)} or by
+     * {@link IPlugin#processMulti(IPluginConfig, Observable[])}.
      */
     public Observable<Output> process(Parameter params, Observable<? extends Object>... streams) {
         if (streams.length <= 1) {
@@ -207,6 +203,27 @@ public abstract class IPlugin<Input, Output, Parameter extends IPluginConfig> {
             return processSingle(params, singleStream);
         }
 
+        return processMulti(params, streams);
+    }
+
+    /**
+     * Process multiple streams and return just one.
+     * This method will be automatically called by {@link IPlugin#process(IPluginConfig, Observable[])} if the input
+     * streams are more than one.
+     * <p>
+     * This method always throws {@link UnsupportedOperationException} if it isn't overridden in the plugin that
+     * has to process multiple input streams.
+     *
+     * @param params  An optional parameter object of type {@link Parameter}.
+     * @param streams The array of {@link Observable}s to use (only the first one will be processed).
+     * @return A new {@link Observable<Output>} built by {@link IPlugin#processSingle(IPluginConfig, Observable)}.
+     */
+    public Observable<Output> processMulti(Parameter params, Observable<? extends Object>... streams) {
+        throw new UnsupportedOperationException("IPlugin doesn't support multiple streams. " +
+                "You have to override \"processMulti\" and handle it yourself.");
+
+        /*
+        TODO: try and handle the wait-emit here
         // the first element must be processed but must emit items
         streams[0] = streams[0].publish();
 
@@ -228,6 +245,7 @@ public abstract class IPlugin<Input, Output, Parameter extends IPluginConfig> {
         });
 
         return processSingle(params, (ConnectableObservable<Input>) streams[0]);
+         */
     }
 
     /**
