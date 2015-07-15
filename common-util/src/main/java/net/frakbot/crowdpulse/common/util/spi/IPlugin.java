@@ -125,7 +125,7 @@ public abstract class IPlugin<Input, Output, Parameter extends IPluginConfig> {
     public Observable.Transformer<Input, Output> transform(Parameter params) {
         Observable.Operator<Output, Input> operator = getOperator(params);
         if (operator != null) {
-            return inputObservable -> inputObservable.lift(getOperator(params));
+            return inputObservable -> inputObservable.lift(operator);
         }
         // if there is no operator, return null
         return null;
