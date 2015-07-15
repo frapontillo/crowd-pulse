@@ -74,7 +74,6 @@ public class TwitterExtractorRunner {
                     getOldMessagesByTimeline(parameters, subscriber);
                 }
             }).onBackpressureBuffer();
-            ;
         }
 
         // create the new messages (streamed) Observable
