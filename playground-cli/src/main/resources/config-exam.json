@@ -3,8 +3,8 @@
     "message-extractor": {
       "plugin": "extractor-twitter",
       "config": {
-        "from": "semeraro_g",
-        "since": "2015-01-01"
+        "from": "cataldomusto",
+        "tags": "musto"
       }
     },
     "message-persister-1": {
