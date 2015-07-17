@@ -23,6 +23,16 @@ sourceCompatibility = 1.8
 
 version = '1.0'
 
+task execute(type:JavaExec) {
+    main = mainClassName
+    classpath = sourceSets.main.runtimeClasspath
+
+    String argString = System.getProperty("args")
+    if (argString) {
+        args = Arrays.asList(argString.split(" "))
+    }
+}
+
 dependencies {
     compile 'com.google.code.gson:gson:2.3.1'
 
