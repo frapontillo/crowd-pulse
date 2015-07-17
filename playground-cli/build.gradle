@@ -17,7 +17,7 @@
 apply plugin: 'java'
 apply plugin: 'application'
 
-mainClassName = 'net.frakbot.crowdpulse.tokenize.ExtractionMain'
+mainClassName = 'net.frakbot.crowdpulse.playground.cli.Blade'
 
 sourceCompatibility = 1.8
 
