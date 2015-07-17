@@ -18,11 +18,7 @@ package net.frakbot.crowdpulse.common.util.spi;
 
 import net.frakbot.crowdpulse.common.util.rx.BackpressureAsyncTransformer;
 import rx.Observable;
-import rx.Observer;
-import rx.observables.ConnectableObservable;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
