@@ -1,0 +1,13 @@
+{
+  "nodes": {
+    "message-extractor": {
+      "plugin": "message-fetch"
+    },
+    "infogram": {
+      "plugin": "infogram"
+    }
+  },
+  "edges": {
+    "message-extractor": ["infogram"]
+  }
+}
