@@ -73,4 +73,5 @@ include 'lemmatize-morphit'
 include 'sentiment'
 include 'sentiment-sentit'
 include 'sentiment-sentiwordnet'
+include 'infogram'
 

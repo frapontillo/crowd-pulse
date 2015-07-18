@@ -29,6 +29,9 @@ public class Token {
     private String lemma;
     private double score;
 
+    public Token() {
+    }
+
     /**
      * Create a new Token and assign it a text.
      *

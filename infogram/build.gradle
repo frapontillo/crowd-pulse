@@ -15,15 +15,35 @@
  */
 
 apply plugin: 'java'
+apply plugin: 'kotlin'
 
 sourceCompatibility = 1.8
 
 version = '1.0'
 
 dependencies {
-    compile group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.1'
-    compile group: 'com.beust', name: 'jcommander', version: '1.47'
-    compile group: 'io.reactivex', name: 'rxjava', version: '1.0.9'
-    compile group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.5.3'
-    compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.5.3'
+    compile project(':data-java')
+    compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    compile "org.jetbrains.kotlin:kotlin-runtime:$kotlin_version"
+    compile "com.github.infogram:infogram-java:cbfbb370e3"
+    compile group: 'com.squareup.retrofit', name: 'retrofit', version: '1.9.0'
+}
+
+buildscript {
+    ext.kotlin_version = '0.12.613'
+    repositories {
+        mavenCentral()
+        jcenter()
+    }
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+sourceSets {
+    main.java.srcDirs += 'src/main/kotlin'
 }

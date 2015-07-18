@@ -1,0 +1,16 @@
+{
+  "nodes": {
+    "message-extractor": {
+      "plugin": "message-fetch"
+    },
+    "infogram": {
+      "plugin": "infogram",
+      "config": {
+        "path": "~/Dropbox/Workspace/crowd-pulse/exam"
+      }
+    }
+  },
+  "edges": {
+    "message-extractor": ["infogram"]
+  }
+}

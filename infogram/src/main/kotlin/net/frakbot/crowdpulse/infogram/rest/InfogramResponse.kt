@@ -14,16 +14,11 @@
  * limitations under the License.
  */
 
-apply plugin: 'java'
+package net.frakbot.crowdpulse.infogram.rest
 
-sourceCompatibility = 1.8
-
-version = '1.0'
-
-dependencies {
-    compile group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.1'
-    compile group: 'com.beust', name: 'jcommander', version: '1.47'
-    compile group: 'io.reactivex', name: 'rxjava', version: '1.0.9'
-    compile group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.5.3'
-    compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.5.3'
-}
+/**
+ * @author Francesco Pontillo
+ */
+public data class InfogramResponse(var id: String, var title: String, var theme_id: Int,
+                                   var published: Boolean, var thumbnail_url: String, var date_modified: String,
+                                   var user_profile: String, var publish_mode: String, var url: String)
