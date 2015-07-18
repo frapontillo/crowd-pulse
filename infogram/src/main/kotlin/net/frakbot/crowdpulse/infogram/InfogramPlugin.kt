@@ -241,13 +241,18 @@ public class InfogramPlugin : IPlugin<Message, Message, InfogramConfig>() {
     }
 
     fun writePNGs(path: String?, vararg files : Pair<ByteArray?, String>) : Array<String?> {
-        val directory = path ?: System.getProperty("java.io.tmpdir")
+        // get a valid directory and replace ~ with the user dir
+        val directory = (path ?: System.getProperty("java.io.tmpdir"))
+                .replaceFirst(Regex("^~"), System.getProperty("user.home"));
+        var resolved = Paths.get(directory, "crowd-pulse-infogram");
+        Files.createDirectories(resolved);
+
         var date = ZonedDateTime.now()
                 .truncatedTo(ChronoUnit.SECONDS)
                 .format(DateTimeFormatter.ISO_INSTANT)
                 .replace(Regex(":"), "-")
-        var resolved = Paths.get(directory, "crowd-pulse");
-        Files.createDirectories(resolved);
+
+        // for every file, save it if it's not empty
         val pngs : Array<String?> = arrayOfNulls(files.size())
         for (f in files.indices) {
             var file = files[f]
