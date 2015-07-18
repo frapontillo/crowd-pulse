@@ -15,9 +15,6 @@
     "profile-extractor": {
       "plugin": "profiler-twitter"
     },
-    "profile-grapher": {
-      "plugin": "twitter-profile-grapher"
-    },
     "profile-geo-fixer": {
       "plugin": "googlemaps"
     },
@@ -70,8 +67,7 @@
   "edges": {
     "message-extractor": ["message-persister-1"],
     "message-persister-1": ["profile-extractor"],
-    "profile-extractor": ["profile-grapher"],
-    "profile-grapher": ["profile-geo-fixer"],
+    "profile-extractor": ["profile-geo-fixer"],
     "profile-geo-fixer": ["profile-persister"],
     "profile-persister": ["message-fetcher"],
     "message-fetcher": ["message-geo-fixer"],
