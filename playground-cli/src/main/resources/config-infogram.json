@@ -4,7 +4,10 @@
       "plugin": "message-fetch"
     },
     "infogram": {
-      "plugin": "infogram"
+      "plugin": "infogram",
+      "config": {
+        "path": "~/Dropbox/Workspace/crowd-pulse/exam"
+      }
     }
   },
   "edges": {
