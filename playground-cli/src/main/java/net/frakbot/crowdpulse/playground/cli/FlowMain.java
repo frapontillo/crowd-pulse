@@ -24,6 +24,7 @@ import net.frakbot.crowdpulse.common.util.spi.PluginProvider;
 import net.frakbot.crowdpulse.common.util.spi.VoidConfig;
 import net.frakbot.crowdpulse.data.entity.Message;
 import net.frakbot.crowdpulse.data.entity.Profile;
+import net.frakbot.crowdpulse.data.plugin.MessageFetcher;
 import net.frakbot.crowdpulse.data.plugin.MessagePersister;
 import net.frakbot.crowdpulse.data.plugin.ProfilePersister;
 import net.frakbot.crowdpulse.data.plugin.Streamer;
@@ -75,7 +76,7 @@ public class FlowMain {
         IPlugin<Message, Profile, VoidConfig> profileGraphBldr = PluginProvider.getPlugin(TwitterProfileGrapher.PLUGIN_NAME);
         IPlugin<Profile, Profile, VoidConfig> profileGLocFixer = PluginProvider.getPlugin(GoogleMapsProfileGeoFixer.PLUGIN_NAME);
         IPlugin<Profile, Profile, VoidConfig> profilePersister = PluginProvider.getPlugin(ProfilePersister.PLUGIN_NAME);
-        IPlugin<Object, Message, VoidConfig> messageSimpleSel = PluginProvider.getPlugin(Streamer.PLUGIN_NAME);
+        IPlugin<Object, Message, VoidConfig> messageFetcher = PluginProvider.getPlugin(MessageFetcher.PLUGIN_NAME);
         IPlugin<Message, Message, VoidConfig> messageGLocFixer = PluginProvider.getPlugin(FromProfileMessageGeoFixer.PLUGIN_NAME);
         IPlugin<Message, Message, VoidConfig> messageLangFixer = PluginProvider.getPlugin(OptimaizeLanguageDetector.PLUGIN_NAME);
         IPlugin<Message, Message, VoidConfig> messageCtxTagger = PluginProvider.getPlugin(WikipediaMinerTagger.PLUGIN_NAME);
@@ -106,7 +107,7 @@ public class FlowMain {
         profileStream = profilePersister.process(profileStream);
 
         // as soon as profiling is done, keep on processing messages
-        messageStream = messageSimpleSel.process(messageStream, profileStream);
+        messageStream = messageFetcher.process(profileStream);
         messageStream = messageGLocFixer.process(messageStream);
         messageStream = messageLangFixer.process(messageStream);
 
