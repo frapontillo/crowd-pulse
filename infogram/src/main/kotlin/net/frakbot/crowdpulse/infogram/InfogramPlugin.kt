@@ -139,10 +139,6 @@ public class InfogramPlugin : IPlugin<Message, Message, InfogramConfig>() {
                     val categoryRes = post(infogramApi, arrayOf(categoryChart), "Crowd Pulse Categories", true, "public")
                     val lemmaRes = post(infogramApi, arrayOf(lemmaChart), "Crowd Pulse Lemmas", true, "public")
 
-                    // TODO: brutal hack until https://infogram.zendesk.com/hc/en-us/requests/23166 is resolved
-                    logger.debug("Waiting a couple of seconds so that Infogram can save the charts...")
-                    Thread.sleep(2000);
-
                     // get the resulting images
                     val tagImage = getPNG(infogramApi, tagRes?.id)
                     val categoryImage = getPNG(infogramApi, categoryRes?.id)
