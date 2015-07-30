@@ -70,6 +70,7 @@ public class BabelfyTagger extends IPlugin<Message, Message, VoidConfig> {
                     }
                 } catch (Exception e) {
                     // ignored
+                    e.printStackTrace();
                     System.err.println(e);
                 }
 
