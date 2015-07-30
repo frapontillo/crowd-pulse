@@ -7,6 +7,7 @@ build/
 gradle/
 temp/
 */src/test/resources/*.properties
-playground-cli/src/main/resources/*
-!playground-cli/src/main/resources/*.sample
-!playground-cli/src/main/resources/*.json
+*/src/main/resources/*
+!*/src/main/resources/*.sample
+!*/src/main/resources/*.json
+core/src/main/resources/*.json

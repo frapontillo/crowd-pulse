@@ -14,16 +14,44 @@
  * limitations under the License.
  */
 
-apply plugin: 'java'
-apply plugin: 'application'
+plugins {
+    id 'java'
+    id 'application'
+    id 'com.github.johnrengelman.shadow' version '1.2.2'
+}
 
-mainClassName = 'net.frakbot.crowdpulse.playground.cli.FlowMain'
+def name = 'crowd-pulse-core'
+
+jar {
+    baseName = name
+    manifest {
+        attributes("Class-Path": ".")
+    }
+}
+
+shadowJar {
+    baseName = name
+    classifier = 'bundle'
+    mergeServiceFiles()
+    exclude('*.bin')
+    exclude('*.json')
+    exclude('*.properties')
+    exclude { file ->
+        file.name.matches('(en|it)_index')
+    }
+    exclude('morphit')
+    exclude('sentiwordnet')
+    exclude('stop-words-*')
+    exclude('tanl-morphit')
+}
+
+mainClassName = 'net.frakbot.crowdpulse.core.cli.Blade'
+
+version = mainVersion
 
 sourceCompatibility = 1.8
 
-version = '1.0'
-
-task execute(type:JavaExec) {
+task execute(type: JavaExec) {
     main = mainClassName
     classpath = sourceSets.main.runtimeClasspath
 

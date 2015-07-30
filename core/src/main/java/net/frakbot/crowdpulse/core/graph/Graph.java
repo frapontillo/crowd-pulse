@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package net.frakbot.crowdpulse.playground.graph;
+package net.frakbot.crowdpulse.core.graph;
 
 import java.util.*;
 import java.util.stream.Collectors;

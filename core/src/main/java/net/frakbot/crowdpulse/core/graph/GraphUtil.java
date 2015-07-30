@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
-package net.frakbot.crowdpulse.playground.graph;
+package net.frakbot.crowdpulse.core.graph;
 
 import com.google.gson.Gson;
+import net.frakbot.crowdpulse.common.util.CrowdLogger;
+import org.apache.logging.log4j.Logger;
 
 import java.io.*;
 
@@ -26,6 +28,7 @@ import java.io.*;
  * @author Francesco Pontillo
  */
 public class GraphUtil {
+    private final static Logger logger = CrowdLogger.getLogger(GraphUtil.class);
 
     /**
      * Read a {@link Graph} from a file.
@@ -50,8 +53,15 @@ public class GraphUtil {
      */
     public static Graph readGraph(String resourceName, Class resourceClassOwner) {
         Gson gson = new Gson();
-        InputStream configInput = resourceClassOwner.getClassLoader().getResourceAsStream(resourceName);
-        InputStreamReader inputStreamReader = new InputStreamReader(configInput);
-        return gson.fromJson(inputStreamReader, Graph.class).buildGraph();
+        InputStream configInput;
+        try {
+            configInput = resourceClassOwner.getClassLoader().getResourceAsStream(resourceName);
+            InputStreamReader inputStreamReader = new InputStreamReader(configInput);
+            return gson.fromJson(inputStreamReader, Graph.class).buildGraph();
+        } catch (Exception exc) {
+            logger.error("Can't find graph file named {}.", resourceName);
+            exc.printStackTrace();
+        }
+        return null;
     }
 }

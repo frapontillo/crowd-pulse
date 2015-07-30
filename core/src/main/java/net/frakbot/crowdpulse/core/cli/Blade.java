@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-package net.frakbot.crowdpulse.playground.cli;
+package net.frakbot.crowdpulse.core.cli;
 
 import net.frakbot.crowdpulse.common.util.CrowdLogger;
 import net.frakbot.crowdpulse.common.util.rx.SubscriptionGroupLatch;
 import net.frakbot.crowdpulse.common.util.spi.IPlugin;
 import net.frakbot.crowdpulse.common.util.spi.PluginProvider;
-import net.frakbot.crowdpulse.playground.graph.Graph;
-import net.frakbot.crowdpulse.playground.graph.GraphUtil;
-import net.frakbot.crowdpulse.playground.graph.Node;
+import net.frakbot.crowdpulse.core.graph.Graph;
+import net.frakbot.crowdpulse.core.graph.GraphUtil;
+import net.frakbot.crowdpulse.core.graph.Node;
 import org.apache.logging.log4j.Logger;
 import rx.Observable;
 import rx.Subscriber;

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-version = '1.0'
+ext.mainVersion = '0.0.1'
 
 allprojects {
     repositories {

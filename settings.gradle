@@ -16,6 +16,7 @@
 
 rootProject.name = 'crowd-pulse'
 
+include 'core'
 include 'playground-cli'
 
 include 'common-util'
