@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package net.frakbot.crowdpulse.tag.opencalais;
+package net.frakbot.crowdpulse.tag.opencalais.rest;
 
 import com.google.gson.*;
 

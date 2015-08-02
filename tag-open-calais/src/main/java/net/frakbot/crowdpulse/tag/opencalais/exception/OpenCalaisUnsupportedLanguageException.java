@@ -14,26 +14,15 @@
  * limitations under the License.
  */
 
-package net.frakbot.crowdpulse.tag.opencalais;
-
-import java.util.ArrayList;
-import java.util.List;
+package net.frakbot.crowdpulse.tag.opencalais.exception;
 
 /**
+ * Exception thrown when an unsupported language is submitted to the OpenCalais Web Service.
+ *
  * @author Francesco Pontillo
  */
-public class OpenCalaisResponse {
-    private List<String> entities;
-
-    public OpenCalaisResponse() {
-        entities = new ArrayList<String>();
-    }
-
-    public List<String> getEntities() {
-        return entities;
-    }
-
-    public void setEntities(List<String> entities) {
-        this.entities = entities;
+public class OpenCalaisUnsupportedLanguageException extends Exception {
+    public OpenCalaisUnsupportedLanguageException(Throwable throwable) {
+        super(throwable);
     }
 }
