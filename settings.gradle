@@ -75,4 +75,5 @@ include 'sentiment'
 include 'sentiment-sentit'
 include 'sentiment-sentiwordnet'
 include 'infogram'
+include 'index-uniba'
 

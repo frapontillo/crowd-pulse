@@ -43,7 +43,7 @@ public class ConfigUtil {
             CrowdLogger.getLogger(clazz)
                     .error(String.format("Error while loading the configuration configuration file %s.", fileName),
                             exception);
-            return null;
+            return prop;
         }
     }
 }

@@ -76,6 +76,8 @@ Here is a complete Crowd Pulse flow:
   - `sentiment-sentit`: uses the SentIt Web Service to perform sentiment analysis
   - `sentiment-sentiwordnet`: uses a combination of MultiWordNet and SentiWordNet to perform sentiment analysis on 
   Tokens and Messages
+- `infogram`: generates and fetches Infogram word clouds for tags, categories, lemmas
+- `index-uniba`: sends extracted messages to the Uniba indexing service by Natilla and Impedovo
   
 ## License
 
