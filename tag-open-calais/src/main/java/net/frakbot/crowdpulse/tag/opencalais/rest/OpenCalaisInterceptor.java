@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 
-package net.frakbot.crowdpulse.tag.opencalais;
+package net.frakbot.crowdpulse.tag.opencalais.rest;
 
+import net.frakbot.crowdpulse.common.util.ConfigUtil;
 import retrofit.RequestInterceptor;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.Properties;
 
 /**
@@ -27,21 +26,17 @@ import java.util.Properties;
  */
 public class OpenCalaisInterceptor implements RequestInterceptor {
     private static final String PROP_API_KEY = "opencalais.key";
-    private static String API_KEY;
+    private String API_KEY;
 
-    static {
-        InputStream configInput = RequestInterceptor.class.getClassLoader().getResourceAsStream("opencalais.properties");
-        Properties prop = new Properties();
-
-        try {
-            prop.load(configInput);
-        } catch (IOException noFileException) {
-            System.err.println(noFileException);
+    private String getApiKey() {
+        if (API_KEY == null) {
+            Properties props = ConfigUtil.getPropertyFile(this.getClass(), "opencalais.properties");
+            API_KEY = props.getProperty(PROP_API_KEY, "");
         }
-        API_KEY = prop.getProperty(PROP_API_KEY);
+        return API_KEY;
     }
 
     @Override public void intercept(RequestFacade request) {
-        request.addHeader("x-calais-licenseID", API_KEY);
+        request.addHeader("x-ag-access-token", getApiKey());
     }
 }

@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-package net.frakbot.crowdpulse.tag.opencalais;
+package net.frakbot.crowdpulse.tag.opencalais.rest;
 
 import retrofit.http.Body;
+import retrofit.http.Header;
 import retrofit.http.Headers;
 import retrofit.http.POST;
 
@@ -24,10 +25,10 @@ import retrofit.http.POST;
  * @author Francesco Pontillo
  */
 public interface OpenCalaisService {
-    @POST("/enrich")
+    @POST("/permid/calais")
     @Headers({
             "content-type: text/raw",
-            "accept: application/json"
+            "outputFormat: application/json"
     })
-    OpenCalaisResponse tag(@Body String text);
+    OpenCalaisResponse tag(@Body String text, @Header("x-calais-language") String language);
 }
