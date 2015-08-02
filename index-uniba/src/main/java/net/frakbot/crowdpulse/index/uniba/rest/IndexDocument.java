@@ -16,23 +16,19 @@
 
 package net.frakbot.crowdpulse.index.uniba.rest;
 
-import java.util.HashMap;
-
 /**
- * Element to index, containing an ID and a textual content.
- *
  * @author Francesco Pontillo
  */
-public class TextContent {
+public class IndexDocument {
     private String id;
-    private String content;
-    private HashMap<String, Integer> targets;
+    private String body;
 
-    public TextContent(String id, String content) {
-        this.id = id;
-        this.content = content;
-        this.targets = new HashMap<>();
-        this.targets.put(id, 1);
+    public String getBody() {
+        return body;
+    }
+
+    public void setBody(String body) {
+        this.body = body;
     }
 
     public String getId() {
@@ -41,21 +37,5 @@ public class TextContent {
 
     public void setId(String id) {
         this.id = id;
-    }
-
-    public String getContent() {
-        return content;
-    }
-
-    public void setContent(String content) {
-        this.content = content;
-    }
-
-    public HashMap<String, Integer> getTargets() {
-        return targets;
-    }
-
-    public void setTargets(HashMap<String, Integer> targets) {
-        this.targets = targets;
     }
 }
