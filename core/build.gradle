@@ -116,4 +116,6 @@ dependencies {
     compile project(':sentiment-sentiwordnet')
 
     compile project(':infogram')
+
+    compile project(':index-uniba')
 }
