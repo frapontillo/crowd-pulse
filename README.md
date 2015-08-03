@@ -37,7 +37,6 @@ Here is a complete Crowd Pulse flow:
 - `common-util`: shared Java/RxJava utility classes
 - `data-java`: data access layer for Java modules
 - `data-nodejs`: data access layer for NodeJS modules
-- `web-service`: RESTful Web Service to expose stored data
 - `playground-cli`: Command Line Interface containing a CLI to test features
 - `social`: generic social network module to handle message extraction and user profiling
   - `social-facebook`: specific implementation of `social` for Facebook
