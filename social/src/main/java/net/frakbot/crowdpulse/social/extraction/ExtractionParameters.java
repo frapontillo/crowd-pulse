@@ -45,13 +45,13 @@ public class ExtractionParameters implements IPluginConfig<ExtractionParameters>
     private GeoLocationBox geoLocationBox;
 
     @Parameter(names = "-from", description = "User identifier the messages must originate from")
-    private String fromUser;
+    private String from;
 
     @Parameter(names = "-to", description = "User identifier the messages are destined to")
-    private String toUser;
+    private String to;
 
     @Parameter(names = "-ref", description = "User identifiers the messages reference")
-    private List<String> referenceUsers;
+    private List<String> references;
 
     @Parameter(names = "-since", description = "Date since searching must start from", converter = ISO8601DateConverter.class)
     private Date since;
@@ -80,16 +80,16 @@ public class ExtractionParameters implements IPluginConfig<ExtractionParameters>
         return geoLocationBox;
     }
 
-    public String getFromUser() {
-        return fromUser;
+    public String getFrom() {
+        return from;
     }
 
-    public String getToUser() {
-        return toUser;
+    public String getTo() {
+        return to;
     }
 
-    public List<String> getReferenceUsers() {
-        return referenceUsers;
+    public List<String> getReferences() {
+        return references;
     }
 
     public Date getSince() {
@@ -112,12 +112,12 @@ public class ExtractionParameters implements IPluginConfig<ExtractionParameters>
         return tags;
     }
 
-    public void setToUser(String toUser) {
-        this.toUser = toUser;
+    public void setTo(String to) {
+        this.to = to;
     }
 
-    public void setFromUser(String fromUser) {
-        this.fromUser = fromUser;
+    public void setFrom(String from) {
+        this.from = from;
     }
 
     public void setSince(Date since) {
@@ -140,8 +140,8 @@ public class ExtractionParameters implements IPluginConfig<ExtractionParameters>
         this.geoLocationBox = geoLocationBox;
     }
 
-    public void setReferenceUsers(List<String> referenceUsers) {
-        this.referenceUsers = referenceUsers;
+    public void setReferences(List<String> references) {
+        this.references = references;
     }
 
     public void setLanguage(String language) {

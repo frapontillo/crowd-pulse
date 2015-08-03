@@ -242,13 +242,13 @@ public class FacebookExtractorRunner {
         String endpoint;
 
         // if we have the recipient user, fetch the user's feed (all posts)
-        if (!StringUtil.isNullOrEmpty(parameters.getToUser())) {
-            endpoint = facebook.getUser(parameters.getToUser()).getId();
-            parameters.setToUser(endpoint);
+        if (!StringUtil.isNullOrEmpty(parameters.getTo())) {
+            endpoint = facebook.getUser(parameters.getTo()).getId();
+            parameters.setTo(endpoint);
         } else {
             // if we only have the author user, get only the posts by that user
-            endpoint = facebook.getUser(parameters.getFromUser()).getId();
-            parameters.setFromUser(endpoint);
+            endpoint = facebook.getUser(parameters.getFrom()).getId();
+            parameters.setFrom(endpoint);
         }
 
         return endpoint;

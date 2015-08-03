@@ -127,15 +127,15 @@ public abstract class IExtractor extends IPlugin<Void, Message, ExtractionParame
     public boolean validateParameters(ExtractionParameters parameters) throws SocialException {
         validateParameter("query", parameters.getQuery(), getSupportQuery());
         validateParameter("geolocation", parameters.getGeoLocationBox(), getSupportGeoLocation());
-        validateParameter("from", parameters.getFromUser(), getSupportFrom());
-        validateParameter("to", parameters.getToUser(), getSupportTo());
-        validateParameter("reference", parameters.getReferenceUsers(), getSupportReference());
+        validateParameter("from", parameters.getFrom(), getSupportFrom());
+        validateParameter("to", parameters.getTo(), getSupportTo());
+        validateParameter("reference", parameters.getReferences(), getSupportReference());
         validateParameter("since", parameters.getSince(), getSupportSince());
         validateParameter("until", parameters.getUntil(), getSupportUntil());
         validateParameter("language", parameters.getLanguage(), getSupportLanguage());
         validateParameter("locale", parameters.getLocale(), getSupportLocale());
         if (mustSpecifyToOrFrom() &&
-                StringUtil.isNullOrEmpty(parameters.getFromUser()) && StringUtil.isNullOrEmpty(parameters.getToUser())) {
+                StringUtil.isNullOrEmpty(parameters.getFrom()) && StringUtil.isNullOrEmpty(parameters.getTo())) {
             throw new MissingParametersSocialException("You must specify at least one among \"from\" and \"to\".");
         }
         return true;

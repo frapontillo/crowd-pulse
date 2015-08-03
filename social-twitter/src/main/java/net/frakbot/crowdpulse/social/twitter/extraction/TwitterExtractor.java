@@ -16,16 +16,14 @@
 
 package net.frakbot.crowdpulse.social.twitter.extraction;
 
-import net.frakbot.crowdpulse.data.entity.Message;
-import net.frakbot.crowdpulse.social.extraction.ExtractionParameters;
-import net.frakbot.crowdpulse.social.exception.SocialException;
-import net.frakbot.crowdpulse.social.exception.InvalidParametersSocialException;
-import net.frakbot.crowdpulse.social.exception.TooComplexParametersSocialException;
 import net.frakbot.crowdpulse.common.util.CrowdLogger;
+import net.frakbot.crowdpulse.data.entity.Message;
+import net.frakbot.crowdpulse.social.exception.SocialException;
+import net.frakbot.crowdpulse.social.exception.TooComplexParametersSocialException;
+import net.frakbot.crowdpulse.social.extraction.ExtractionParameters;
 import net.frakbot.crowdpulse.social.extraction.IExtractor;
 import org.apache.logging.log4j.Logger;
 import rx.Observable;
-import rx.observables.ConnectableObservable;
 
 /**
  * @author Francesco Pontillo
@@ -103,16 +101,16 @@ public class TwitterExtractor extends IExtractor {
         if (parameters.getGeoLocationBox() != null) {
             count += 1;
         }
-        if (parameters.getFromUser() != null) {
+        if (parameters.getFrom() != null) {
             count += 1;
         }
-        if (parameters.getToUser() != null) {
+        if (parameters.getTo() != null) {
             count += 1;
         }
-        if (parameters.getReferenceUsers() != null) {
-            count += parameters.getReferenceUsers().size();
+        if (parameters.getReferences() != null) {
+            count += parameters.getReferences().size();
         }
-        if (parameters.getFromUser() != null) {
+        if (parameters.getFrom() != null) {
             count += 1;
         }
         if (parameters.getSince() != null) {
