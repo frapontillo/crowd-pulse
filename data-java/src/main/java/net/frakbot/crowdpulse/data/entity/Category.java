@@ -25,6 +25,9 @@ public class Category {
     private String text;
     private boolean stopWord;
 
+    public Category() {
+    }
+
     public Category(String text) {
         this.text = text;
         this.stopWord = false;
