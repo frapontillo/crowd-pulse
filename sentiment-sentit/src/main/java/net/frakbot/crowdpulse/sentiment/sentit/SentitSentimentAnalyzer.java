@@ -39,21 +39,8 @@ public class SentitSentimentAnalyzer extends IPlugin<Message, Message, VoidConfi
     public final static String PLUGIN_NAME = "sentiment-sentit";
     private final static String SENTIT_ENDPOINT = "http://sentit.cloudapp.net:9100/sentit/v2";
     private final static int MAX_MESSAGES_PER_REQ = 10;
-    private final static SentitService service;
 
-    static {
-        // build the Gson deserializers collection
-        Gson gson = new GsonBuilder()
-                .registerTypeAdapter(SentitResponse.SentitResultMap.class, new SentitResultMapDeserializer())
-                .create();
-        // build the REST client
-        RestAdapter restAdapter = new RestAdapter.Builder()
-                .setEndpoint(SENTIT_ENDPOINT)
-                .setConverter(new GsonConverter(gson))
-                .setRequestInterceptor(new SentitInterceptor())
-                .build();
-        service = restAdapter.create(SentitService.class);
-    }
+    private SentitService service;
 
     @Override public String getName() {
         return PLUGIN_NAME;
@@ -97,7 +84,7 @@ public class SentitSentimentAnalyzer extends IPlugin<Message, Message, VoidConfi
                     SentitRequest request = new SentitRequest(messages);
                     SentitResponse response;
                     try {
-                        response = service.classify(request);
+                        response = getService().classify(request);
                         // for each message, set the result
                         for (Message message : messages) {
                             message.setSentiment(response.getSentimentForMessage(message));
@@ -112,5 +99,22 @@ public class SentitSentimentAnalyzer extends IPlugin<Message, Message, VoidConfi
                 }
             });
         }
+    }
+
+    private SentitService getService() {
+        if (service == null) {
+            // build the Gson deserializers collection
+            Gson gson = new GsonBuilder()
+                    .registerTypeAdapter(SentitResponse.SentitResultMap.class, new SentitResultMapDeserializer())
+                    .create();
+            // build the REST client
+            RestAdapter restAdapter = new RestAdapter.Builder()
+                    .setEndpoint(SENTIT_ENDPOINT)
+                    .setConverter(new GsonConverter(gson))
+                    .setRequestInterceptor(new SentitInterceptor())
+                    .build();
+            service = restAdapter.create(SentitService.class);
+        }
+        return service;
     }
 }
