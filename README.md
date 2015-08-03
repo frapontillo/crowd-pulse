@@ -34,11 +34,9 @@ Here is a complete Crowd Pulse flow:
 
 ## Module descriptions
 
-- `admin-cli`: Command Line Interface to handle the core functions of the platform
 - `common-util`: shared Java/RxJava utility classes
 - `data-java`: data access layer for Java modules
 - `data-nodejs`: data access layer for NodeJS modules
-- `oauth-service`: OAuth 2.0 Web Service for authenticating users and apps
 - `web-service`: RESTful Web Service to expose stored data
 - `playground-cli`: Command Line Interface containing a CLI to test features
 - `social`: generic social network module to handle message extraction and user profiling
