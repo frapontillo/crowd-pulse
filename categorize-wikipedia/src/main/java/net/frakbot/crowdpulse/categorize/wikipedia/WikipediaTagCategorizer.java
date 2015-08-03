@@ -48,10 +48,6 @@ public class WikipediaTagCategorizer extends IPlugin<Message, Message, VoidConfi
     private Map<String, WikipediaService> wikipediaServiceMap;
 
     public WikipediaTagCategorizer() {
-        // build the Gson deserializers collection
-        gson = new GsonBuilder()
-                .registerTypeAdapter(WikipediaResponse.class, new WikipediaResponseDeserializer())
-                .create();
         wikipediaServiceMap = new HashMap<>();
     }
 
@@ -79,6 +75,12 @@ public class WikipediaTagCategorizer extends IPlugin<Message, Message, VoidConfi
     private WikipediaService getService(String language) {
         WikipediaService wikipediaService = wikipediaServiceMap.get(language);
         if (wikipediaService == null) {
+            // build the Gson deserializers collection
+            if (gson == null) {
+                gson = new GsonBuilder()
+                        .registerTypeAdapter(WikipediaResponse.class, new WikipediaResponseDeserializer())
+                        .create();
+            }
              // build the REST client
             RestAdapter restAdapter = new RestAdapter.Builder()
                     .setEndpoint(WIKIPEDIA_ENDPOINT_1 + language + WIKIPEDIA_ENDPOINT_2)
