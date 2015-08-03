@@ -34,15 +34,8 @@ import java.util.List;
 public class WikipediaMinerTagger extends IPlugin<Message, Message, VoidConfig> {
     public final static String PLUGIN_NAME = "wikipediaminer";
     private final static String WIKIPEDIA_MINER_ENDPOINT = "http://wikipedia-miner.cms.waikato.ac.nz";
-    private final static WikipediaMinerService service;
 
-    static {
-        // build the REST client
-        RestAdapter restAdapter = new RestAdapter.Builder()
-                .setEndpoint(WIKIPEDIA_MINER_ENDPOINT)
-                .build();
-        service = restAdapter.create(WikipediaMinerService.class);
-    }
+    private WikipediaMinerService service;
 
     @Override public String getName() {
         return PLUGIN_NAME;
@@ -59,7 +52,7 @@ public class WikipediaMinerTagger extends IPlugin<Message, Message, VoidConfig> 
                 WikifyResponse response;
                 List<Tag> tags = new ArrayList<>();
                 try {
-                    response = service.wikify(text, language);
+                    response = getService().wikify(text, language);
                     for (WikifyResponse.DetectedTopic topic : response.getDetectedTopics()) {
                         Tag tag = new Tag();
                         tag.setText(topic.getTitle());
@@ -72,5 +65,16 @@ public class WikipediaMinerTagger extends IPlugin<Message, Message, VoidConfig> 
                 return tags;
             }
         };
+    }
+
+    private WikipediaMinerService getService() {
+        if (service == null) {
+            // build the REST client
+            RestAdapter restAdapter = new RestAdapter.Builder()
+                    .setEndpoint(WIKIPEDIA_MINER_ENDPOINT)
+                    .build();
+            service = restAdapter.create(WikipediaMinerService.class);
+        }
+        return service;
     }
 }
