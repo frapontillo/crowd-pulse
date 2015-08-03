@@ -16,14 +16,15 @@
 
 package net.frakbot.crowdpulse.infogram
 
+import com.google.gson.JsonElement
 import net.frakbot.crowdpulse.common.util.spi.IPluginConfig
+import net.frakbot.crowdpulse.common.util.spi.PluginConfigHelper
 
 /**
  * @author Francesco Pontillo
  */
-public data class InfogramConfig(var path : String? = null) : IPluginConfig {
-    override fun buildFromMap(mapConfig: MutableMap<String, String>?): InfogramConfig? {
-        path = mapConfig?.get("path")
-        return this
+public data class InfogramConfig(var path : String? = null) : IPluginConfig<InfogramConfig> {
+    override fun buildFromJsonElement(json: JsonElement?): InfogramConfig? {
+        return PluginConfigHelper.buildFromJson(json, javaClass<InfogramConfig>())
     }
 }

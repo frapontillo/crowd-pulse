@@ -26,7 +26,8 @@ import java.util.*;
 public class Tag extends GenericEntity<String> {
     private List<String> sources;
     private String language;
-    private Set<String> categories;
+    private Set<Category> categories;
+    private boolean stopWord;
 
     /**
      * Get the text of the Tag.
@@ -99,7 +100,7 @@ public class Tag extends GenericEntity<String> {
      *
      * @return The categories of the Tag.
      */
-    public Set<String> getCategories() {
+    public Set<Category> getCategories() {
         return categories;
     }
 
@@ -108,7 +109,7 @@ public class Tag extends GenericEntity<String> {
      *
      * @param categories The categories of the Tag.
      */
-    public void setCategories(Set<String> categories) {
+    public void setCategories(Set<Category> categories) {
         this.categories = categories;
     }
 
@@ -117,7 +118,7 @@ public class Tag extends GenericEntity<String> {
      *
      * @param categories The {@link Set} of categories to add to the Tag.
      */
-    public void addCategories(Set<String> categories) {
+    public void addCategories(Set<Category> categories) {
         if (this.categories == null) {
             this.categories = categories;
         } else {
@@ -130,10 +131,28 @@ public class Tag extends GenericEntity<String> {
      *
      * @param categories The {@link List} of categories to add to the Tag.
      */
-    public void addCategories(List<String> categories) {
+    public void addCategories(List<Category> categories) {
         if (categories != null) {
             addCategories(new HashSet<>(categories));
         }
+    }
+
+    /**
+     * Check if the Tag is considered a stop word.
+     *
+     * @return {@code true} if the Tag is a stop word, {@code false} otherwise.
+     */
+    public boolean isStopWord() {
+        return stopWord;
+    }
+
+    /**
+     * Mark the Tag as a stop word or not.
+     *
+     * @param stopWord {@code true} if the Tag is a stop word, {@code false} otherwise.
+     */
+    public void setStopWord(boolean stopWord) {
+        this.stopWord = stopWord;
     }
 
     /**

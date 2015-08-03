@@ -16,11 +16,11 @@
 
 package net.frakbot.crowdpulse.common.util.spi;
 
+import com.google.gson.JsonElement;
 import net.frakbot.crowdpulse.common.util.rx.BackpressureAsyncTransformer;
 import rx.Observable;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * Advanced base class for CrowdPulse plugins.
@@ -67,7 +67,7 @@ import java.util.Map;
  *
  * @author Francesco Pontillo
  */
-public abstract class IPlugin<Input, Output, Parameter extends IPluginConfig> {
+public abstract class IPlugin<Input, Output, Parameter extends IPluginConfig<Parameter>> {
 
     /**
      * Retrieve the name of the specific plugin implementation.
@@ -77,14 +77,21 @@ public abstract class IPlugin<Input, Output, Parameter extends IPluginConfig> {
     public abstract String getName();
 
     /**
-     * Build the {@link Parameter} configuration object. You should delegate this to the actual implementation of
-     * {@link
-     * Parameter#buildFromMap(Map)}.
+     * Build a new empty {@link Parameter} configuration object.
      *
-     * @param configurationMap The {@link Map} to convert.
-     * @return A {@link Parameter} configuration object.
+     * @return An empty {@link Parameter} configuration object.
      */
-    public abstract Parameter buildConfiguration(Map<String, String> configurationMap);
+    public abstract Parameter getNewParameter();
+
+    /**
+     * Create a new {@link Parameter} configuration object starting from a {@link JsonElement}.
+     *
+     * @param configuration The {@link JsonElement} to read configuration from.
+     * @return The {@link Parameter} built from the JSON.
+     */
+    public final Parameter buildPluginConfig(JsonElement configuration) {
+        return IPluginConfig.buildFromJson(getNewParameter(), configuration);
+    }
 
     /**
      * Returns the appropriate {@link rx.Observable.Operator<Input, Output>} exposed by the plugin, which will work
@@ -246,16 +253,16 @@ public abstract class IPlugin<Input, Output, Parameter extends IPluginConfig> {
 
     /**
      * Process an {@link Observable<Object>} stream array just as in {@link IPlugin#process(Parameter, Observable[])}
-     * but with parameters in the form of a {@link Map}.
+     * but with parameters in the form of a {@link JsonElement}.
      *
-     * @param params  An optional parameter object of type {@link Map}.
+     * @param params  An optional parameter object of type {@link JsonElement}.
      * @param streams The array of {@link Observable}s to use (only the first one will be processed).
      * @return A new {@link Observable<Output>} built by applying the {@link rx.Observable.Transformer} returned by
      * {@link IPlugin#transform(IPluginConfig)}.
      * @see {@link IPlugin#process(Parameter, Observable[])}
      */
-    public Observable<Output> process(Map<String, String> params, Observable<? extends Object>... streams) {
-        return process(buildConfiguration(params), streams);
+    public Observable<Output> process(JsonElement params, Observable<? extends Object>... streams) {
+        return process(buildPluginConfig(params), streams);
     }
 
     /**
@@ -275,13 +282,13 @@ public abstract class IPlugin<Input, Output, Parameter extends IPluginConfig> {
 
     /**
      * Process a {@link List} of {@link Observable} streams just as in {@link IPlugin#process(Parameter,
-     * Observable[])} but with parameters in the form of a {@link Map}.
+     * Observable[])} but with parameters in the form of a {@link JsonElement}.
      *
-     * @param params  An optional parameter object of type {@link Map}.
+     * @param params  An optional parameter object of type {@link JsonElement}.
      * @param streams The {@link List} of {@link Observable}s to use (only the first one will be processed).
-     * @return A new {@link Observable<Output>} built by {@link IPlugin#process(Map, Observable[])}.
+     * @return A new {@link Observable<Output>} built by {@link IPlugin#process(JsonElement, Observable[])}.
      */
-    public Observable<Output> process(Map<String, String> params, List<Observable<? extends Object>> streams) {
+    public Observable<Output> process(JsonElement params, List<Observable<? extends Object>> streams) {
         if (streams != null) {
             return process(params, streams.toArray(new Observable[]{}));
         }

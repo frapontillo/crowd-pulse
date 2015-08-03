@@ -27,7 +27,6 @@ import rx.Observable;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * A multi-language implementation for {@link IPlugin<Message>}.
@@ -73,8 +72,8 @@ public class MultiLanguageLemmatizer extends IPlugin<Message, Message, VoidConfi
         return PLUGIN_NAME;
     }
 
-    @Override public VoidConfig buildConfiguration(Map<String, String> configurationMap) {
-        return new VoidConfig().buildFromMap(configurationMap);
+    @Override public VoidConfig getNewParameter() {
+        return new VoidConfig();
     }
 
     @Override public Observable.Operator<Message, Message> getOperator(VoidConfig parameters) {

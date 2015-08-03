@@ -25,8 +25,6 @@ import net.frakbot.crowdpulse.data.repository.ProfileRepository;
 import org.apache.logging.log4j.Logger;
 import rx.Observable;
 
-import java.util.Map;
-
 /**
  * An implementation of {@link IPlugin} that persists all streamed {@link Profile}s, eventually completing or erroring.
  *
@@ -45,8 +43,8 @@ public class ProfilePersister extends IPlugin<Profile, Profile, VoidConfig> {
         return PLUGIN_NAME;
     }
 
-    @Override public VoidConfig buildConfiguration(Map<String, String> configurationMap) {
-        return new VoidConfig().buildFromMap(configurationMap);
+    @Override public VoidConfig getNewParameter() {
+        return new VoidConfig();
     }
 
     @Override protected Observable.Operator<Profile, Profile> getOperator(VoidConfig parameters) {

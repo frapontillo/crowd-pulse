@@ -23,7 +23,6 @@ import net.frakbot.crowdpulse.data.entity.Profile;
 import rx.Observable;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * Crowd Pulse plugin that enables fetching of a stream's profiles connections.
@@ -63,7 +62,7 @@ public abstract class IProfileGrapher extends IPlugin<Profile, Profile, VoidConf
         };
     }
 
-    @Override public VoidConfig buildConfiguration(Map<String, String> configurationMap) {
-        return new VoidConfig().buildFromMap(configurationMap);
+    @Override public VoidConfig getNewParameter() {
+        return new VoidConfig();
     }
 }

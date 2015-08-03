@@ -16,6 +16,7 @@
 
 package net.frakbot.crowdpulse.data.repository;
 
+import net.frakbot.crowdpulse.data.entity.Category;
 import net.frakbot.crowdpulse.data.entity.Tag;
 import org.mongodb.morphia.query.Query;
 import org.mongodb.morphia.query.UpdateOperations;
@@ -48,7 +49,7 @@ public class TagRepository extends Repository<Tag, String> {
                 updateTag = updateTag.addAll("sources", tag.getSources(), false);
             }
             if (tag.getCategories() != null && tag.getCategories().size() > 0) {
-                updateTag = updateTag.addAll("categories", new ArrayList<String>(tag.getCategories()), false);
+                updateTag = updateTag.addAll("categories", new ArrayList<Category>(tag.getCategories()), false);
             }
             UpdateResults res = updateFirst(query, updateTag);
             return findOne(query);

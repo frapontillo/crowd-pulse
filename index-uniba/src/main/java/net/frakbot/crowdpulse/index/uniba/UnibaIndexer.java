@@ -32,7 +32,10 @@ import retrofit.RestAdapter;
 import rx.Observable;
 import rx.observables.GroupedObservable;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+import java.util.Properties;
 
 /**
  * Plugin that performs message indexing by relying on the Akka Indexing platform
@@ -53,8 +56,8 @@ public class UnibaIndexer extends IPlugin<Message, Message, IndexParameters> {
         return PLUGIN_NAME;
     }
 
-    @Override public IndexParameters buildConfiguration(Map<String, String> configurationMap) {
-        return new IndexParameters().buildFromMap(configurationMap);
+    @Override public IndexParameters getNewParameter() {
+        return new IndexParameters();
     }
 
     @Override protected Observable.Operator<Message, Message> getOperator(IndexParameters parameters) {

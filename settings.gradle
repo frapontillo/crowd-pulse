@@ -31,8 +31,6 @@ include 'web-service'
 include 'data-nodejs'
 include 'data-java'
 
-include 'admin-cli'
-
 include 'fix-geo-profile'
 include 'fix-geo-profile-google-maps'
 
@@ -74,6 +72,8 @@ include 'lemmatize-morphit'
 include 'sentiment'
 include 'sentiment-sentit'
 include 'sentiment-sentiwordnet'
+
 include 'infogram'
+
 include 'index-uniba'
 

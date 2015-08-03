@@ -16,11 +16,11 @@
 
 package net.frakbot.crowdpulse.social.facebook.extraction;
 
+import net.frakbot.crowdpulse.common.util.CrowdLogger;
 import net.frakbot.crowdpulse.data.entity.Message;
+import net.frakbot.crowdpulse.social.exception.SocialException;
 import net.frakbot.crowdpulse.social.extraction.ExtractionParameters;
 import net.frakbot.crowdpulse.social.extraction.IExtractor;
-import net.frakbot.crowdpulse.social.exception.SocialException;
-import net.frakbot.crowdpulse.common.util.CrowdLogger;
 import org.apache.logging.log4j.Logger;
 import rx.Observable;
 

@@ -35,23 +35,23 @@ public class Checker {
     }
 
     public static Func1<Message, Boolean> checkFromUser(final ExtractionParameters parameters) {
-        return message -> (StringUtil.isNullOrEmpty(parameters.getFromUser()) ||
-                parameters.getFromUser().equals(message.getFromUser()));
+        return message -> (StringUtil.isNullOrEmpty(parameters.getFrom()) ||
+                parameters.getFrom().equals(message.getFromUser()));
     }
 
     public static Func1<Message, Boolean> checkToUser(final ExtractionParameters parameters) {
-        return message -> (StringUtil.isNullOrEmpty(parameters.getToUser()) ||
-                message.getToUsers().contains(parameters.getToUser()));
+        return message -> (StringUtil.isNullOrEmpty(parameters.getTo()) ||
+                message.getToUsers().contains(parameters.getTo()));
     }
 
     public static Func1<Message, Boolean> checkReferencedUsers(final ExtractionParameters parameters) {
         return message -> {
             // if no referenced users are requested
-            if (parameters.getReferenceUsers() == null || parameters.getReferenceUsers().size() <= 0) {
+            if (parameters.getReferences() == null || parameters.getReferences().size() <= 0) {
                 return true;
             }
             // for each ref user to check
-            for (String user : parameters.getReferenceUsers()) {
+            for (String user : parameters.getReferences()) {
                 // if the message does not contain it, return false
                 if (!message.getRefUsers().contains(user)) {
                     return false;

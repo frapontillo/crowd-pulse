@@ -19,7 +19,6 @@ package net.frakbot.crowdpulse.tag.opencalais.rest;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import net.frakbot.crowdpulse.tag.opencalais.exception.OpenCalaisAPILimitReachedException;
-import net.frakbot.crowdpulse.tag.opencalais.exception.OpenCalaisGenericException;
 import net.frakbot.crowdpulse.tag.opencalais.exception.OpenCalaisUnsupportedLanguageException;
 import retrofit.ErrorHandler;
 import retrofit.RetrofitError;

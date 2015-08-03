@@ -16,30 +16,28 @@
 
 package net.frakbot.crowdpulse.infogram
 
-import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import net.frakbot.crowdpulse.common.util.ConfigUtil
 import net.frakbot.crowdpulse.common.util.CrowdLogger
-import net.frakbot.crowdpulse.common.util.rx.CrowdSubscriber
 import net.frakbot.crowdpulse.common.util.spi.IPlugin
-import net.frakbot.crowdpulse.common.util.spi.VoidConfig
 import net.frakbot.crowdpulse.data.entity.Message
 import net.frakbot.crowdpulse.infogram.rest.*
 import net.infogram.api.InfogramAPI
-import retrofit.RestAdapter
-import retrofit.converter.GsonConverter
 import rx.Observable
 import rx.Subscriber
 import rx.observers.SafeSubscriber
-import java.io.*
+import java.io.BufferedReader
+import java.io.IOException
+import java.io.InputStreamReader
 import java.nio.file.Files
-import java.nio.file.Path
 import java.nio.file.Paths
 import java.nio.file.StandardOpenOption
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
-import java.util.*
+import java.util.ArrayList
+import java.util.HashMap
+import java.util.Properties
 import kotlin.text.Regex
 
 /**
@@ -58,8 +56,8 @@ public class InfogramPlugin : IPlugin<Message, Message, InfogramConfig>() {
         return PLUGIN_NAME
     }
 
-    override fun buildConfiguration(configurationMap: MutableMap<String, String>?): InfogramConfig? {
-        return InfogramConfig().buildFromMap(configurationMap)
+    override fun getNewParameter(): InfogramConfig? {
+        return InfogramConfig()
     }
 
     override fun getOperator(parameters: InfogramConfig?): Observable.Operator<Message, Message>? {
@@ -93,13 +91,20 @@ public class InfogramPlugin : IPlugin<Message, Message, InfogramConfig>() {
                     // make calculations for tags and categories
                     if (message.getTags() != null) {
                         var categories: MutableList<String> = ArrayList<String>()
-                        tagCount += message.getTags().size()
                         for (tag in message.getTags()) {
+                            // exclude stop word tags
+                            if (tag.isStopWord()) {
+                                continue
+                            }
+                            tagCount += 1
                             var key = tag.getText()
                             val value: Double = tagMap[key] ?: 0.0
                             tagMap.put(key, value + 1)
                             if (tag.getCategories() != null) {
-                                categories.addAll(tag.getCategories())
+                                // exclude stop word categories
+                                categories.addAll(tag.getCategories().asSequence()
+                                        .filter { !it.isStopWord() }
+                                        .map { it.getText() })
                             }
                         }
                         categoryCount += categories.size()
@@ -112,6 +117,7 @@ public class InfogramPlugin : IPlugin<Message, Message, InfogramConfig>() {
                     // make calculations for lemmas
                     if (message.getTokens() != null) {
                         for (tok in message.getTokens()) {
+                            // exclude stop word tokens
                             if (tok.isStopWord() || tok.getLemma() == null) {
                                 continue
                             }
@@ -163,7 +169,7 @@ public class InfogramPlugin : IPlugin<Message, Message, InfogramConfig>() {
                         if (maps.size() > 1) {
                             sheets[i]!!.header = arrayOf(sheetsNames[i], QTY)
                         }
-                        var sheetList : MutableList<InfogramChartSheetRow> = arrayListOf()
+                        var sheetList: MutableList<InfogramChartSheetRow> = arrayListOf()
                         val map = maps[i]
                         for ((key, value) in map) {
                             val row: Array<Any?>? = arrayOf(key, value)
@@ -225,7 +231,7 @@ public class InfogramPlugin : IPlugin<Message, Message, InfogramConfig>() {
     }
 
     fun getPNG(infogram: InfogramAPI, id: String?): ByteArray? {
-        val res = infogram.sendRequest("GET", "infographics/${id}", mapOf(Pair("format","png")))
+        val res = infogram.sendRequest("GET", "infographics/${id}", mapOf(Pair("format", "png")))
         if (res.getHttpStatusCode() == 200) {
             logger.info("Fetched infogram PNG at ${id}.")
             return res.getResponseBody().readBytes()
@@ -236,7 +242,7 @@ public class InfogramPlugin : IPlugin<Message, Message, InfogramConfig>() {
         return null;
     }
 
-    fun writePNGs(path: String?, vararg files : Pair<ByteArray?, String>) : Array<String?> {
+    fun writePNGs(path: String?, vararg files: Pair<ByteArray?, String>): Array<String?> {
         // get a valid directory and replace ~ with the user dir
         val directory = (path ?: System.getProperty("java.io.tmpdir"))
                 .replaceFirst(Regex("^~"), System.getProperty("user.home"));
@@ -249,7 +255,7 @@ public class InfogramPlugin : IPlugin<Message, Message, InfogramConfig>() {
                 .replace(Regex(":"), "-")
 
         // for every file, save it if it's not empty
-        val pngs : Array<String?> = arrayOfNulls(files.size())
+        val pngs: Array<String?> = arrayOfNulls(files.size())
         for (f in files.indices) {
             var file = files[f]
             if (file.first == null) {
@@ -260,7 +266,7 @@ public class InfogramPlugin : IPlugin<Message, Message, InfogramConfig>() {
                 Files.write(filePath, file.first, StandardOpenOption.CREATE_NEW)
                 logger.info("Infogram written at path: ${filePath}.")
                 pngs[f] = filePath.toString()
-            } catch (e : IOException) {
+            } catch (e: IOException) {
                 logger.error("Couldn't write infogram at path: ${filePath}.")
             }
         }

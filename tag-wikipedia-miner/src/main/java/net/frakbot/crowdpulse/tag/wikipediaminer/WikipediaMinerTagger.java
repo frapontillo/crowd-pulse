@@ -26,7 +26,6 @@ import rx.Observable;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @see {@link "http://wikipedia-miner.cms.waikato.ac.nz/services/?wikify"}
@@ -35,22 +34,15 @@ import java.util.Map;
 public class WikipediaMinerTagger extends IPlugin<Message, Message, VoidConfig> {
     public final static String PLUGIN_NAME = "wikipediaminer";
     private final static String WIKIPEDIA_MINER_ENDPOINT = "http://wikipedia-miner.cms.waikato.ac.nz";
-    private final static WikipediaMinerService service;
 
-    static {
-        // build the REST client
-        RestAdapter restAdapter = new RestAdapter.Builder()
-                .setEndpoint(WIKIPEDIA_MINER_ENDPOINT)
-                .build();
-        service = restAdapter.create(WikipediaMinerService.class);
-    }
+    private WikipediaMinerService service;
 
     @Override public String getName() {
         return PLUGIN_NAME;
     }
 
-    @Override public VoidConfig buildConfiguration(Map<String, String> configurationMap) {
-        return new VoidConfig().buildFromMap(configurationMap);
+    @Override public VoidConfig getNewParameter() {
+        return new VoidConfig();
     }
 
     @Override protected Observable.Operator<Message, Message> getOperator(VoidConfig parameters) {
@@ -60,7 +52,7 @@ public class WikipediaMinerTagger extends IPlugin<Message, Message, VoidConfig> 
                 WikifyResponse response;
                 List<Tag> tags = new ArrayList<>();
                 try {
-                    response = service.wikify(text, language);
+                    response = getService().wikify(text, language);
                     for (WikifyResponse.DetectedTopic topic : response.getDetectedTopics()) {
                         Tag tag = new Tag();
                         tag.setText(topic.getTitle());
@@ -73,5 +65,16 @@ public class WikipediaMinerTagger extends IPlugin<Message, Message, VoidConfig> 
                 return tags;
             }
         };
+    }
+
+    private WikipediaMinerService getService() {
+        if (service == null) {
+            // build the REST client
+            RestAdapter restAdapter = new RestAdapter.Builder()
+                    .setEndpoint(WIKIPEDIA_MINER_ENDPOINT)
+                    .build();
+            service = restAdapter.create(WikipediaMinerService.class);
+        }
+        return service;
     }
 }

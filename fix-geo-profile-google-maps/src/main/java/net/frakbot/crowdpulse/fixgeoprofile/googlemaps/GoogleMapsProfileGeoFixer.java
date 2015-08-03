@@ -28,7 +28,6 @@ import net.frakbot.crowdpulse.fixgeoprofile.IProfileGeoFixerOperator;
 import rx.Observable;
 
 import java.io.InputStream;
-import java.util.Map;
 import java.util.Properties;
 
 /**
@@ -47,8 +46,8 @@ public class GoogleMapsProfileGeoFixer extends IPlugin<Profile, Profile, VoidCon
         return PLUGIN_NAME;
     }
 
-    @Override public VoidConfig buildConfiguration(Map<String, String> configurationMap) {
-        return new VoidConfig().buildFromMap(configurationMap);
+    @Override public VoidConfig getNewParameter() {
+        return new VoidConfig();
     }
 
     @Override protected Observable.Operator<Profile, Profile> getOperator(VoidConfig parameters) {

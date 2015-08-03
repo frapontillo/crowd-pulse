@@ -22,8 +22,6 @@ import rx.Observable;
 import rx.Subscriber;
 import rx.observers.SafeSubscriber;
 
-import java.util.Map;
-
 /**
  * An implementation of {@link IPlugin} that has no effect on input elements, emitting them untouched. Error and
  * completion events are notified as well.
@@ -37,8 +35,8 @@ public class Streamer extends IPlugin<Object, Object, VoidConfig> {
         return PLUGIN_NAME;
     }
 
-    @Override public VoidConfig buildConfiguration(Map<String, String> configurationMap) {
-        return new VoidConfig().buildFromMap(configurationMap);
+    @Override public VoidConfig getNewParameter() {
+        return new VoidConfig();
     }
 
     @Override protected Observable.Operator<Object, Object> getOperator(VoidConfig parameters) {

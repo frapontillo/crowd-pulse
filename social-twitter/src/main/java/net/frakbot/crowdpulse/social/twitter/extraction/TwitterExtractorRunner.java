@@ -21,7 +21,6 @@ import net.frakbot.crowdpulse.common.util.DateUtil;
 import net.frakbot.crowdpulse.common.util.StringUtil;
 import net.frakbot.crowdpulse.data.entity.Message;
 import net.frakbot.crowdpulse.social.extraction.ExtractionParameters;
-import net.frakbot.crowdpulse.social.twitter.*;
 import net.frakbot.crowdpulse.social.util.Checker;
 import rx.Observable;
 import rx.Subscriber;
@@ -56,7 +55,7 @@ public class TwitterExtractorRunner {
 
         // create the old messages Observable
         Observable<Message> oldMessages;
-        if (StringUtil.isNullOrEmpty(parameters.getFromUser())) {
+        if (StringUtil.isNullOrEmpty(parameters.getFrom())) {
             // if the generating user is not specified, we need to use the Search API
             // which are very limited in the time span they can search (6-9 days top)
             oldMessages = Observable.create(new Observable.OnSubscribe<Message>() {
@@ -204,7 +203,7 @@ public class TwitterExtractorRunner {
                 // get the tweets
                 ResponseList<Status> tweetList = null;
                 try {
-                    tweetList = twitter.getUserTimeline(parameters.getFromUser(), paging);
+                    tweetList = twitter.getUserTimeline(parameters.getFrom(), paging);
                 } catch (TwitterException timeout) {
                     if (net.frakbot.crowdpulse.social.twitter.TwitterFactory.waitForTwitterTimeout(timeout, logger)) {
                         continue;
@@ -350,14 +349,14 @@ public class TwitterExtractorRunner {
 
         // start building the main query text
         StringBuilder queryStringBuilder = new StringBuilder();
-        if (!StringUtil.isNullOrEmpty(parameters.getFromUser())) {
-            queryStringBuilder.append("from:").append(parameters.getFromUser()).append(" ");
+        if (!StringUtil.isNullOrEmpty(parameters.getFrom())) {
+            queryStringBuilder.append("from:").append(parameters.getFrom()).append(" ");
         }
-        if (!StringUtil.isNullOrEmpty(parameters.getToUser())) {
-            queryStringBuilder.append("to:").append(parameters.getToUser()).append(" ");
+        if (!StringUtil.isNullOrEmpty(parameters.getTo())) {
+            queryStringBuilder.append("to:").append(parameters.getTo()).append(" ");
         }
-        if (parameters.getReferenceUsers() != null && parameters.getReferenceUsers().size() > 0) {
-            for (String user : parameters.getReferenceUsers()) {
+        if (parameters.getReferences() != null && parameters.getReferences().size() > 0) {
+            for (String user : parameters.getReferences()) {
                 if (!StringUtil.isNullOrEmpty(user)) {
                     queryStringBuilder.append("@").append(user).append(" ");
                 }
@@ -403,14 +402,14 @@ public class TwitterExtractorRunner {
 
         // set the users to retrieve tweets from
         List<String> users = new ArrayList<String>();
-        if (!StringUtil.isNullOrEmpty(parameters.getFromUser())) {
-            users.add(parameters.getFromUser());
+        if (!StringUtil.isNullOrEmpty(parameters.getFrom())) {
+            users.add(parameters.getFrom());
         }
-        if (!StringUtil.isNullOrEmpty(parameters.getToUser())) {
-            users.add(parameters.getToUser());
+        if (!StringUtil.isNullOrEmpty(parameters.getTo())) {
+            users.add(parameters.getTo());
         }
-        if (parameters.getReferenceUsers() != null && parameters.getReferenceUsers().size() > 0) {
-            for (String user : parameters.getReferenceUsers()) {
+        if (parameters.getReferences() != null && parameters.getReferences().size() > 0) {
+            for (String user : parameters.getReferences()) {
                 if (!StringUtil.isNullOrEmpty(user)) {
                     users.add(user);
                 }
@@ -439,13 +438,13 @@ public class TwitterExtractorRunner {
     private Func1<Message, Boolean> checkReferencedUsers(final ExtractionParameters parameters) {
         return message -> {
             // if no referenced users are requested
-            if (parameters.getReferenceUsers() == null || parameters.getReferenceUsers().size() <= 0) {
+            if (parameters.getReferences() == null || parameters.getReferences().size() <= 0) {
                 return true;
             }
             // if some referenced users are requested, all tweets should contain those
             // BUT we need to exclude all tweets whose recipient user matches a referenced user
             // (referenced users are all users involved in a tweet but the recipient)
-            return !parameters.getReferenceUsers().contains(message.getToUsers());
+            return !parameters.getReferences().contains(message.getToUsers());
         };
     }
 

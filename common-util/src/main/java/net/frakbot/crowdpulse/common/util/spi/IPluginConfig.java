@@ -16,19 +16,17 @@
 
 package net.frakbot.crowdpulse.common.util.spi;
 
-import java.util.Map;
+import com.google.gson.JsonElement;
 
 /**
  * Interface for {@link IPlugin} configuration classes.
  *
  * @author Francesco Pontillo
  */
-public interface IPluginConfig {
-    /**
-     * Build the current IPluginConfig from a {@link Map}<{@link String}, {@link String}>.
-     *
-     * @param mapConfig The input configuration as a {@link Map}.
-     * @return The current object, with parameters set from the input {@link Map}.
-     */
-    IPluginConfig buildFromMap(Map<String, String> mapConfig);
+public interface IPluginConfig<T> {
+    T buildFromJsonElement(JsonElement json);
+
+    static <T extends IPluginConfig<T>> T buildFromJson(T obj, JsonElement json) {
+        return obj.buildFromJsonElement(json);
+    }
 }

@@ -28,7 +28,6 @@ import rx.Observable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author Francesco Pontillo
@@ -37,24 +36,16 @@ import java.util.Map;
 public class TagMeTagger extends IPlugin<Message, Message, VoidConfig> {
     public final static String PLUGIN_NAME = "tagme";
     private final static String TAG_ME_ENDPOINT = "http://tagme.di.unipi.it";
-    private final static TagMeService service;
     private final static List<String> supportedLangs = Arrays.asList("IT", "EN");
 
-    static {
-        // build the REST client
-        RestAdapter restAdapter = new RestAdapter.Builder()
-                .setEndpoint(TAG_ME_ENDPOINT)
-                .setRequestInterceptor(new TagMeInterceptor())
-                .build();
-        service = restAdapter.create(TagMeService.class);
-    }
+    private TagMeService service;
 
     @Override public String getName() {
         return PLUGIN_NAME;
     }
 
-    @Override public VoidConfig buildConfiguration(Map<String, String> configurationMap) {
-        return new VoidConfig().buildFromMap(configurationMap);
+    @Override public VoidConfig getNewParameter() {
+        return new VoidConfig();
     }
 
     @Override protected Observable.Operator<Message, Message> getOperator(VoidConfig parameters) {
@@ -66,7 +57,7 @@ public class TagMeTagger extends IPlugin<Message, Message, VoidConfig> {
 
                 if (language != null && supportedLangs.contains(language.toUpperCase())) {
                     try {
-                        response = service.tag(text, language);
+                        response = getService().tag(text, language);
                         for (TagMeResponse.TagMeAnnotation annotation : response.getAnnotations()) {
                             Tag tag = new Tag();
                             tag.setText(annotation.getTitle());
@@ -86,5 +77,17 @@ public class TagMeTagger extends IPlugin<Message, Message, VoidConfig> {
                 return tags;
             }
         };
+    }
+
+    private TagMeService getService() {
+        if (service == null) {
+            // build the REST client
+            RestAdapter restAdapter = new RestAdapter.Builder()
+                    .setEndpoint(TAG_ME_ENDPOINT)
+                    .setRequestInterceptor(new TagMeInterceptor())
+                    .build();
+            service = restAdapter.create(TagMeService.class);
+        }
+        return service;
     }
 }

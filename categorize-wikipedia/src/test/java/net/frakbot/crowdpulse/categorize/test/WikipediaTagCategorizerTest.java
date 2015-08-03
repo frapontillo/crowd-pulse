@@ -17,10 +17,10 @@
 package net.frakbot.crowdpulse.categorize.test;
 
 import net.frakbot.crowdpulse.categorize.wikipedia.WikipediaTagCategorizer;
-import net.frakbot.crowdpulse.common.util.spi.VoidConfig;
-import net.frakbot.crowdpulse.data.entity.Tag;
 import net.frakbot.crowdpulse.common.util.spi.IPlugin;
 import net.frakbot.crowdpulse.common.util.spi.PluginProvider;
+import net.frakbot.crowdpulse.common.util.spi.VoidConfig;
+import net.frakbot.crowdpulse.data.entity.Tag;
 import org.junit.Test;
 
 import static org.junit.Assert.assertTrue;

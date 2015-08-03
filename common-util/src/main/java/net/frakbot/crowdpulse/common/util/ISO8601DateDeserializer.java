@@ -14,22 +14,27 @@
  * limitations under the License.
  */
 
-package net.frakbot.crowdpulse.admin.cli.json;
+package net.frakbot.crowdpulse.common.util;
 
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
-import org.bson.types.ObjectId;
+import org.joda.time.DateTime;
 
 import java.lang.reflect.Type;
+import java.util.Date;
 
 /**
  * @author Francesco Pontillo
  */
-public class ObjectIdDeserializer  implements JsonDeserializer<ObjectId> {
-    @Override
-    public ObjectId deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
-        return new ObjectId(json.getAsJsonPrimitive().getAsString());
+public class ISO8601DateDeserializer implements JsonDeserializer<Date> {
+    @Override public Date deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
+            throws JsonParseException {
+        String value = json.getAsString();
+        if (value == null) {
+            return null;
+        }
+        return new DateTime(value).toDate();
     }
 }

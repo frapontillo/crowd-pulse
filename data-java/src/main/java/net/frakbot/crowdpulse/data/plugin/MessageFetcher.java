@@ -26,8 +26,6 @@ import rx.Observable;
 import rx.Subscriber;
 import rx.observers.SafeSubscriber;
 
-import java.util.Map;
-
 /**
  * An implementation of {@link IPlugin} that, no matter the input stream, waits for its completion and then emits
  * all of the {@link Message}s stored in the database, eventually completing or erroring.
@@ -49,8 +47,8 @@ public class MessageFetcher extends IPlugin<Object, Message, VoidConfig> {
         return PLUGIN_NAME;
     }
 
-    @Override public VoidConfig buildConfiguration(Map<String, String> configurationMap) {
-        return new VoidConfig().buildFromMap(configurationMap);
+    @Override public VoidConfig getNewParameter() {
+        return new VoidConfig();
     }
 
     @Override protected Observable.Operator<Message, Object> getOperator(VoidConfig parameters) {

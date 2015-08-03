@@ -16,21 +16,20 @@
 
 package net.frakbot.crowdpulse.remstopword.simple;
 
-import net.frakbot.crowdpulse.common.util.spi.IPlugin;
-import net.frakbot.crowdpulse.common.util.spi.VoidConfig;
-import net.frakbot.crowdpulse.data.entity.Message;
-import net.frakbot.crowdpulse.data.entity.Token;
-import net.frakbot.crowdpulse.remstopword.IStopWordRemoverOperator;
+import net.frakbot.crowdpulse.remstopword.StopWordConfig;
+import net.frakbot.crowdpulse.remstopword.StopWordRemover;
 import org.apache.commons.io.IOUtils;
-import rx.Observable;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 
 /**
  * @author Francesco Pontillo
  */
-public class SimpleStopWordRemover extends IPlugin<Message, Message, VoidConfig> {
+public class SimpleStopWordRemover extends StopWordRemover {
     public final static String PLUGIN_NAME = "simple";
     private final HashMap<String, HashSet<String>> dictionaries;
     private final List<String> punctuation = Arrays.asList(".",",",":",";","?","!","(",")","[","]","{","}");
@@ -43,21 +42,16 @@ public class SimpleStopWordRemover extends IPlugin<Message, Message, VoidConfig>
         return PLUGIN_NAME;
     }
 
-    @Override public VoidConfig buildConfiguration(Map<String, String> configurationMap) {
-        return new VoidConfig().buildFromMap(configurationMap);
+    @Override protected boolean isTokenStopWord(String token, String language, StopWordConfig stopWordConfig) {
+        return isStopWord(token, language);
     }
 
-    @Override public Observable.Operator<Message, Message> getOperator(VoidConfig parameters) {
-        return new IStopWordRemoverOperator() {
-            @Override public List<Token> stopWordRemoveMessageTokens(Message message) {
-                List<Token> tokens = message.getTokens();
-                if (tokens != null) {
-                    // for each token, reset the "stop word" property by looking up the word in the proper dictionary
-                    tokens.forEach(token -> token.setStopWord(isStopWord(token.getText(), message.getLanguage())));
-                }
-                return tokens;
-            }
-        };
+    @Override protected boolean isTagStopWord(String tag, String language, StopWordConfig stopWordConfig) {
+        return isStopWord(tag, language);
+    }
+
+    @Override protected boolean isCategoryStopWord(String category, String language, StopWordConfig stopWordConfig) {
+        return isStopWord(category, language);
     }
 
     /**

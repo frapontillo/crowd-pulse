@@ -33,8 +33,8 @@ public class PluginProvider {
         serviceLoader = ServiceLoader.load(IPlugin.class);
     }
 
-    public static <Input, Output, Parameter extends IPluginConfig, Plugin extends IPlugin<Input, Output, Parameter>> Plugin getPlugin(
-            String name) throws ClassNotFoundException {
+    public static <Input, Output, Parameter extends IPluginConfig<Parameter>,
+            Plugin extends IPlugin<Input, Output, Parameter>> Plugin getPlugin(String name) throws ClassNotFoundException {
         for (IPlugin implementation : serviceLoader) {
             if (implementation.getName().equals(name)) {
                 return (Plugin) implementation;

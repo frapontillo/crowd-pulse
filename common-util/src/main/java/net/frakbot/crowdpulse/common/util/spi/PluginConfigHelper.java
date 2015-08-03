@@ -14,21 +14,26 @@
  * limitations under the License.
  */
 
-package net.frakbot.crowdpulse.admin.cli.json;
+package net.frakbot.crowdpulse.common.util.spi;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
-import com.google.gson.JsonPrimitive;
-import com.google.gson.JsonSerializationContext;
-import com.google.gson.JsonSerializer;
-import org.bson.types.ObjectId;
+import net.frakbot.crowdpulse.common.util.ISO8601DateDeserializer;
 
-import java.lang.reflect.Type;
+import java.util.Date;
 
 /**
+ * Helper to convert {@link IPluginConfig} implementations from {@link JsonElement}s.
+ *
  * @author Francesco Pontillo
  */
-public class ObjectIdSerializer implements JsonSerializer<ObjectId> {
-    @Override public JsonElement serialize(ObjectId src, Type typeOfSrc, JsonSerializationContext context) {
-        return new JsonPrimitive(src.toHexString());
+public class PluginConfigHelper {
+    private static final Gson gson = new GsonBuilder()
+            .registerTypeAdapter(Date.class, new ISO8601DateDeserializer())
+            .create();
+
+    public static <T extends IPluginConfig> T buildFromJson(JsonElement json, Class<T> classOfT) {
+        return gson.fromJson(json, classOfT);
     }
 }

@@ -27,7 +27,7 @@ package net.frakbot.crowdpulse.common.util.spi;
  *
  * @author Francesco Pontillo
  */
-public abstract class ISingleablePlugin<InputOutput, Parameter extends IPluginConfig> extends IPlugin<InputOutput, InputOutput, Parameter> {
+public abstract class ISingleablePlugin<InputOutput, Parameter extends IPluginConfig<Parameter>> extends IPlugin<InputOutput, InputOutput, Parameter> {
 
     /**
      * Process a single element according to the task of this {@link IPlugin}.

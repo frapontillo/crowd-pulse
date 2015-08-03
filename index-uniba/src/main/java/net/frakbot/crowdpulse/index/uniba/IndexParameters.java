@@ -16,34 +16,25 @@
 
 package net.frakbot.crowdpulse.index.uniba;
 
+import com.google.gson.JsonElement;
 import net.frakbot.crowdpulse.common.util.CrowdLogger;
 import net.frakbot.crowdpulse.common.util.spi.IPluginConfig;
+import net.frakbot.crowdpulse.common.util.spi.PluginConfigHelper;
 import org.apache.logging.log4j.Logger;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Indexing parameters class for the Uniba Indexing Web Service.
  *
  * @author Francesco Pontillo
  */
-public class IndexParameters implements IPluginConfig {
+public class IndexParameters implements IPluginConfig<IndexParameters> {
     private String schema;
+
     private final static List<String> SCHEMAS = Arrays.asList("TFIDF", "BM25", "TF");
     private final static Logger logger = CrowdLogger.getLogger(IndexParameters.class);
-
-    @Override public IndexParameters buildFromMap(Map<String, String> mapConfig) {
-        String candidateSchema = mapConfig.get("schema");
-        if (!SCHEMAS.contains(candidateSchema)) {
-            logger.warn("The indexing schema you specified ({}) is not supported. Defaulting to TFIDF.",
-                    candidateSchema);
-            candidateSchema = "TFIDF";
-        }
-        this.setSchema(candidateSchema);
-        return this;
-    }
 
     public String getSchema() {
         return schema;
@@ -51,5 +42,17 @@ public class IndexParameters implements IPluginConfig {
 
     public void setSchema(String schema) {
         this.schema = schema;
+    }
+
+    @Override public IndexParameters buildFromJsonElement(JsonElement json) {
+        IndexParameters parameters = PluginConfigHelper.buildFromJson(json, IndexParameters.class);
+        String candidateSchema = parameters.getSchema();
+        if (!SCHEMAS.contains(candidateSchema)) {
+            logger.warn("The indexing schema you specified ({}) is not supported. Defaulting to TFIDF.",
+                    candidateSchema);
+            candidateSchema = "TFIDF";
+        }
+        parameters.setSchema(candidateSchema);
+        return parameters;
     }
 }

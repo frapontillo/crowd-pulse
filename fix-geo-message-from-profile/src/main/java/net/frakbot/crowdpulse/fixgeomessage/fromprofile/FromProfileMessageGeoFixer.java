@@ -23,9 +23,6 @@ import net.frakbot.crowdpulse.data.entity.Profile;
 import net.frakbot.crowdpulse.data.repository.ProfileRepository;
 import net.frakbot.crowdpulse.fixgeomessage.IMessageGeoFixerOperator;
 import rx.Observable;
-import rx.Subscriber;
-
-import java.util.Map;
 
 /**
  * @author Francesco Pontillo
@@ -42,8 +39,8 @@ public class FromProfileMessageGeoFixer extends IPlugin<Message, Message, VoidCo
         return PLUGIN_NAME;
     }
 
-    @Override public VoidConfig buildConfiguration(Map<String, String> configurationMap) {
-        return new VoidConfig().buildFromMap(configurationMap);
+    @Override public VoidConfig getNewParameter() {
+        return new VoidConfig();
     }
 
     @Override public Observable.Operator<Message, Message> getOperator(VoidConfig parameters) {

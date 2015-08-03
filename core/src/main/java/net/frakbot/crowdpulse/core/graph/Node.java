@@ -16,8 +16,9 @@
 
 package net.frakbot.crowdpulse.core.graph;
 
+import com.google.gson.JsonObject;
+
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -28,7 +29,7 @@ import java.util.List;
 public class Node {
     private String name;
     private String plugin;
-    private HashMap<String, String> config;
+    private JsonObject config;
     private List<Node> prev;
     private List<Node> next;
 
@@ -73,18 +74,18 @@ public class Node {
     /**
      * Get the generic configuration object for the step.
      *
-     * @return A configuration object as a {@link HashMap}<{@link String}, {@link String}>.
+     * @return A configuration object as a {@link JsonObject}.
      */
-    public HashMap<String, String> getConfig() {
+    public JsonObject getConfig() {
         return config;
     }
 
     /**
      * Set the configuration for the step.
      *
-     * @param config A configuration object as a {@link HashMap}<{@link String}, {@link String}>.
+     * @param config A configuration object as a {@link JsonObject}.
      */
-    public void setConfig(HashMap<String, String> config) {
+    public void setConfig(JsonObject config) {
         this.config = config;
     }
 

@@ -26,7 +26,6 @@ import rx.Observable;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author Francesco Pontillo
@@ -34,25 +33,14 @@ import java.util.Map;
 public class BabelfyTagger extends IPlugin<Message, Message, VoidConfig> {
     public final static String PLUGIN_NAME = "babelfy";
     private final static String BABELFY_ENDPOINT = "http://babelfy.io/v1";
-    private static BabelfyService service;
-
-    private BabelfyService getService() {
-        if (service == null) {
-            RestAdapter restAdapter = new RestAdapter.Builder()
-                    .setEndpoint(BABELFY_ENDPOINT)
-                    .setRequestInterceptor(new BabelfyInterceptor())
-                    .build();
-            service = restAdapter.create(BabelfyService.class);
-        }
-        return service;
-    }
+    private BabelfyService service;
 
     @Override public String getName() {
         return PLUGIN_NAME;
     }
 
-    @Override public VoidConfig buildConfiguration(Map<String, String> configurationMap) {
-        return new VoidConfig().buildFromMap(configurationMap);
+    @Override public VoidConfig getNewParameter() {
+        return new VoidConfig();
     }
 
     @Override protected Observable.Operator<Message, Message> getOperator(VoidConfig parameters) {
@@ -78,5 +66,16 @@ public class BabelfyTagger extends IPlugin<Message, Message, VoidConfig> {
                 return tags;
             }
         };
+    }
+
+    private BabelfyService getService() {
+        if (service == null) {
+            RestAdapter restAdapter = new RestAdapter.Builder()
+                    .setEndpoint(BABELFY_ENDPOINT)
+                    .setRequestInterceptor(new BabelfyInterceptor())
+                    .build();
+            service = restAdapter.create(BabelfyService.class);
+        }
+        return service;
     }
 }

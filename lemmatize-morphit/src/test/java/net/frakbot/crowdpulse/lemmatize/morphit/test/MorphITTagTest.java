@@ -16,11 +16,11 @@
 
 package net.frakbot.crowdpulse.lemmatize.morphit.test;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
 import net.frakbot.crowdpulse.lemmatize.morphit.MorphITTag;
 import org.junit.Test;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Francesco Pontillo
