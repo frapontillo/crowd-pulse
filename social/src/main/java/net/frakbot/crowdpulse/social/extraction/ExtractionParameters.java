@@ -18,21 +18,22 @@ package net.frakbot.crowdpulse.social.extraction;
 
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
+import com.google.gson.JsonElement;
 import net.frakbot.crowdpulse.common.util.StringUtil;
 import net.frakbot.crowdpulse.common.util.spi.IPluginConfig;
+import net.frakbot.crowdpulse.common.util.spi.PluginConfigHelper;
 import net.frakbot.crowdpulse.social.converter.GeoLocationBoxConverter;
 import net.frakbot.crowdpulse.social.converter.ISO8601DateConverter;
 
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author Francesco Pontillo
  */
 @Parameters(separators = "=")
-public class ExtractionParameters implements IPluginConfig {
+public class ExtractionParameters implements IPluginConfig<ExtractionParameters> {
 
     @Parameter(names = "-source", description = "Source for extraction")
     private String source;
@@ -159,29 +160,20 @@ public class ExtractionParameters implements IPluginConfig {
         this.tags = Arrays.asList(tags);
     }
 
-    @Override public ExtractionParameters buildFromMap(Map<String, String> mapConfig) {
-        GeoLocationBoxConverter geoConverter = new GeoLocationBoxConverter();
-        ISO8601DateConverter dateConverter = new ISO8601DateConverter();
-
-        this.setSource(mapConfig.get("source"));
-        this.setQuery(mapConfig.get("query"));
-        this.setGeoLocationBox(geoConverter.convert(mapConfig.get("location")));
-        this.setFromUser(mapConfig.get("from"));
-        this.setToUser(mapConfig.get("to"));
-        this.setReferenceUsers(multipleStrings(mapConfig.get("ref")));
-        this.setSince(dateConverter.convert(mapConfig.get("since")));
-        this.setUntil(dateConverter.convert(mapConfig.get("until")));
-        this.setLanguage(mapConfig.get("language"));
-        this.setLocale(mapConfig.get("locale"));
-        this.setTags(multipleStrings(mapConfig.get("tags")));
-
-        return this;
-    }
-
     private List<String> multipleStrings(String input) {
         if (StringUtil.isNullOrEmpty(input)) {
             return null;
         }
         return Arrays.asList(input.split(","));
+    }
+
+    @Override public ExtractionParameters buildFromJsonElement(JsonElement json) {
+        ExtractionParameters extractionParameters = PluginConfigHelper.buildFromJson(json, ExtractionParameters.class);
+        GeoLocationBoxConverter geoConverter = new GeoLocationBoxConverter();
+        JsonElement location;
+        if ((location = json.getAsJsonObject().get("location")) != null) {
+            this.setGeoLocationBox(geoConverter.convert(location.getAsString()));
+        }
+        return extractionParameters;
     }
 }

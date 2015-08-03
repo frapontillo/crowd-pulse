@@ -17,6 +17,7 @@
 package net.frakbot.crowdpulse.categorize;
 
 import net.frakbot.crowdpulse.common.util.rx.CrowdSubscriber;
+import net.frakbot.crowdpulse.data.entity.Category;
 import net.frakbot.crowdpulse.data.entity.Message;
 import net.frakbot.crowdpulse.data.entity.Tag;
 import rx.Observable;
@@ -49,9 +50,9 @@ public abstract class ITagCategorizerOperator implements Observable.Operator<Mes
      * Custom implementations must implement this method and return the appropriate values.
      *
      * @param tag The input {@link Tag} to look for categories into.
-     * @return A {@link List} of {@link String}s representing the found categories.
+     * @return A {@link List} of {@link Category} representing the found categories.
      */
-    public abstract List<String> getCategories(Tag tag);
+    public abstract List<Category> getCategories(Tag tag);
 
     /**
      * Retrieves the categories from the input {@link Tag} and sets them into

@@ -21,8 +21,6 @@ import net.frakbot.crowdpulse.data.entity.Message;
 import net.frakbot.crowdpulse.data.entity.Profile;
 import rx.Observable;
 
-import java.util.Map;
-
 /**
  * Crowd Pulse plugin interface to retrieve a stream of {@link Profile}s starting from a stream of {@link Message}s.
  *
@@ -58,7 +56,7 @@ public abstract class IProfiler extends IPlugin<Message, Profile, ProfileParamet
         return null;
     }
 
-    @Override public ProfileParameters buildConfiguration(Map<String, String> configurationMap) {
-        return new ProfileParameters().buildFromMap(configurationMap);
+    @Override public ProfileParameters getNewParameter() {
+        return new ProfileParameters();
     }
 }

@@ -28,7 +28,6 @@ import org.apache.logging.log4j.Logger;
 import rx.Observable;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * Simple POS tagger that relies on external simple POS taggers based on the language they support.
@@ -44,8 +43,8 @@ public class SimpleMultiPOSTagger extends IPlugin<Message, Message, VoidConfig> 
         return PLUGIN_NAME;
     }
 
-    @Override public VoidConfig buildConfiguration(Map<String, String> configurationMap) {
-        return new VoidConfig().buildFromMap(configurationMap);
+    @Override public VoidConfig getNewParameter() {
+        return new VoidConfig();
     }
 
     @Override public Observable.Operator<Message, Message> getOperator(VoidConfig parameters) {

@@ -31,7 +31,6 @@ import rx.Subscriber;
 import rx.observers.SafeSubscriber;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author Francesco Pontillo
@@ -60,8 +59,8 @@ public class SentitSentimentAnalyzer extends IPlugin<Message, Message, VoidConfi
         return PLUGIN_NAME;
     }
 
-    @Override public VoidConfig buildConfiguration(Map<String, String> configurationMap) {
-        return new VoidConfig().buildFromMap(configurationMap);
+    @Override public VoidConfig getNewParameter() {
+        return new VoidConfig();
     }
 
     /**

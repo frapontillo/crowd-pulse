@@ -33,7 +33,6 @@ import rx.Observable;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author Francesco Pontillo
@@ -63,8 +62,8 @@ public class OptimaizeLanguageDetector extends IPlugin<Message, Message, VoidCon
         return PLUGIN_NAME;
     }
 
-    @Override public VoidConfig buildConfiguration(Map<String, String> configurationMap) {
-        return new VoidConfig().buildFromMap(configurationMap);
+    @Override public VoidConfig getNewParameter() {
+        return new VoidConfig();
     }
 
     @Override public Observable.Operator<Message, Message> getOperator(VoidConfig parameters) {

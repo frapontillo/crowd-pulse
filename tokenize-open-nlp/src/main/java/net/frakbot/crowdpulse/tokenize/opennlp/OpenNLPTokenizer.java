@@ -49,8 +49,8 @@ public class OpenNLPTokenizer extends IPlugin<Message, Message, VoidConfig> {
         return PLUGIN_NAME;
     }
 
-    @Override public VoidConfig buildConfiguration(Map<String, String> configurationMap) {
-        return new VoidConfig().buildFromMap(configurationMap);
+    @Override public VoidConfig getNewParameter() {
+        return new VoidConfig();
     }
 
     @Override protected Observable.Operator<Message, Message> getOperator(VoidConfig parameters) {

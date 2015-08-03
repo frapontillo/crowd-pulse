@@ -16,13 +16,13 @@
 
 package net.frakbot.crowdpulse.common.util.spi;
 
-import java.util.Map;
+import com.google.gson.JsonElement;
 
 /**
  * @author Francesco Pontillo
  */
-public class VoidConfig implements IPluginConfig {
-    @Override public VoidConfig buildFromMap(Map<String, String> mapConfig) {
-        return this;
+public class VoidConfig implements IPluginConfig<VoidConfig> {
+    @Override public VoidConfig buildFromJsonElement(JsonElement json) {
+        return PluginConfigHelper.buildFromJson(json, VoidConfig.class);
     }
 }

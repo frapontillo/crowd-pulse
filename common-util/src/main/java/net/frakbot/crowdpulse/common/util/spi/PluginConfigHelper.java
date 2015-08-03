@@ -16,17 +16,24 @@
 
 package net.frakbot.crowdpulse.common.util.spi;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
+import net.frakbot.crowdpulse.common.util.ISO8601DateDeserializer;
+
+import java.util.Date;
 
 /**
- * Interface for {@link IPlugin} configuration classes.
+ * Helper to convert {@link IPluginConfig} implementations from {@link JsonElement}s.
  *
  * @author Francesco Pontillo
  */
-public interface IPluginConfig<T> {
-    T buildFromJsonElement(JsonElement json);
+public class PluginConfigHelper {
+    private static final Gson gson = new GsonBuilder()
+            .registerTypeAdapter(Date.class, new ISO8601DateDeserializer())
+            .create();
 
-    static <T extends IPluginConfig<T>> T buildFromJson(T obj, JsonElement json) {
-        return obj.buildFromJsonElement(json);
+    public static <T extends IPluginConfig> T buildFromJson(JsonElement json, Class<T> classOfT) {
+        return gson.fromJson(json, classOfT);
     }
 }

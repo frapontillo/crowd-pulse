@@ -16,6 +16,8 @@
 
 package net.frakbot.crowdpulse.categorize.wikipedia.rest;
 
+import net.frakbot.crowdpulse.data.entity.Category;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,17 +25,17 @@ import java.util.List;
  * @author Francesco Pontillo
  */
 public class WikipediaResponse {
-    private List<String> categories;
+    private List<Category> categories;
 
     public WikipediaResponse() {
-        categories = new ArrayList<String>();
+        categories = new ArrayList<Category>();
     }
 
-    public List<String> getCategories() {
+    public List<Category> getCategories() {
         return categories;
     }
 
-    public void setCategories(List<String> categories) {
+    public void setCategories(List<Category> categories) {
         this.categories = categories;
     }
 }

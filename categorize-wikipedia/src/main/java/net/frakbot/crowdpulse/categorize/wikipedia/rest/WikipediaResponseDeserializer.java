@@ -17,6 +17,7 @@
 package net.frakbot.crowdpulse.categorize.wikipedia.rest;
 
 import com.google.gson.*;
+import net.frakbot.crowdpulse.data.entity.Category;
 
 import java.lang.reflect.Type;
 import java.util.Map;
@@ -51,7 +52,8 @@ public class WikipediaResponseDeserializer implements JsonDeserializer<Wikipedia
             if (categories != null) {
                 JsonArray jsonCategories = categories.getAsJsonArray();
                 for (JsonElement jsonCategory : jsonCategories) {
-                    response.getCategories().add(jsonCategory.getAsJsonObject().get("title").getAsString());
+                    response.getCategories().add(
+                            new Category(jsonCategory.getAsJsonObject().get("title").getAsString()));
                 }
             }
         }

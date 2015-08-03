@@ -23,7 +23,6 @@ import net.frakbot.crowdpulse.data.entity.Message;
 import rx.Observable;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * Crowd Pulse plugin to fetch message replies.
@@ -55,8 +54,8 @@ public abstract class IReplyExtractor extends IPlugin<Message, Message, VoidConf
         };
     }
 
-    @Override public VoidConfig buildConfiguration(Map<String, String> configurationMap) {
-        return new VoidConfig().buildFromMap(configurationMap);
+    @Override public VoidConfig getNewParameter() {
+        return new VoidConfig();
     }
 
 }

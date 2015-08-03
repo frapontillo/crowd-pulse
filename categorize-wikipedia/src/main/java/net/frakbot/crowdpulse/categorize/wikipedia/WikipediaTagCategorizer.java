@@ -24,6 +24,7 @@ import net.frakbot.crowdpulse.categorize.wikipedia.rest.WikipediaResponseDeseria
 import net.frakbot.crowdpulse.categorize.wikipedia.rest.WikipediaService;
 import net.frakbot.crowdpulse.common.util.spi.IPlugin;
 import net.frakbot.crowdpulse.common.util.spi.VoidConfig;
+import net.frakbot.crowdpulse.data.entity.Category;
 import net.frakbot.crowdpulse.data.entity.Message;
 import net.frakbot.crowdpulse.data.entity.Tag;
 import retrofit.RestAdapter;
@@ -58,13 +59,13 @@ public class WikipediaTagCategorizer extends IPlugin<Message, Message, VoidConfi
         return PLUGIN_NAME;
     }
 
-    @Override public VoidConfig buildConfiguration(Map<String, String> configurationMap) {
-        return new VoidConfig().buildFromMap(configurationMap);
+    @Override public VoidConfig getNewParameter() {
+        return new VoidConfig();
     }
 
     @Override public Observable.Operator<Message, Message> getOperator(VoidConfig parameters) {
         return new ITagCategorizerOperator() {
-            @Override public List<String> getCategories(Tag tag) {
+            @Override public List<Category> getCategories(Tag tag) {
                 WikipediaService wikipediaService = getService(tag.getLanguage());
                 try {
                     return wikipediaService.tag(tag.getText()).getCategories();

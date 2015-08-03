@@ -19,7 +19,6 @@ package net.frakbot.crowdpulse.tag.tagme;
 import net.frakbot.crowdpulse.common.util.CrowdLogger;
 import retrofit.RequestInterceptor;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 

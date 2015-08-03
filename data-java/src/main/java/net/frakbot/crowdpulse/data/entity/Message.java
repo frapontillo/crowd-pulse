@@ -18,7 +18,10 @@ package net.frakbot.crowdpulse.data.entity;
 
 import net.frakbot.crowdpulse.common.util.StringUtil;
 
-import java.util.*;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Messages are one of the basic entities of Crowd Pulse: they can be extracted, manipulated, analyzed,

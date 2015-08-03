@@ -24,8 +24,6 @@ import net.frakbot.crowdpulse.data.entity.Token;
 import net.frakbot.crowdpulse.sentiment.ISentimentAnalyzerOperator;
 import rx.Observable;
 
-import java.util.Map;
-
 /**
  * Sentiment Analyzer based on MultiWordNet and SentiWordNet.
  * Each message is processed as follows:
@@ -61,8 +59,8 @@ public class SentiWordNetSentimentAnalyzer extends IPlugin<Message, Message, Voi
         return PLUGIN_NAME;
     }
 
-    @Override public VoidConfig buildConfiguration(Map<String, String> configurationMap) {
-        return new VoidConfig().buildFromMap(configurationMap);
+    @Override public VoidConfig getNewParameter() {
+        return new VoidConfig();
     }
 
     @Override protected Observable.Operator<Message, Message> getOperator(VoidConfig parameters) {

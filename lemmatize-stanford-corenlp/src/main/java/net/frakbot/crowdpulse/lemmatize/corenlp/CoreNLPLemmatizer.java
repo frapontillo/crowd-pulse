@@ -25,7 +25,6 @@ import net.frakbot.crowdpulse.lemmatize.ILemmatizerOperator;
 import rx.Observable;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author Francesco Pontillo
@@ -42,8 +41,8 @@ public class CoreNLPLemmatizer extends ISingleablePlugin<Message, VoidConfig> {
         return PLUGIN_NAME;
     }
 
-    @Override public VoidConfig buildConfiguration(Map<String, String> configurationMap) {
-        return new VoidConfig().buildFromMap(configurationMap);
+    @Override public VoidConfig getNewParameter() {
+        return new VoidConfig();
     }
 
     @Override public Observable.Operator<Message, Message> getOperator(VoidConfig parameters) {
