@@ -27,7 +27,6 @@ import net.frakbot.crowdpulse.data.entity.Profile;
 import net.frakbot.crowdpulse.data.plugin.MessageFetcher;
 import net.frakbot.crowdpulse.data.plugin.MessagePersister;
 import net.frakbot.crowdpulse.data.plugin.ProfilePersister;
-import net.frakbot.crowdpulse.data.plugin.Streamer;
 import net.frakbot.crowdpulse.detectlanguage.optimaize.OptimaizeLanguageDetector;
 import net.frakbot.crowdpulse.fixgeomessage.fromprofile.FromProfileMessageGeoFixer;
 import net.frakbot.crowdpulse.fixgeoprofile.googlemaps.GoogleMapsProfileGeoFixer;
@@ -163,7 +162,7 @@ public class FlowMain {
 
     private ExtractionParameters getExtractionParams() {
         ExtractionParameters extractionParameters = new ExtractionParameters();
-        extractionParameters.setFromUser("frapontillo");
+        extractionParameters.setFrom("frapontillo");
         extractionParameters.setSince(new GregorianCalendar(2015, 5, 20).getTime());
         extractionParameters.setUntil(new GregorianCalendar().getTime());
         return extractionParameters;
