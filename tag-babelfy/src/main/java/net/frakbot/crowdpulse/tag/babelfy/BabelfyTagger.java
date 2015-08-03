@@ -33,18 +33,7 @@ import java.util.List;
 public class BabelfyTagger extends IPlugin<Message, Message, VoidConfig> {
     public final static String PLUGIN_NAME = "babelfy";
     private final static String BABELFY_ENDPOINT = "http://babelfy.io/v1";
-    private static BabelfyService service;
-
-    private BabelfyService getService() {
-        if (service == null) {
-            RestAdapter restAdapter = new RestAdapter.Builder()
-                    .setEndpoint(BABELFY_ENDPOINT)
-                    .setRequestInterceptor(new BabelfyInterceptor())
-                    .build();
-            service = restAdapter.create(BabelfyService.class);
-        }
-        return service;
-    }
+    private BabelfyService service;
 
     @Override public String getName() {
         return PLUGIN_NAME;
@@ -77,5 +66,16 @@ public class BabelfyTagger extends IPlugin<Message, Message, VoidConfig> {
                 return tags;
             }
         };
+    }
+
+    private BabelfyService getService() {
+        if (service == null) {
+            RestAdapter restAdapter = new RestAdapter.Builder()
+                    .setEndpoint(BABELFY_ENDPOINT)
+                    .setRequestInterceptor(new BabelfyInterceptor())
+                    .build();
+            service = restAdapter.create(BabelfyService.class);
+        }
+        return service;
     }
 }
