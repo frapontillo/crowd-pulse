@@ -141,4 +141,24 @@ public class StringUtil {
         }
         return newString;
     }
+
+    /**
+     * Check if the source {@link String} contains any of the elements in the input {@link List}.
+     *
+     * @param source   The {@link String} to check.
+     * @param elements A {@link List} of {@link String}s that will be looked for into the source.
+     * @return {@code true} if the source contains at least one of the elements, {@code false} otherwise.
+     */
+    public static boolean containsAnyString(String source, List<String> elements) {
+        if (elements == null) {
+            return true;
+        }
+        for (String element : elements) {
+            String normalized = element.replaceFirst("^\"", "").replaceFirst("\"$", "");
+            if (source.contains(normalized)) {
+                return true;
+            }
+        }
+        return false;
+    }
 }
