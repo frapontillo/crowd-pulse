@@ -34,10 +34,19 @@ import java.util.List;
 public class Repository<T, K> extends BasicDAO<T, K> {
 
     /**
-     * Create a new Repository.
+     * Create a new Repository using the default configuration in `database.properties`.
      */
     protected Repository() {
-        super(DataLayer.getDataLayer().getDatastore());
+        super(DataLayer.getDataLayer(null).getDatastore());
+    }
+
+    /**
+     * Create a new Repository using the default configuration in `database.properties` and overriding the db name
+     * with the one in input.
+     * @param db The database name to use for this Repository instance.
+     */
+    public Repository(String db) {
+        super(DataLayer.getDataLayer(db).getDatastore());
     }
 
     /**

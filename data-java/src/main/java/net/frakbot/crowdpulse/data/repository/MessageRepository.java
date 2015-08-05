@@ -27,6 +27,14 @@ import org.mongodb.morphia.query.Query;
  */
 public class MessageRepository extends Repository<Message, ObjectId> {
 
+    public MessageRepository() {
+        super();
+    }
+
+    public MessageRepository(String db) {
+        super(db);
+    }
+
     /**
      * Get a Message by checking its original source ID.
      *

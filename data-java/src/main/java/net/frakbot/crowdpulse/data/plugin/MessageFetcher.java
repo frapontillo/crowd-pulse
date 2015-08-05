@@ -16,9 +16,10 @@
 
 package net.frakbot.crowdpulse.data.plugin;
 
+import com.google.gson.JsonElement;
 import net.frakbot.crowdpulse.common.util.CrowdLogger;
 import net.frakbot.crowdpulse.common.util.spi.IPlugin;
-import net.frakbot.crowdpulse.common.util.spi.VoidConfig;
+import net.frakbot.crowdpulse.common.util.spi.PluginConfigHelper;
 import net.frakbot.crowdpulse.data.entity.Message;
 import net.frakbot.crowdpulse.data.repository.MessageRepository;
 import org.apache.logging.log4j.Logger;
@@ -34,24 +35,23 @@ import rx.observers.SafeSubscriber;
  *
  * @author Francesco Pontillo
  */
-public class MessageFetcher extends IPlugin<Object, Message, VoidConfig> {
+public class MessageFetcher extends IPlugin<Object, Message, MessageFetcher.MessageFetcherOptions> {
     public final static String PLUGIN_NAME = "message-fetch";
-    private final MessageRepository messageRepository;
+    private MessageRepository messageRepository;
     private final Logger logger = CrowdLogger.getLogger(MessageFetcher.class);
-
-    public MessageFetcher() {
-        messageRepository = new MessageRepository();
-    }
 
     @Override public String getName() {
         return PLUGIN_NAME;
     }
 
-    @Override public VoidConfig getNewParameter() {
-        return new VoidConfig();
+    @Override public MessageFetcherOptions getNewParameter() {
+        return new MessageFetcherOptions();
     }
 
-    @Override protected Observable.Operator<Message, Object> getOperator(VoidConfig parameters) {
+    @Override protected Observable.Operator<Message, Object> getOperator(MessageFetcherOptions parameters) {
+        // use a custom db, if any
+        messageRepository = new MessageRepository(parameters.getDb());
+
         return subscriber -> new SafeSubscriber<>(new Subscriber<Object>() {
             @Override public void onCompleted() {
                 // fetch all messages from the database and subscribe view the new subscriber
@@ -69,6 +69,12 @@ public class MessageFetcher extends IPlugin<Object, Message, VoidConfig> {
                 // do absolutely nothing
             }
         });
+    }
+
+    public class MessageFetcherOptions extends GenericDbConfig<MessageFetcherOptions> {
+        @Override public MessageFetcherOptions buildFromJsonElement(JsonElement json) {
+            return PluginConfigHelper.buildFromJson(json, MessageFetcherOptions.class);
+        }
     }
 
 }

@@ -27,6 +27,14 @@ import org.mongodb.morphia.query.Query;
  */
 public class ProfileRepository extends Repository<Profile, ObjectId> {
 
+    public ProfileRepository() {
+        super();
+    }
+
+    public ProfileRepository(String db) {
+        super(db);
+    }
+
     /**
      * Get a {@link Profile} given the username.
      *

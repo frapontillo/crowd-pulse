@@ -16,10 +16,11 @@
 
 package net.frakbot.crowdpulse.data.plugin;
 
+import com.google.gson.JsonElement;
 import net.frakbot.crowdpulse.common.util.CrowdLogger;
 import net.frakbot.crowdpulse.common.util.rx.CrowdSubscriber;
 import net.frakbot.crowdpulse.common.util.spi.IPlugin;
-import net.frakbot.crowdpulse.common.util.spi.VoidConfig;
+import net.frakbot.crowdpulse.common.util.spi.PluginConfigHelper;
 import net.frakbot.crowdpulse.data.entity.Profile;
 import net.frakbot.crowdpulse.data.repository.ProfileRepository;
 import org.apache.logging.log4j.Logger;
@@ -30,24 +31,21 @@ import rx.Observable;
  *
  * @author Francesco Pontillo
  */
-public class ProfilePersister extends IPlugin<Profile, Profile, VoidConfig> {
+public class ProfilePersister extends IPlugin<Profile, Profile, ProfilePersister.ProfilePersisterOptions> {
     public final static String PLUGIN_NAME = "profile-persist";
-    private final ProfileRepository profileRepository;
+    private ProfileRepository profileRepository;
     private final Logger logger = CrowdLogger.getLogger(ProfilePersister.class);
-
-    public ProfilePersister() {
-        profileRepository = new ProfileRepository();
-    }
 
     @Override public String getName() {
         return PLUGIN_NAME;
     }
 
-    @Override public VoidConfig getNewParameter() {
-        return new VoidConfig();
+    @Override public ProfilePersisterOptions getNewParameter() {
+        return new ProfilePersisterOptions();
     }
 
-    @Override protected Observable.Operator<Profile, Profile> getOperator(VoidConfig parameters) {
+    @Override protected Observable.Operator<Profile, Profile> getOperator(ProfilePersisterOptions parameters) {
+        profileRepository = new ProfileRepository(parameters.getDb());
         return subscriber -> new CrowdSubscriber<Profile>(subscriber) {
             @Override public void onNext(Profile profile) {
                 profileRepository.save(profile);
@@ -55,4 +53,14 @@ public class ProfilePersister extends IPlugin<Profile, Profile, VoidConfig> {
             }
         };
     }
+
+    /**
+     * Options to persist the fetched profiles.
+     */
+    public class ProfilePersisterOptions extends GenericDbConfig<ProfilePersisterOptions> {
+        @Override public ProfilePersisterOptions buildFromJsonElement(JsonElement json) {
+            return PluginConfigHelper.buildFromJson(json, ProfilePersisterOptions.class);
+        }
+    }
+
 }

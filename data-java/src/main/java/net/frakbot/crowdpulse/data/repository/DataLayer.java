@@ -19,6 +19,7 @@ package net.frakbot.crowdpulse.data.repository;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoCredential;
 import com.mongodb.ServerAddress;
+import net.frakbot.crowdpulse.common.util.StringUtil;
 import net.frakbot.crowdpulse.data.entity.Message;
 import org.mongodb.morphia.Datastore;
 import org.mongodb.morphia.Morphia;
@@ -32,8 +33,8 @@ import java.util.Properties;
 
 /**
  * Data Access Layer to a database, all of the connection parameters must be specified in a {@code database.properties}
- * file (see the constructor {@link DataLayer#DataLayer()}).
- * This class cannot be directly instantiated, please use {@link DataLayer#getDataLayer()}.
+ * file (see the constructor {@link DataLayer#DataLayer(String)}).
+ * This class cannot be directly instantiated, please use {@link DataLayer#getDataLayer(String)}.
  *
  * @author Francesco Pontillo
  */
@@ -60,11 +61,12 @@ public class DataLayer {
      * <li>{@code database.password}, the password of the user with access to the collection</li>
      * </ul>
      *
+     * @param db The DB name to get the Data Layer for.
      * @return A setup instance of DataLayer.
      */
-    public static synchronized DataLayer getDataLayer() {
+    public static synchronized DataLayer getDataLayer(String db) {
         if (dataLayer == null) {
-            dataLayer = new DataLayer();
+            dataLayer = new DataLayer(db);
         }
         return dataLayer;
     }
@@ -72,9 +74,11 @@ public class DataLayer {
     /**
      * Private constructor.
      * Reads from a {@code database.properties} file and sets up the DB client and connection, mapping all of the
-     * entity classes.
+     * entity classes. You can optionally specify a target DB name that will override the one in the properties file.
+     *
+     * @param db The target database to connect to.
      */
-    private DataLayer() {
+    private DataLayer(String db) {
         InputStream configInput = getClass().getClassLoader().getResourceAsStream("database.properties");
         Properties prop = new Properties();
         try {
@@ -87,6 +91,11 @@ public class DataLayer {
         String dbName = prop.getProperty(PROP_DATABASE_NAME);
         String username = prop.getProperty(PROP_DATABASE_USERNAME);
         String password = prop.getProperty(PROP_DATABASE_PASSWORD);
+
+        // the input target overrides the DB name in the `database.properties` file
+        if (!StringUtil.isNullOrEmpty(db)) {
+            dbName = db;
+        }
 
         client = null;
         try {

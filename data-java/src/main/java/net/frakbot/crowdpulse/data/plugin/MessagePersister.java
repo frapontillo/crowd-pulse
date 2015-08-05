@@ -19,7 +19,6 @@ package net.frakbot.crowdpulse.data.plugin;
 import com.google.gson.JsonElement;
 import net.frakbot.crowdpulse.common.util.rx.CrowdSubscriber;
 import net.frakbot.crowdpulse.common.util.spi.IPlugin;
-import net.frakbot.crowdpulse.common.util.spi.IPluginConfig;
 import net.frakbot.crowdpulse.common.util.spi.PluginConfigHelper;
 import net.frakbot.crowdpulse.data.entity.Message;
 import net.frakbot.crowdpulse.data.repository.MessageRepository;
@@ -35,11 +34,7 @@ import java.util.List;
  */
 public class MessagePersister extends IPlugin<Message, Message, MessagePersister.MessagePersisterOptions> {
     public final static String PLUGIN_NAME = "message-persist";
-    private final MessageRepository messageRepository;
-
-    public MessagePersister() {
-        messageRepository = new MessageRepository();
-    }
+    private MessageRepository messageRepository;
 
     @Override public String getName() {
         return PLUGIN_NAME;
@@ -50,6 +45,9 @@ public class MessagePersister extends IPlugin<Message, Message, MessagePersister
     }
 
     @Override protected Observable.Operator<Message, Message> getOperator(MessagePersisterOptions parameters) {
+        // init the message repository with the given target DB, if any
+        messageRepository = new MessageRepository(parameters.getDb());
+
         return subscriber -> new CrowdSubscriber<Message>(subscriber) {
             @Override public void onNext(Message message) {
                 // if the message was already persisted, update its favs and shares
@@ -59,9 +57,7 @@ public class MessagePersister extends IPlugin<Message, Message, MessagePersister
                     originalMessage.setShares(message.getShares());
                     message = originalMessage;
                 }
-                if (parameters != null) {
-                    message.setCustomTags(parameters.getTags());
-                }
+                message.setCustomTags(parameters.getTags());
                 messageRepository.save(message);
                 subscriber.onNext(message);
             }
@@ -69,9 +65,9 @@ public class MessagePersister extends IPlugin<Message, Message, MessagePersister
     }
 
     /**
-     * Persisting options including the custom tags to persist with the {@link Message}.
+     * Persisting options including the custom tags to persist with the {@link Message} and the database to save to.
      */
-    public static class MessagePersisterOptions implements IPluginConfig<MessagePersisterOptions> {
+    public class MessagePersisterOptions extends GenericDbConfig<MessagePersisterOptions> {
         private List<String> tags;
 
         public List<String> getTags() {
