@@ -25,10 +25,6 @@ include 'social'
 include 'social-facebook'
 include 'social-twitter'
 
-include 'oauth-service'
-include 'web-service'
-
-include 'data-nodejs'
 include 'data-java'
 
 include 'fix-geo-profile'
