@@ -23,6 +23,8 @@ import twitter4j.TwitterStream;
 import twitter4j.TwitterStreamFactory;
 import twitter4j.conf.ConfigurationBuilder;
 
+import java.io.FileNotFoundException;
+
 /**
  * @author Francesco Pontillo
  */
@@ -73,6 +75,9 @@ public class TwitterFactory {
      */
     public static boolean waitForTwitterTimeout(TwitterException exception, Logger logger)
             throws InterruptedException {
+        if (exception.getCause().getClass() == FileNotFoundException.class) {
+            return true;
+        }
         int remaining = exception.getRateLimitStatus().getRemaining();
         if (remaining <= 0) {
             int secondsToWait = exception.getRateLimitStatus().getSecondsUntilReset() + 5;
