@@ -65,7 +65,7 @@ public class Blade {
 
         // start from the root nodes and transform the Graph into Observables
         List<Node> rootNodes = graph.getRoots();
-        buildObservables(rootNodes);
+        buildObservables(graph, rootNodes);
     }
 
     public void run() throws ClassNotFoundException, FileNotFoundException {
@@ -98,13 +98,13 @@ public class Blade {
         logger.info("Done.");
     }
 
-    private void buildObservables(List<Node> nodes) throws ClassNotFoundException {
-        for (int i = 0; i < nodes.size(); i++) {
-            buildObservable(nodes.get(i));
+    private void buildObservables(Graph graph, List<Node> nodes) throws ClassNotFoundException {
+        for (Node node : nodes) {
+            buildObservable(graph, node);
         }
     }
 
-    private void buildObservable(Node node) throws ClassNotFoundException {
+    private void buildObservable(Graph graph, Node node) throws ClassNotFoundException {
         // if the observableMap already has an Observable for the current Node, it was already built before
         if (observableMap.get(node.getName()) != null) {
             return;
@@ -115,7 +115,7 @@ public class Blade {
         List<Observable> previousObservables = null;
         if (node.hasPrev()) {
             // build the previous nodes if they're not already built
-            buildObservables(previousNodes);
+            buildObservables(graph, previousNodes);
             // get all the previous Observables from the observableMap
             previousObservables = previousNodes.stream()
                     .map(prevNode -> observableMap.get(prevNode.getName()))
@@ -129,6 +129,7 @@ public class Blade {
         }
 
         IPlugin plugin = PluginProvider.getPlugin(node.getPlugin());
+        plugin.setProcessName(graph.getName());
         // use the previous observables in the plugin
         Observable observable = plugin.process(node.getConfig(), previousObservables);
 
@@ -144,7 +145,7 @@ public class Blade {
         if (!node.hasNext()) {
             terminalObservables.add(observable);
         } else {
-            buildObservables(node.getNext());
+            buildObservables(graph, node.getNext());
         }
     }
 

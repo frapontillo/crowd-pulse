@@ -25,9 +25,28 @@ import java.util.stream.Collectors;
  * @author Francesco Pontillo
  */
 public class Graph {
+    private String name;
     private List<Node> roots;
     private HashMap<String, Node> nodes;
     private HashMap<String, List<String>> edges;
+
+    /**
+     * Get the name of the Graph.
+     *
+     * @return The name of the Graph.
+     */
+    public String getName() {
+        return name;
+    }
+
+    /**
+     * Set the name of the Graph.
+     *
+     * @param name The name of the Graph.
+     */
+    public void setName(String name) {
+        this.name = name;
+    }
 
     /**
      * Get the root {@link Node}s of the Graph.
