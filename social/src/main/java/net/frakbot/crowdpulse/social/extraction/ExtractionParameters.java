@@ -39,7 +39,7 @@ public class ExtractionParameters implements IPluginConfig<ExtractionParameters>
     private String source;
 
     @Parameter(names = "-query", description = "Text content to search for")
-    private String query;
+    private List<String> query;
 
     @Parameter(names = "-location", description = "Location box or area", converter = GeoLocationBoxConverter.class)
     private GeoLocationBox geoLocationBox;
@@ -72,7 +72,7 @@ public class ExtractionParameters implements IPluginConfig<ExtractionParameters>
         return source;
     }
 
-    public String getQuery() {
+    public List<String> getQuery() {
         return query;
     }
 
@@ -132,7 +132,7 @@ public class ExtractionParameters implements IPluginConfig<ExtractionParameters>
         this.source = source;
     }
 
-    public void setQuery(String query) {
+    public void setQuery(List<String> query) {
         this.query = query;
     }
 

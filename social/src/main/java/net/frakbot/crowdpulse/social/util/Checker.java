@@ -30,8 +30,8 @@ public class Checker {
     }
 
     public static Func1<Message, Boolean> checkQuery(final ExtractionParameters parameters) {
-        return message -> (StringUtil.isNullOrEmpty(parameters.getQuery())
-                || message.getText().contains(parameters.getQuery()));
+        return message -> parameters.getQuery() == null || parameters.getQuery().size() == 0
+                || StringUtil.containsAnyString(message.getText(), parameters.getQuery());
     }
 
     public static Func1<Message, Boolean> checkFromUser(final ExtractionParameters parameters) {

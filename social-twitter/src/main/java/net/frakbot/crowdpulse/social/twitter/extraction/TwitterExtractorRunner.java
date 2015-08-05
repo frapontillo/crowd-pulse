@@ -362,11 +362,11 @@ public class TwitterExtractorRunner {
                 }
             }
         }
-        if (!StringUtil.isNullOrEmpty(parameters.getQuery())) {
-            String[] components = parameters.getQuery().split(",");
-            for (int i = 0; i < components.length; i++) {
-                queryStringBuilder.append(components[i]);
-                if (i < components.length - 1) {
+        List<String> components = parameters.getQuery();
+        if (components != null) {
+            for (int i = 0; i < components.size(); i++) {
+                queryStringBuilder.append(components.get(i));
+                if (i < components.size() - 1) {
                     queryStringBuilder.append(" OR ");
                 }
             }
@@ -428,8 +428,10 @@ public class TwitterExtractorRunner {
         }
 
         // set the terms to search for
-        if (!StringUtil.isNullOrEmpty(parameters.getQuery())) {
-            filterQuery.track(parameters.getQuery().split(","));
+        if (parameters.getQuery() != null) {
+            String[] parametersArray = new String[parameters.getQuery().size()];
+            parametersArray = parameters.getQuery().toArray(parametersArray);
+            filterQuery.track(parametersArray);
         }
 
         return filterQuery;
