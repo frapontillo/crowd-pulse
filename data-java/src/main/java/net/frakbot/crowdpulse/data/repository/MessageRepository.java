@@ -18,6 +18,7 @@ package net.frakbot.crowdpulse.data.repository;
 
 import net.frakbot.crowdpulse.data.entity.Message;
 import org.bson.types.ObjectId;
+import org.mongodb.morphia.query.Query;
 
 /**
  * {@link Repository} for {@link Message}s.
@@ -25,4 +26,16 @@ import org.bson.types.ObjectId;
  * @author Francesco Pontillo
  */
 public class MessageRepository extends Repository<Message, ObjectId> {
+
+    /**
+     * Get a Message by checking its original source ID.
+     *
+     * @param originalId The original ID of the message at the source.
+     * @return The found {@link Message} or {@code null}.
+     */
+    public Message getByOriginalId(String originalId) {
+        Query<Message> query = createQuery();
+        query.field("oId").equal(originalId);
+        return query.get();
+    }
 }

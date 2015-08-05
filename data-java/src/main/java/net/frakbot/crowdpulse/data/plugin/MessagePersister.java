@@ -52,6 +52,13 @@ public class MessagePersister extends IPlugin<Message, Message, MessagePersister
     @Override protected Observable.Operator<Message, Message> getOperator(MessagePersisterOptions parameters) {
         return subscriber -> new CrowdSubscriber<Message>(subscriber) {
             @Override public void onNext(Message message) {
+                // if the message was already persisted, update its favs and shares
+                Message originalMessage = messageRepository.getByOriginalId(message.getoId());
+                if (originalMessage != null) {
+                    originalMessage.setFavs(message.getFavs());
+                    originalMessage.setShares(message.getShares());
+                    message = originalMessage;
+                }
                 if (parameters != null) {
                     message.setCustomTags(parameters.getTags());
                 }
