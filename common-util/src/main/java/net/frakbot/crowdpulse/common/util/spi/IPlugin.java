@@ -68,6 +68,23 @@ import java.util.List;
  * @author Francesco Pontillo
  */
 public abstract class IPlugin<Input, Output, Parameter extends IPluginConfig<Parameter>> {
+    private String processName;
+
+    /**
+     * Get the name of the process that has created and instantiated the plugin.
+     * @return The name of the process.
+     */
+    public String getProcessName() {
+        return processName;
+    }
+
+    /**
+     * Set the name of the process that has created and instantiated the plugin.
+     * @param processName The name of the process.
+     */
+    public void setProcessName(String processName) {
+        this.processName = processName;
+    }
 
     /**
      * Retrieve the name of the specific plugin implementation.
