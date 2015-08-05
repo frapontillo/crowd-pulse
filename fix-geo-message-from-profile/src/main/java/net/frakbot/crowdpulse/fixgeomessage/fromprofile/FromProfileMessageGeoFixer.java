@@ -16,10 +16,12 @@
 
 package net.frakbot.crowdpulse.fixgeomessage.fromprofile;
 
+import com.google.gson.JsonElement;
 import net.frakbot.crowdpulse.common.util.spi.IPlugin;
-import net.frakbot.crowdpulse.common.util.spi.VoidConfig;
+import net.frakbot.crowdpulse.common.util.spi.PluginConfigHelper;
 import net.frakbot.crowdpulse.data.entity.Message;
 import net.frakbot.crowdpulse.data.entity.Profile;
+import net.frakbot.crowdpulse.data.plugin.GenericDbConfig;
 import net.frakbot.crowdpulse.data.repository.ProfileRepository;
 import net.frakbot.crowdpulse.fixgeomessage.IMessageGeoFixerOperator;
 import rx.Observable;
@@ -27,32 +29,38 @@ import rx.Observable;
 /**
  * @author Francesco Pontillo
  */
-public class FromProfileMessageGeoFixer extends IPlugin<Message, Message, VoidConfig> {
+public class FromProfileMessageGeoFixer
+        extends IPlugin<Message, Message, FromProfileMessageGeoFixer.FromProfileMessageGeoFixerOptions> {
     public final static String PLUGIN_NAME = "fromprofile";
-    private final ProfileRepository profileRepository;
-
-    public FromProfileMessageGeoFixer() {
-        profileRepository = new ProfileRepository();
-    }
+    private ProfileRepository profileRepository;
 
     @Override public String getName() {
         return PLUGIN_NAME;
     }
 
-    @Override public VoidConfig getNewParameter() {
-        return new VoidConfig();
+    @Override public FromProfileMessageGeoFixerOptions getNewParameter() {
+        return new FromProfileMessageGeoFixerOptions();
     }
 
-    @Override public Observable.Operator<Message, Message> getOperator(VoidConfig parameters) {
+    @Override public Observable.Operator<Message, Message> getOperator(FromProfileMessageGeoFixerOptions parameters) {
+        // use the custom DB name, if any
+        profileRepository = new ProfileRepository(parameters.getDb());
+
         return new IMessageGeoFixerOperator() {
             @Override public Double[] getCoordinates(Message message) {
                 Profile user = profileRepository.getByUsername(message.getFromUser());
                 Double[] coordinates = null;
                 if (user != null && user.getLatitude() != null && user.getLongitude() != null) {
-                    coordinates = new Double[] { user.getLatitude(), user.getLongitude() };
+                    coordinates = new Double[]{user.getLatitude(), user.getLongitude()};
                 }
                 return coordinates;
             }
         };
+    }
+
+    public class FromProfileMessageGeoFixerOptions extends GenericDbConfig<FromProfileMessageGeoFixerOptions> {
+        @Override public FromProfileMessageGeoFixerOptions buildFromJsonElement(JsonElement json) {
+            return PluginConfigHelper.buildFromJson(json, FromProfileMessageGeoFixerOptions.class);
+        }
     }
 }
