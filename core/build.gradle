@@ -118,4 +118,6 @@ dependencies {
     compile project(':infogram')
 
     compile project(':index-uniba')
+
+    compile project(':email-notify')
 }

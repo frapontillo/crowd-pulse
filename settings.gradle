@@ -73,3 +73,5 @@ include 'infogram'
 
 include 'index-uniba'
 
+include 'email-notify'
+
