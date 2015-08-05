@@ -28,12 +28,14 @@ import net.frakbot.crowdpulse.social.converter.ISO8601DateConverter;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.regex.Pattern;
 
 /**
  * @author Francesco Pontillo
  */
 @Parameters(separators = "=")
 public class ExtractionParameters implements IPluginConfig<ExtractionParameters> {
+    private final Pattern REGEX_NO_QUOTE = Pattern.compile("^(?!\").*(?!\")$");
 
     @Parameter(names = "-source", description = "Source for extraction")
     private String source;
@@ -169,10 +171,23 @@ public class ExtractionParameters implements IPluginConfig<ExtractionParameters>
 
     @Override public ExtractionParameters buildFromJsonElement(JsonElement json) {
         ExtractionParameters extractionParameters = PluginConfigHelper.buildFromJson(json, ExtractionParameters.class);
+        // convert the location, if any
         GeoLocationBoxConverter geoConverter = new GeoLocationBoxConverter();
-        JsonElement location;
-        if ((location = json.getAsJsonObject().get("location")) != null) {
+        JsonElement location = json.getAsJsonObject().get("location");
+        if (location != null) {
             this.setGeoLocationBox(geoConverter.convert(location.getAsString()));
+        }
+        // normalize the query parameters
+        List<String> query = extractionParameters.getQuery();
+        if (query != null) {
+            for (int i = 0; i < query.size(); i++) {
+                String s = query.get(i);
+                // if the string has spaces and isn't surrounded by quotes
+                if (s.contains(" ") && REGEX_NO_QUOTE.matcher(s).matches()) {
+                    s = "\"" + s + "\"";
+                    query.set(i, s);
+                }
+            }
         }
         return extractionParameters;
     }
