@@ -17,6 +17,7 @@
 package net.frakbot.crowdpulse.categorize;
 
 import net.frakbot.crowdpulse.common.util.rx.CrowdSubscriber;
+import net.frakbot.crowdpulse.common.util.spi.IPlugin;
 import net.frakbot.crowdpulse.data.entity.Category;
 import net.frakbot.crowdpulse.data.entity.Message;
 import net.frakbot.crowdpulse.data.entity.Tag;
@@ -31,16 +32,33 @@ import java.util.List;
  * @author Francesco Pontillo
  */
 public abstract class ITagCategorizerOperator implements Observable.Operator<Message, Message> {
+    private IPlugin plugin;
+
+    public ITagCategorizerOperator(IPlugin plugin) {
+        this.plugin = plugin;
+    }
 
     @Override
     public Subscriber<? super Message> call(Subscriber<? super Message> subscriber) {
         return new CrowdSubscriber<Message>(subscriber) {
             @Override
             public void onNext(Message message) {
+                plugin.reportElementAsStarted(message.getId());
                 if (message.getTags() != null) {
                     message.getTags().forEach(ITagCategorizerOperator.this::categorizeTag);
                 }
+                plugin.reportElementAsEnded(message.getId());
                 subscriber.onNext(message);
+            }
+
+            @Override public void onCompleted() {
+                plugin.reportPluginAsCompleted();
+                super.onCompleted();
+            }
+
+            @Override public void onError(Throwable e) {
+                plugin.reportPluginAsErrored();
+                super.onError(e);
             }
         };
     }

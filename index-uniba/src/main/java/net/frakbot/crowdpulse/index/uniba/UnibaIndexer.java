@@ -78,6 +78,16 @@ public class UnibaIndexer extends IPlugin<Message, Message, IndexParameters> {
                                     .compose(RxUtil.flatten());
                             subscriber.onNext(messages);
                         }
+
+                        @Override public void onCompleted() {
+                            reportPluginAsCompleted();
+                            super.onCompleted();
+                        }
+
+                        @Override public void onError(Throwable e) {
+                            reportPluginAsErrored();
+                            super.onError(e);
+                        }
                     });
             // in the end, merge all of the groups
             return Observable.merge(grouped);
@@ -105,6 +115,8 @@ public class UnibaIndexer extends IPlugin<Message, Message, IndexParameters> {
             return subscriber -> new CrowdSubscriber<List<Message>>(subscriber) {
 
                 @Override public void onNext(List<Message> messages) {
+                    messages.forEach(m -> reportElementAsStarted(m.getId()));
+
                     // feed the created model with the new message
                     IndexRequest req = new IndexRequest();
                     req.setId(getSchemaName(parameters));
@@ -117,6 +129,8 @@ public class UnibaIndexer extends IPlugin<Message, Message, IndexParameters> {
                     if (res.hasErrored()) {
                         logger.error(String.format("Could not index message (\"%s\").", res.getError()));
                     }
+
+                    messages.forEach(m -> reportElementAsEnded(m.getId()));
                     subscriber.onNext(messages);
                 }
 
@@ -126,6 +140,8 @@ public class UnibaIndexer extends IPlugin<Message, Message, IndexParameters> {
         // if the language is not supported, flow elements through
         return subscriber -> new CrowdSubscriber<List<Message>>(subscriber) {
             @Override public void onNext(List<Message> messages) {
+                messages.forEach(m -> reportElementAsStarted(m.getId()));
+                messages.forEach(m -> reportElementAsEnded(m.getId()));
                 subscriber.onNext(messages);
             }
         };

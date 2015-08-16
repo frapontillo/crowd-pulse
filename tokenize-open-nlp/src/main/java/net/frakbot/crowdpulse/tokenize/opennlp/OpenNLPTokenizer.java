@@ -54,7 +54,7 @@ public class OpenNLPTokenizer extends IPlugin<Message, Message, VoidConfig> {
     }
 
     @Override protected Observable.Operator<Message, Message> getOperator(VoidConfig parameters) {
-        return new ITokenizerOperator() {
+        return new ITokenizerOperator(this) {
             @Override public List<Token> getTokens(Message message) {
                 TokenizerModel tokenizerModel = getModel(message.getLanguage());
                 if (tokenizerModel == null) {

@@ -46,7 +46,7 @@ public class FromProfileMessageGeoFixer
         // use the custom DB name, if any
         profileRepository = new ProfileRepository(parameters.getDb());
 
-        return new IMessageGeoFixerOperator() {
+        return new IMessageGeoFixerOperator(this) {
             @Override public Double[] getCoordinates(Message message) {
                 Profile user = profileRepository.getByUsername(message.getFromUser());
                 Double[] coordinates = null;

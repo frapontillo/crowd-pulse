@@ -20,7 +20,12 @@ import com.google.gson.JsonElement;
 import net.frakbot.crowdpulse.common.util.rx.BackpressureAsyncTransformer;
 import rx.Observable;
 
-import java.util.List;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
+import java.util.*;
 
 /**
  * Advanced base class for CrowdPulse plugins.
@@ -68,8 +73,11 @@ import java.util.List;
  * @author Francesco Pontillo
  */
 public abstract class IPlugin<Input, Output, Parameter extends IPluginConfig<Parameter>> {
+    private final static char CSV_NEW_COLUMN = ',';
+
     private String jobName;
     private ProcessInfo processInfo;
+    private HashMap<Object, ProcessingStat> statMap;
 
     /**
      * Get the name that was given to this plugin instance. Plugin instances are called jobs.
@@ -317,6 +325,174 @@ public abstract class IPlugin<Input, Output, Parameter extends IPluginConfig<Par
      */
     public final Observable<Output> process(Observable<? extends Object>... streams) {
         return process((Parameter) null, streams);
+    }
+
+    /**
+     * Returns the current plugin's statistics map, where every element has associated a {@link
+     * net.frakbot.crowdpulse.common.util.spi.IPlugin.ProcessingStat} object.
+     *
+     * @return The execution statistics map.
+     */
+    private HashMap<Object, ProcessingStat> getStatMap() {
+        if (statMap == null) {
+            statMap = new HashMap<>();
+        }
+        return statMap;
+    }
+
+    /**
+     * Report that the plugin has begun processing an element. This method is idempotent, if the processing had already
+     * begun, this notification has no effect.
+     *
+     * @param elementId The ID of the element the plugin started to process.
+     */
+    public final void reportElementAsStarted(Object elementId) {
+        if (getStatMap().get(elementId) == null) {
+            getStatMap().put(elementId, new ProcessingStat(new Date()));
+        }
+    }
+
+    /**
+     * Report that the plugin has finished processing an element. This method is idempotent, if the processing had
+     * already completed, the notification has no effect.
+     *
+     * @param elementId The ID of the element the plugin finished to process.
+     */
+    public final void reportElementAsEnded(Object elementId) {
+        ProcessingStat stat = getStatMap().get(elementId);
+        if (stat == null) {
+            stat = new ProcessingStat();
+        }
+        stat.setEndTime(new Date());
+    }
+
+    private void printStatisticsToCSV() {
+        Map<Object, ProcessingStat> statMap = getStatMap();
+        if (statMap.keySet().isEmpty()) {
+            return;
+        }
+
+        List<String> rows = new ArrayList<>(statMap.keySet().size() + 1);
+        // build the header
+        String header = buildRow(new String[]{"element", "start_time", "end_time", "duration"});
+        rows.add(header);
+
+        // build all rows
+        statMap.keySet().forEach(k -> {
+            ProcessingStat stat = statMap.get(k);
+            String[] values = new String[]{k.toString(),
+                    Long.toString(stat.getStartTime().getTime()), Long.toString(stat.getEndTime().getTime()),
+                    Long.toString(stat.getDuration())};
+            rows.add(buildRow(values));
+        });
+
+        try {
+            Path dirPath = Paths.get(getProcessInfo().getLogs(), getProcessInfo().getName());
+            Files.createDirectories(dirPath);
+            Path filePath = dirPath.resolve(getJobName() + ".csv");
+            Files.write(filePath, rows, StandardOpenOption.CREATE_NEW);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Report that the plugin has finished processing all elements, thus it can print out the statistics to a CSV file.
+     */
+    public final void reportPluginAsCompleted() {
+        printStatisticsToCSV();
+    }
+
+    /**
+     * Report that the plugin has errored while processing elements. The statistics CSV file will still be written.
+     */
+    public final void reportPluginAsErrored() {
+        printStatisticsToCSV();
+    }
+
+    /**
+     * Build a row as a {@link String} starting from the column values.
+     *
+     * @param columns The column values, as array of {@link String}s.
+     * @return The {@link String} representation of the row.
+     */
+    private String buildRow(String[] columns) {
+        StringBuilder builder = new StringBuilder();
+        for (int i = 0; i < columns.length; i++) {
+            builder = builder.append(columns[i]);
+            if (i < columns.length - 1) {
+                builder = builder.append(CSV_NEW_COLUMN);
+            }
+        }
+        return builder.toString();
+    }
+
+    /**
+     * Statistics holder class for an element processing time.
+     */
+    private final class ProcessingStat {
+        private Date startTime;
+        private Date endTime;
+
+        public ProcessingStat() {
+        }
+
+        public ProcessingStat(Date startTime) {
+            this.startTime = startTime;
+        }
+
+        /**
+         * Get the time a specific element processing began.
+         *
+         * @return The start processing time for an element.
+         */
+        public Date getStartTime() {
+            return startTime;
+        }
+
+        /**
+         * Set the time a specific element processing began.
+         *
+         * @param startTime The start processing time for an element.
+         */
+        public void setStartTime(Date startTime) {
+            this.startTime = startTime;
+        }
+
+        /**
+         * Get the time a specific element processing completed.
+         *
+         * @return The end processing time for an element.
+         */
+        public Date getEndTime() {
+            return endTime;
+        }
+
+        /**
+         * Set the time a specific element processing completed.
+         *
+         * @param endTime The end processing time for an element.
+         */
+        public void setEndTime(Date endTime) {
+            this.endTime = endTime;
+        }
+
+        /**
+         * Calculate the duration, in milliseconds, that an element has taken to go through the plugin.
+         * If the element has no start time but has an end time, 0 is returned.
+         * Otherwise, -1 is returned.
+         *
+         * @return The time (in milliseconds) that an element has taken to get processed.
+         */
+        public long getDuration() {
+            if (startTime != null && endTime != null) {
+                return endTime.getTime() - startTime.getTime();
+            }
+            if (endTime != null) {
+                return 0;
+            }
+            return -1;
+        }
     }
 
 }

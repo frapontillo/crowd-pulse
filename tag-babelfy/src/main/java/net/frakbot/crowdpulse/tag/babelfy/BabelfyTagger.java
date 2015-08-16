@@ -44,7 +44,7 @@ public class BabelfyTagger extends IPlugin<Message, Message, VoidConfig> {
     }
 
     @Override protected Observable.Operator<Message, Message> getOperator(VoidConfig parameters) {
-        return new ITaggerOperator() {
+        return new ITaggerOperator(this) {
             @Override protected List<Tag> getTagsImpl(String text, String language) {
                 BabelfyResponse response;
                 List<Tag> tags = new ArrayList<>();

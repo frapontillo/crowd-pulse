@@ -44,12 +44,24 @@ public abstract class IReplyExtractor extends IPlugin<Message, Message, VoidConf
     @Override protected Observable.Operator<Message, Message> getOperator(VoidConfig parameters) {
         return subscriber -> new CrowdSubscriber<Message>(subscriber) {
             @Override public void onNext(Message message) {
+                reportElementAsStarted(message.getId());
                 ExtractionParameters newParams = new ExtractionParameters();
                 newParams.setSource(getName());
                 newParams.setTags(message.getCustomTags());
                 List<Message> replies = getReplies(message, newParams);
+                reportElementAsEnded(message.getId());
                 subscriber.onNext(message);
                 replies.forEach(subscriber::onNext);
+            }
+
+            @Override public void onCompleted() {
+                reportPluginAsCompleted();
+                super.onCompleted();
+            }
+
+            @Override public void onError(Throwable e) {
+                reportPluginAsErrored();
+                super.onError(e);
             }
         };
     }

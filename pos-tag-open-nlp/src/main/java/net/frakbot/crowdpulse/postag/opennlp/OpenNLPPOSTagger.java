@@ -52,7 +52,7 @@ public class OpenNLPPOSTagger extends IPlugin<Message, Message, VoidConfig> {
     }
 
     @Override public Observable.Operator<Message, Message> getOperator(VoidConfig parameters) {
-        return new IPOSTaggerOperator() {
+        return new IPOSTaggerOperator(this) {
             @Override public List<Token> posTagMessageTokens(Message message) {
                 if (message.getTokens() == null) {
                     return null;

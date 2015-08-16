@@ -61,7 +61,6 @@ public class MessageFetcher extends IPlugin<Object, Message, MessageFetcher.Mess
 
             @Override public void onError(Throwable e) {
                 e.printStackTrace();
-                // TODO: should we stop the stream if an error occurs?
                 subscriber.onError(e);
             }
 

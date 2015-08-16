@@ -18,6 +18,7 @@ package net.frakbot.crowdpulse.detectlanguage;
 
 import net.frakbot.crowdpulse.common.util.StringUtil;
 import net.frakbot.crowdpulse.common.util.rx.CrowdSubscriber;
+import net.frakbot.crowdpulse.common.util.spi.IPlugin;
 import net.frakbot.crowdpulse.data.entity.Message;
 import rx.Observable;
 import rx.Subscriber;
@@ -28,16 +29,33 @@ import rx.Subscriber;
  * @author Francesco Pontillo
  */
 public abstract class ILanguageDetectorOperator implements Observable.Operator<Message, Message> {
+    private IPlugin plugin;
+
+    public ILanguageDetectorOperator(IPlugin plugin) {
+        this.plugin = plugin;
+    }
 
     @Override
     public Subscriber<? super Message> call(Subscriber<? super Message> subscriber) {
         return new CrowdSubscriber<Message>(subscriber) {
             @Override
             public void onNext(Message message) {
+                plugin.reportElementAsStarted(message.getId());
                 if (StringUtil.isNullOrEmpty(message.getLanguage())) {
                     message.setLanguage(getLanguage(message));
                 }
+                plugin.reportElementAsEnded(message.getId());
                 subscriber.onNext(message);
+            }
+
+            @Override public void onCompleted() {
+                plugin.reportPluginAsCompleted();
+                super.onCompleted();
+            }
+
+            @Override public void onError(Throwable e) {
+                plugin.reportPluginAsErrored();
+                super.onError(e);
             }
         };
     }

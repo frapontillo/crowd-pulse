@@ -22,6 +22,7 @@ import net.frakbot.crowdpulse.common.util.spi.IPlugin;
 import net.frakbot.crowdpulse.common.util.spi.PluginConfigHelper;
 import net.frakbot.crowdpulse.data.entity.Message;
 import net.frakbot.crowdpulse.data.repository.MessageRepository;
+import org.bson.types.ObjectId;
 import rx.Observable;
 
 import java.util.List;
@@ -50,6 +51,8 @@ public class MessagePersister extends IPlugin<Message, Message, MessagePersister
 
         return subscriber -> new CrowdSubscriber<Message>(subscriber) {
             @Override public void onNext(Message message) {
+                ObjectId id = message.getId();
+                reportElementAsStarted(id);
                 // if the message was already persisted, update its favs and shares
                 Message originalMessage = messageRepository.getByOriginalId(message.getoId());
                 if (originalMessage != null) {
@@ -59,7 +62,18 @@ public class MessagePersister extends IPlugin<Message, Message, MessagePersister
                 }
                 message.setCustomTags(parameters.getTags());
                 messageRepository.save(message);
+                reportElementAsEnded(id);
                 subscriber.onNext(message);
+            }
+
+            @Override public void onCompleted() {
+                reportPluginAsCompleted();
+                super.onCompleted();
+            }
+
+            @Override public void onError(Throwable e) {
+                reportPluginAsErrored();
+                super.onError(e);
             }
         };
     }

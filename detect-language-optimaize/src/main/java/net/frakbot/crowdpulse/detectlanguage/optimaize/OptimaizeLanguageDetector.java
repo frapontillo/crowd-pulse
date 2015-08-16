@@ -67,7 +67,7 @@ public class OptimaizeLanguageDetector extends IPlugin<Message, Message, VoidCon
     }
 
     @Override public Observable.Operator<Message, Message> getOperator(VoidConfig parameters) {
-        return new ILanguageDetectorOperator() {
+        return new ILanguageDetectorOperator(this) {
             @Override public String getLanguage(Message message) {
                 TextObject textObject = textObjectFactory.forText(message.getText());
                 Optional<String> lang = languageDetector.detect(textObject);

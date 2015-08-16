@@ -17,6 +17,7 @@
 package net.frakbot.crowdpulse.tag;
 
 import net.frakbot.crowdpulse.common.util.rx.CrowdSubscriber;
+import net.frakbot.crowdpulse.common.util.spi.IPlugin;
 import net.frakbot.crowdpulse.data.entity.Message;
 import net.frakbot.crowdpulse.data.entity.Tag;
 import rx.Observable;
@@ -28,14 +29,31 @@ import java.util.List;
  * @author Francesco Pontillo
  */
 public abstract class ITaggerOperator implements Observable.Operator<Message, Message> {
+    private IPlugin plugin;
+
+    public ITaggerOperator(IPlugin plugin) {
+        this.plugin = plugin;
+    }
 
     @Override
     public Subscriber<? super Message> call(Subscriber<? super Message> subscriber) {
         return new CrowdSubscriber<Message>(subscriber) {
             @Override
             public void onNext(Message message) {
+                plugin.reportElementAsStarted(message.getId());
                 message = tagMessage(message);
+                plugin.reportElementAsEnded(message.getId());
                 subscriber.onNext(message);
+            }
+
+            @Override public void onCompleted() {
+                plugin.reportPluginAsCompleted();
+                super.onCompleted();
+            }
+
+            @Override public void onError(Throwable e) {
+                plugin.reportPluginAsErrored();
+                super.onError(e);
             }
         };
     }
@@ -44,7 +62,7 @@ public abstract class ITaggerOperator implements Observable.Operator<Message, Me
      * Starts an asynchronous tagging process loading an {@link List} of
      * {@link net.frakbot.crowdpulse.data.entity.Tag}.
      *
-     * @param text {@link String} text to tag
+     * @param text     {@link String} text to tag
      * @param language {@link String} language of the text to tag (can be discarded by some implementations)
      * @return {@link List <net.frakbot.crowdpulse.data.entity.Tag>}
      */
@@ -56,6 +74,13 @@ public abstract class ITaggerOperator implements Observable.Operator<Message, Me
         return tags;
     }
 
+    /**
+     * Tag a {@link Message} by calling {@link #getTags(String, String)} and setting all the {@link Tag}s to the
+     * original message.
+     *
+     * @param message The {@link Message} to tag.
+     * @return The tagged input {@link Message}.
+     */
     public Message tagMessage(Message message) {
         List<Tag> tags = getTags(message.getText(), message.getLanguage());
         message.addTags(tags);
@@ -65,9 +90,9 @@ public abstract class ITaggerOperator implements Observable.Operator<Message, Me
     /**
      * Actual {@link Tag} retrieval implementation.
      *
-     * @param text      The text to add {@link Tag}s to.
-     * @param language  The language of the text.
-     * @return          A {@link List<Tag>}.
+     * @param text     The text to add {@link Tag}s to.
+     * @param language The language of the text.
+     * @return A {@link List<Tag>}.
      */
     protected abstract List<Tag> getTagsImpl(String text, String language);
 

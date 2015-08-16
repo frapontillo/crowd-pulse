@@ -49,7 +49,7 @@ public class SimpleMultiPOSTagger extends IPlugin<Message, Message, VoidConfig> 
 
     @Override public Observable.Operator<Message, Message> getOperator(VoidConfig parameters) {
         SimpleMultiPOSTagger actualTagger = this;
-        return new ISimplePOSTaggerOperator() {
+        return new ISimplePOSTaggerOperator(this) {
             @Override public List<Token> posTagMessageTokens(Message message) {
                 return actualTagger.simplePosTagMessageTokens(message);
             }

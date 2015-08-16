@@ -60,7 +60,7 @@ public class WikipediaTagCategorizer extends IPlugin<Message, Message, VoidConfi
     }
 
     @Override public Observable.Operator<Message, Message> getOperator(VoidConfig parameters) {
-        return new ITagCategorizerOperator() {
+        return new ITagCategorizerOperator(this) {
             @Override public List<Category> getCategories(Tag tag) {
                 WikipediaService wikipediaService = getService(tag.getLanguage());
                 try {

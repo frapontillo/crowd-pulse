@@ -110,7 +110,7 @@ public class MorphITLemmatizer extends ISingleablePlugin<Message, VoidConfig> {
 
     @Override public Observable.Operator<Message, Message> getOperator(VoidConfig parameters) {
         MorphITLemmatizer currentLemmatizer = this;
-        return new ILemmatizerOperator() {
+        return new ILemmatizerOperator(this) {
             @Override public List<Token> lemmatizeMessageTokens(Message message) {
                 return currentLemmatizer.singleItemProcess(message).getTokens();
             }

@@ -17,6 +17,7 @@
 package net.frakbot.crowdpulse.fixgeoprofile;
 
 import net.frakbot.crowdpulse.common.util.rx.CrowdSubscriber;
+import net.frakbot.crowdpulse.common.util.spi.IPlugin;
 import net.frakbot.crowdpulse.data.entity.Profile;
 import rx.Observable;
 import rx.Subscriber;
@@ -25,14 +26,31 @@ import rx.Subscriber;
  * @author Francesco Pontillo
  */
 public abstract class IProfileGeoFixerOperator implements Observable.Operator<Profile, Profile> {
+    private IPlugin plugin;
+
+    public IProfileGeoFixerOperator(IPlugin plugin) {
+        this.plugin = plugin;
+    }
 
     @Override
     public Subscriber<? super Profile> call(Subscriber<? super Profile> subscriber) {
         return new CrowdSubscriber<Profile>(subscriber) {
             @Override
             public void onNext(Profile profile) {
+                plugin.reportElementAsStarted(profile.getId());
                 profile = geoFixProfile(profile);
+                plugin.reportElementAsEnded(profile.getId());
                 subscriber.onNext(profile);
+            }
+
+            @Override public void onCompleted() {
+                plugin.reportPluginAsCompleted();
+                super.onCompleted();
+            }
+
+            @Override public void onError(Throwable e) {
+                plugin.reportPluginAsErrored();
+                super.onError(e);
             }
         };
     }

@@ -46,8 +46,13 @@ public abstract class IProfiler extends IPlugin<Message, Profile, ProfileParamet
                     if (params != null) {
                         parameters.setTags(params.getTags());
                     }
-                    return getSingleProfile(parameters);
-                });
+                    reportElementAsStarted(message.getFromUser());
+                    Profile profile = getSingleProfile(parameters);
+                    reportElementAsEnded(message.getFromUser());
+                    return profile;
+                })
+                .doOnCompleted(this::reportPluginAsCompleted)
+                .doOnError((err) -> reportPluginAsErrored());
     }
 
     @Override protected Observable.Operator<Profile, Message> getOperator(ProfileParameters parameters) {

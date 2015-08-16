@@ -17,6 +17,7 @@
 package net.frakbot.crowdpulse.tokenize;
 
 import net.frakbot.crowdpulse.common.util.rx.CrowdSubscriber;
+import net.frakbot.crowdpulse.common.util.spi.IPlugin;
 import net.frakbot.crowdpulse.data.entity.Message;
 import net.frakbot.crowdpulse.data.entity.Token;
 import rx.Observable;
@@ -28,14 +29,31 @@ import java.util.List;
  * @author Francesco Pontillo
  */
 public abstract class ITokenizerOperator implements Observable.Operator<Message, Message> {
+    private IPlugin plugin;
+
+    public ITokenizerOperator(IPlugin plugin) {
+        this.plugin = plugin;
+    }
 
     @Override
     public Subscriber<? super Message> call(Subscriber<? super Message> subscriber) {
         return new CrowdSubscriber<Message>(subscriber) {
             @Override
             public void onNext(Message message) {
+                plugin.reportElementAsStarted(message.getId());
                 message = tokenize(message);
+                plugin.reportElementAsEnded(message.getId());
                 subscriber.onNext(message);
+            }
+
+            @Override public void onCompleted() {
+                plugin.reportPluginAsCompleted();
+                super.onCompleted();
+            }
+
+            @Override public void onError(Throwable e) {
+                plugin.reportPluginAsErrored();
+                super.onError(e);
             }
         };
     }

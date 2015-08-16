@@ -64,7 +64,7 @@ public class SentiWordNetSentimentAnalyzer extends IPlugin<Message, Message, Voi
     }
 
     @Override protected Observable.Operator<Message, Message> getOperator(VoidConfig parameters) {
-        return new ISentimentAnalyzerOperator() {
+        return new ISentimentAnalyzerOperator(this) {
             @Override public Message sentimentAnalyze(Message message) {
                 double totalScore = 0;
                 double lemmatizedTokens = 0;

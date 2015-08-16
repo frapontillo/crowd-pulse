@@ -72,14 +72,17 @@ public class SentitSentimentAnalyzer extends IPlugin<Message, Message, VoidConfi
         @Override public Subscriber<? super List<Message>> call(Subscriber<? super List<Message>> subscriber) {
             return new SafeSubscriber<>(new Subscriber<List<Message>>() {
                 @Override public void onCompleted() {
+                    reportPluginAsCompleted();
                     subscriber.onCompleted();
                 }
 
                 @Override public void onError(Throwable e) {
+                    reportPluginAsErrored();
                     subscriber.onError(e);
                 }
 
                 @Override public void onNext(List<Message> messages) {
+                    messages.forEach(m -> reportElementAsStarted(m.getId()));
                     // make the request
                     SentitRequest request = new SentitRequest(messages);
                     SentitResponse response;
@@ -95,6 +98,7 @@ public class SentitSentimentAnalyzer extends IPlugin<Message, Message, VoidConfi
                             error.printStackTrace();
                         }
                     }
+                    messages.forEach(m -> reportElementAsEnded(m.getId()));
                     subscriber.onNext(messages);
                 }
             });

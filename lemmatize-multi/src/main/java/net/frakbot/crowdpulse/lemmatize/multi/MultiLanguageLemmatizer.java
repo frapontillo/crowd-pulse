@@ -77,7 +77,7 @@ public class MultiLanguageLemmatizer extends IPlugin<Message, Message, VoidConfi
     }
 
     @Override public Observable.Operator<Message, Message> getOperator(VoidConfig parameters) {
-        return new ILemmatizerOperator() {
+        return new ILemmatizerOperator(this) {
             @Override public List<Token> lemmatizeMessageTokens(Message message) {
                 // find or instantiate the lemmatizer
                 IPlugin<Message, Message, VoidConfig> lemmatizer = getLemmatizerForMessage(message);

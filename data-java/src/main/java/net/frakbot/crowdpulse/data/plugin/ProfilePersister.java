@@ -48,8 +48,20 @@ public class ProfilePersister extends IPlugin<Profile, Profile, ProfilePersister
         profileRepository = new ProfileRepository(parameters.getDb());
         return subscriber -> new CrowdSubscriber<Profile>(subscriber) {
             @Override public void onNext(Profile profile) {
+                reportElementAsStarted(profile.getId());
                 profileRepository.save(profile);
+                reportElementAsEnded(profile.getId());
                 subscriber.onNext(profile);
+            }
+
+            @Override public void onCompleted() {
+                reportPluginAsCompleted();
+                super.onCompleted();
+            }
+
+            @Override public void onError(Throwable e) {
+                reportPluginAsErrored();
+                super.onError(e);
             }
         };
     }

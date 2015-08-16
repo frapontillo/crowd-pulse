@@ -41,7 +41,7 @@ public class EnglishSimplePOSTagger extends ISingleablePlugin<Message, VoidConfi
 
     @Override public Observable.Operator<Message, Message> getOperator(VoidConfig parameters) {
         EnglishSimplePOSTagger actualTagger = this;
-        return new ISimplePOSTaggerOperator() {
+        return new ISimplePOSTaggerOperator(this) {
             @Override public List<Token> posTagMessageTokens(Message message) {
                 return actualTagger.singleItemProcess(message).getTokens();
             }

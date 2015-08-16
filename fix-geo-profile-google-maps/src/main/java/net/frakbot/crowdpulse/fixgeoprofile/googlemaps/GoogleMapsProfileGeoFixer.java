@@ -51,7 +51,7 @@ public class GoogleMapsProfileGeoFixer extends IPlugin<Profile, Profile, VoidCon
     }
 
     @Override protected Observable.Operator<Profile, Profile> getOperator(VoidConfig parameters) {
-        return new IProfileGeoFixerOperator() {
+        return new IProfileGeoFixerOperator(this) {
             @Override public Double[] getCoordinates(Profile profile) {
                 if (StringUtil.isNullOrEmpty(profile.getLocation())) {
                     return null;

@@ -49,6 +49,8 @@ public abstract class IProfileGrapher extends IPlugin<Profile, Profile, VoidConf
     @Override protected Observable.Operator<Profile, Profile> getOperator(VoidConfig parameters) {
         return subscriber -> new CrowdSubscriber<Profile>(subscriber) {
             @Override public void onNext(Profile profile) {
+                reportElementAsStarted(profile.getUsername());
+
                 // build the appropriate profile parameters
                 ProfileParameters params = new ProfileParameters();
                 params.setSource(getName());
@@ -56,8 +58,20 @@ public abstract class IProfileGrapher extends IPlugin<Profile, Profile, VoidConf
                 // get the profiles and emit them
                 List<Profile> connections = getConnections(profile, params);
                 connections.forEach(connection -> profile.addConnections(connection.getUsername()));
+
+                reportElementAsEnded(profile.getUsername());
                 connections.forEach(subscriber::onNext);
                 subscriber.onNext(profile);
+            }
+
+            @Override public void onCompleted() {
+                reportPluginAsCompleted();
+                super.onCompleted();
+            }
+
+            @Override public void onError(Throwable e) {
+                reportPluginAsErrored();
+                super.onError(e);
             }
         };
     }

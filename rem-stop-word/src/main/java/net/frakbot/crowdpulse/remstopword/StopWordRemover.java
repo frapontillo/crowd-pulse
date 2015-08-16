@@ -39,8 +39,20 @@ public abstract class StopWordRemover<Config extends IPluginConfig<Config>> exte
     @Override protected Observable.Operator<Message, Message> getOperator(Config parameters) {
         return subscriber -> new CrowdSubscriber<Message>(subscriber) {
             @Override public void onNext(Message message) {
+                reportElementAsStarted(message.getId());
                 processMessage(message, parameters);
+                reportElementAsEnded(message.getId());
                 subscriber.onNext(message);
+            }
+
+            @Override public void onCompleted() {
+                reportPluginAsCompleted();
+                super.onCompleted();
+            }
+
+            @Override public void onError(Throwable e) {
+                reportPluginAsErrored();
+                super.onError(e);
             }
         };
     }
