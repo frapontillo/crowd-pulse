@@ -83,7 +83,7 @@ public class EmailNotifier extends IPlugin<Object, Object, EmailNotifierConfig> 
             } else {
                 body = parameters.getBodyError();
             }
-            body = body.replace("{{NAME}}", getProcessName());
+            body = body.replace("{{NAME}}", getProcessInfo().getName());
             email.setMsg(body);
             email.addTo(parameters.getAddresses());
             email.send();

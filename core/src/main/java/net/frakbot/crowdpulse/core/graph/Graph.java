@@ -16,6 +16,8 @@
 
 package net.frakbot.crowdpulse.core.graph;
 
+import net.frakbot.crowdpulse.common.util.spi.ProcessInfo;
+
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -25,27 +27,27 @@ import java.util.stream.Collectors;
  * @author Francesco Pontillo
  */
 public class Graph {
-    private String name;
+    private ProcessInfo process;
     private List<Node> roots;
     private HashMap<String, Node> nodes;
     private HashMap<String, List<String>> edges;
 
     /**
-     * Get the name of the Graph.
+     * Get the process info associated with the graph.
      *
-     * @return The name of the Graph.
+     * @return The process info.
      */
-    public String getName() {
-        return name;
+    public ProcessInfo getProcess() {
+        return process;
     }
 
     /**
-     * Set the name of the Graph.
+     * Set the process info to associate with the graph.
      *
-     * @param name The name of the Graph.
+     * @param process The process info to associate with the graph.
      */
-    public void setName(String name) {
-        this.name = name;
+    public void setProcess(ProcessInfo process) {
+        this.process = process;
     }
 
     /**

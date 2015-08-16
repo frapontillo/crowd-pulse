@@ -68,22 +68,44 @@ import java.util.List;
  * @author Francesco Pontillo
  */
 public abstract class IPlugin<Input, Output, Parameter extends IPluginConfig<Parameter>> {
-    private String processName;
+    private String jobName;
+    private ProcessInfo processInfo;
 
     /**
-     * Get the name of the process that has created and instantiated the plugin.
-     * @return The name of the process.
+     * Get the name that was given to this plugin instance. Plugin instances are called jobs.
+     *
+     * @return The name of this job.
      */
-    public String getProcessName() {
-        return processName;
+    public String getJobName() {
+        return jobName;
     }
 
     /**
-     * Set the name of the process that has created and instantiated the plugin.
-     * @param processName The name of the process.
+     * Set a name that will be given to this plugin job instance.
+     * A plugin is identified by {@link #getName()}, but the specific instance can be named via this method.
+     *
+     * @param jobName The name to give the plugin instance.
      */
-    public void setProcessName(String processName) {
-        this.processName = processName;
+    public void setJobName(String jobName) {
+        this.jobName = jobName;
+    }
+
+    /**
+     * Get the information of the process that has created and instantiated the plugin.
+     *
+     * @return The process info as a {@link ProcessInfo}.
+     */
+    public ProcessInfo getProcessInfo() {
+        return processInfo;
+    }
+
+    /**
+     * Set the information of the process that has created and instantiated the plugin.
+     *
+     * @param processInfo The process info as a {@link ProcessInfo}.
+     */
+    public void setProcessInfo(ProcessInfo processInfo) {
+        this.processInfo = processInfo;
     }
 
     /**

@@ -129,7 +129,8 @@ public class Blade {
         }
 
         IPlugin plugin = PluginProvider.getPlugin(node.getPlugin());
-        plugin.setProcessName(graph.getName());
+        plugin.setProcessInfo(graph.getProcess());
+        plugin.setJobName(node.getName());
         // use the previous observables in the plugin
         Observable observable = plugin.process(node.getConfig(), previousObservables);
 
