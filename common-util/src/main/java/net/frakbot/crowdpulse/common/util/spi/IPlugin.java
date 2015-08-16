@@ -366,6 +366,14 @@ public abstract class IPlugin<Input, Output, Parameter extends IPluginConfig<Par
         stat.setEndTime(new Date());
     }
 
+    /**
+     * Print the plugin statistics to a CSV file whose location is specified by:
+     * <ul>
+     *     <li>the plugin process info log path</li>
+     *     <li>the plugin process info name</li>
+     *     <li>the specific job name</li>
+     * </ul>
+     */
     private void printStatisticsToCSV() {
         Map<Object, ProcessingStat> statMap = getStatMap();
         if (statMap.keySet().isEmpty()) {

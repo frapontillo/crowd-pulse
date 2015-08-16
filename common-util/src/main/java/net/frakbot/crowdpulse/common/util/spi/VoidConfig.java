@@ -19,6 +19,8 @@ package net.frakbot.crowdpulse.common.util.spi;
 import com.google.gson.JsonElement;
 
 /**
+ * A basic void configuration for plugins that have no use for configurations.
+ *
  * @author Francesco Pontillo
  */
 public class VoidConfig implements IPluginConfig<VoidConfig> {
