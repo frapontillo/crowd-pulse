@@ -241,31 +241,6 @@ public abstract class IPlugin<Input, Output, Parameter extends IPluginConfig<Par
     public Observable<Output> processMulti(Parameter params, Observable<? extends Object>... streams) {
         throw new UnsupportedOperationException("IPlugin doesn't support multiple streams. " +
                 "You have to override \"processMulti\" and handle it yourself.");
-
-        /*
-        TODO: try and handle the wait-emit here
-        // the first element must be processed but must emit items
-        streams[0] = streams[0].publish();
-
-        Observable[] waitStreams = Arrays.copyOfRange(streams, 1, streams.length);
-        Observable<Object> waitObservables = Observable.merge(waitStreams);
-        waitObservables.subscribe(new Observer<Object>() {
-            @Override
-            public void onCompleted() {
-                ((ConnectableObservable<Input>) streams[0]).connect();
-            }
-
-            @Override
-            public void onError(Throwable e) {
-            }
-
-            @Override
-            public void onNext(Object o) {
-            }
-        });
-
-        return processSingle(params, (ConnectableObservable<Input>) streams[0]);
-         */
     }
 
     /**
