@@ -72,6 +72,12 @@ public class WikipediaTagCategorizer extends IPlugin<Message, Message, VoidConfi
         };
     }
 
+    /**
+     * Get or create a {@link WikipediaService} for the specified language.
+     *
+     * @param language The language for the Wiki service.
+     * @return A {@link WikipediaService} instance.
+     */
     private WikipediaService getService(String language) {
         WikipediaService wikipediaService = wikipediaServiceMap.get(language);
         if (wikipediaService == null) {
@@ -81,7 +87,7 @@ public class WikipediaTagCategorizer extends IPlugin<Message, Message, VoidConfi
                         .registerTypeAdapter(WikipediaResponse.class, new WikipediaResponseDeserializer())
                         .create();
             }
-             // build the REST client
+            // build the REST client
             RestAdapter restAdapter = new RestAdapter.Builder()
                     .setEndpoint(WIKIPEDIA_ENDPOINT_1 + language + WIKIPEDIA_ENDPOINT_2)
                     .setConverter(new GsonConverter(gson))
