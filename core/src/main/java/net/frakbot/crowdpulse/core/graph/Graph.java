@@ -106,6 +106,11 @@ public class Graph {
         this.edges = edges;
     }
 
+    /**
+     * Get a {@link List} of {@link Node}s that aren't referenced by any other node in the directed Graph.
+     *
+     * @return {@link List} of root {@link Node}s for the Graph.
+     */
     private List<Node> getRootNodes() {
         List<Node> rootNodes = new ArrayList<>();
         Set<String> referencesNodes = new HashSet<>();
@@ -121,6 +126,11 @@ public class Graph {
         return rootNodes;
     }
 
+    /**
+     * Build the Graph starting from the root {@link Node}s.
+     *
+     * @return The built Graph.
+     */
     public Graph buildGraph() {
         // set the names to all of the nodes
         nodes.keySet().forEach(key -> nodes.get(key).setName(key));
@@ -130,6 +140,12 @@ public class Graph {
         return this;
     }
 
+    /**
+     * Recursively build a {@link Node} children in the Graph, one by one, by checking if they weren't already built.
+     *
+     * @param node The {@link Node} whose children will be used to expand this Graph.
+     * @return The built input {@link Node}.
+     */
     public Node buildNode(Node node) {
         // for every next node
         //  - add it to the list of adjacent nodes

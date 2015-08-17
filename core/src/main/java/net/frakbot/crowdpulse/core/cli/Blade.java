@@ -48,7 +48,7 @@ public class Blade {
     private HashMap<String, Observable> observableMap;
     private List<Observable> terminalObservables;
 
-    public static void main(String args[]) throws ClassNotFoundException, FileNotFoundException {
+    public static void main(String args[]) throws ClassNotFoundException {
         Blade runner = new Blade(args);
         runner.run();
     }
@@ -68,7 +68,14 @@ public class Blade {
         buildObservables(graph, rootNodes);
     }
 
-    public void run() throws ClassNotFoundException, FileNotFoundException {
+    /**
+     * Merges all of the terminal {@link Observable}s, publishes them, subscribes to them and eventually connect to
+     * them.
+     *
+     * @throws ClassNotFoundException If an {@link IPlugin} instance could not be found.
+     * @throws FileNotFoundException
+     */
+    public void run() throws ClassNotFoundException {
         ConnectableObservable stream = mergeObservables(terminalObservables).publish();
 
         SubscriptionGroupLatch allSubscriptions = new SubscriptionGroupLatch(1);
@@ -98,12 +105,26 @@ public class Blade {
         logger.info("Done.");
     }
 
+    /**
+     * Build all of the {@link Observable}s referenced by list of {@link Node}s.
+     *
+     * @param graph The {@link Graph} that holds the nodes.
+     * @param nodes The {@link List} of {@link Node}s to build observables for.
+     * @throws ClassNotFoundException If an {@link IPlugin} instance could not be found.
+     */
     private void buildObservables(Graph graph, List<Node> nodes) throws ClassNotFoundException {
         for (Node node : nodes) {
             buildObservable(graph, node);
         }
     }
 
+    /**
+     * Build an {@link Observable} for a {@link Node} in a given {@link Graph}.
+     *
+     * @param graph The {@link Graph} that holds the {@link Node}.
+     * @param node  The {@link Node} to build the {@link Observable} for.
+     * @throws ClassNotFoundException If an {@link IPlugin} instance could not be found.
+     */
     private void buildObservable(Graph graph, Node node) throws ClassNotFoundException {
         // if the observableMap already has an Observable for the current Node, it was already built before
         if (observableMap.get(node.getName()) != null) {
