@@ -35,6 +35,9 @@ import java.io.IOException;
 import java.util.List;
 
 /**
+ * Language detector {@link IPlugin} implementation based on Optimaize.
+ * It uses the {@link Message} language to load the appropriate Optimaize file.
+ *
  * @author Francesco Pontillo
  */
 public class OptimaizeLanguageDetector extends IPlugin<Message, Message, VoidConfig> {
