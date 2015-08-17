@@ -36,10 +36,20 @@ public class IndexParameters implements IPluginConfig<IndexParameters> {
     private final static List<String> SCHEMAS = Arrays.asList("TFIDF", "BM25", "TF");
     private final static Logger logger = CrowdLogger.getLogger(IndexParameters.class);
 
+    /**
+     * Get the schema to use for indexing.
+     *
+     * @return The indexing schema.
+     */
     public String getSchema() {
         return schema;
     }
 
+    /**
+     * Set the schema to use for indexing.
+     *
+     * @param schema The indexing schema, can be one of "TFIDF", "BM25", "TF".
+     */
     public void setSchema(String schema) {
         this.schema = schema;
     }

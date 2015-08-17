@@ -38,8 +38,9 @@ import java.util.List;
 import java.util.Properties;
 
 /**
- * Plugin that performs message indexing by relying on the Akka Indexing platform
- * built by Alessandro Natilla and Angelo Impedovo.
+ * Plugin that performs message indexing by relying on the Akka Indexing platform built by Alessandro Natilla and
+ * Angelo
+ * Impedovo.
  *
  * @author Francesco Pontillo
  */
@@ -94,6 +95,12 @@ public class UnibaIndexer extends IPlugin<Message, Message, IndexParameters> {
         };
     }
 
+    /**
+     * Create a schema using the input parameters and returns its name once it is created on the indexing service.
+     *
+     * @param parameters The input {@link IndexParameters}.
+     * @return The name of the created schema, containing the date and time of creation.
+     */
     private String getSchemaName(IndexParameters parameters) {
         Index currentIndex = new Index();
         schemaName = "schema-" + DateUtil.getUnixEpoch(new Date());
@@ -107,6 +114,14 @@ public class UnibaIndexer extends IPlugin<Message, Message, IndexParameters> {
         return schemaName;
     }
 
+    /**
+     * Builds an {@link rx.Observable.Operator} that, from buffered {@link Message}s of the same language, calls the
+     * indexing Web service and indexes the {@link Message}s.
+     *
+     * @param parameters
+     * @param language
+     * @return
+     */
     private Observable.Operator<List<Message>, List<Message>> getBufferedOperator(IndexParameters parameters,
             String language) {
 
