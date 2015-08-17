@@ -70,6 +70,9 @@ public class MessageFetcher extends IPlugin<Object, Message, MessageFetcher.Mess
         });
     }
 
+    /**
+     * Fetching options that include the database name from {@link GenericDbConfig}.
+     */
     public class MessageFetcherOptions extends GenericDbConfig<MessageFetcherOptions> {
         @Override public MessageFetcherOptions buildFromJsonElement(JsonElement json) {
             return PluginConfigHelper.buildFromJson(json, MessageFetcherOptions.class);

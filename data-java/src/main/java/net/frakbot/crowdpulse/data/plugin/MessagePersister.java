@@ -84,10 +84,18 @@ public class MessagePersister extends IPlugin<Message, Message, MessagePersister
     public class MessagePersisterOptions extends GenericDbConfig<MessagePersisterOptions> {
         private List<String> tags;
 
+        /**
+         * Get the tags to persist messages with.
+         * @return A {@link List} of tags as {@link String}.
+         */
         public List<String> getTags() {
             return tags;
         }
 
+        /**
+         * Set the tags that will be added to messages before persisting them.
+         * @param tags A {@link List} of tags as {@link String}.
+         */
         public void setTags(List<String> tags) {
             this.tags = tags;
         }

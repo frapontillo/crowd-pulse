@@ -67,7 +67,7 @@ public class ProfilePersister extends IPlugin<Profile, Profile, ProfilePersister
     }
 
     /**
-     * Options to persist the fetched profiles.
+     * Profile persisting options that include the database name from {@link GenericDbConfig}.
      */
     public class ProfilePersisterOptions extends GenericDbConfig<ProfilePersisterOptions> {
         @Override public ProfilePersisterOptions buildFromJsonElement(JsonElement json) {

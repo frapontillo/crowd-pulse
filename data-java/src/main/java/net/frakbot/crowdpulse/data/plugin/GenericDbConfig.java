@@ -26,10 +26,20 @@ import net.frakbot.crowdpulse.common.util.spi.IPluginConfig;
 public abstract class GenericDbConfig<T> implements IPluginConfig<T> {
     private String db;
 
+    /**
+     * Get the database name to access.
+     *
+     * @return The database name.
+     */
     public String getDb() {
         return db;
     }
 
+    /**
+     * Set the database name to access according to this configuration.
+     *
+     * @param db The database name.
+     */
     public void setDb(String db) {
         this.db = db;
     }
