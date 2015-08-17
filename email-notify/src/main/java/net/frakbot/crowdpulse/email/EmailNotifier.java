@@ -30,6 +30,7 @@ import rx.Observable;
  * Plugin that notifies one or more email addresses of the completion or erroring of the pipeline.
  *
  * @author Francesco Pontillo
+ * @see EmailNotifierConfig to learn how to configure the plugin.
  */
 public class EmailNotifier extends IPlugin<Object, Object, EmailNotifierConfig> {
     private static final String PLUGIN_NAME = "email-notifier";
@@ -65,6 +66,12 @@ public class EmailNotifier extends IPlugin<Object, Object, EmailNotifierConfig> 
         };
     }
 
+    /**
+     * Send an email, using the provided parameters, notifying if the pipeline succeeded or errored.
+     *
+     * @param parameters The {@link EmailNotifierConfig} to use.
+     * @param isSuccess  {@code true} to report a success, {@code false} to report an error.
+     */
     private void sendEmail(EmailNotifierConfig parameters, boolean isSuccess) {
         if (parameters.getAddresses() == null || parameters.getAddresses().length == 0) {
             return;

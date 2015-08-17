@@ -26,6 +26,45 @@ import java.util.Properties;
 
 /**
  * Configuration class for the {@link EmailNotifier} plugin.
+ * The configuration can be loaded from either a {@link JsonElement} or a properties file.
+ * <p>
+ * The available properties are:
+ * <ul>
+ * <li>host: the SMTP host</li>
+ * <li>port: the SMTP port to connect to</li>
+ * <li>username: the username of the account that will send the email</li>
+ * <li>password: the password of the account that will send the email</li>
+ * <li>use_ssl: whether to use SSL for the connection to the SMTP server</li>
+ * <li>from: the email address associated to the sender account sender</li>
+ * <li>addresses: array of recipient email addresses (can only be set via JSON config)</li>
+ * <li>subject: the subject of the email</li>
+ * <li>body_success: the body of a successful report email (references to {{NAME}} will be replaced with the process
+ * name)</li>
+ * <li>body_error: the body of an error report email (references to {{NAME}} will be replaced with the process
+ * name)</li>
+ * <li>notify_success: {@code true} to notify successful pipelines, {@code false} otherwise</li>
+ * <li>notify_error: {@code true} to notify errored pipelines, {@code false} otherwise</li>
+ * </ul>
+ * <p>
+ * Configurations in a properties file must be introduced by the {@code email} accessor, e.g.:
+ * <p>
+ * {@code
+ * email.host=smtp.myserver.com
+ * email.port=123
+ * email.username=user@myserver.com
+ * email.password=lgtm1234
+ * ...
+ * }
+ * <p>
+ * The equivalent configuration as a JSON would be:
+ * {@code
+ * {
+ * "host": "smtp.myserver.com",
+ * "port": 123,
+ * "username: "user@myserver.com",
+ * "password: "lgtm1234"
+ * }
+ * }
  *
  * @author Francesco Pontillo
  */
@@ -161,6 +200,11 @@ public class EmailNotifierConfig implements IPluginConfig<EmailNotifierConfig> {
         EmailNotifierConfig.props = props;
     }
 
+    /**
+     * Read the properties from an {@code email.properties} file.
+     *
+     * @return {@link Properties} object read by an {@code email.properties} file.
+     */
     private Properties getProps() {
         if (props == null) {
             props = ConfigUtil.getPropertyFile(EmailNotifier.class, "email.properties");
