@@ -27,6 +27,9 @@ import net.frakbot.crowdpulse.fixgeomessage.IMessageGeoFixerOperator;
 import rx.Observable;
 
 /**
+ * Implementation of an {@link IPlugin} that, relying on {@link IMessageGeoFixerOperator}, fixes the geo-location of
+ * streamed {@link Message}s using the geo-location information in the author's {@link Profile}, if any.
+ *
  * @author Francesco Pontillo
  */
 public class FromProfileMessageGeoFixer
@@ -58,6 +61,9 @@ public class FromProfileMessageGeoFixer
         };
     }
 
+    /**
+     * Geo fixing configuration based on the database configuration from {@link GenericDbConfig}.
+     */
     public class FromProfileMessageGeoFixerOptions extends GenericDbConfig<FromProfileMessageGeoFixerOptions> {
         @Override public FromProfileMessageGeoFixerOptions buildFromJsonElement(JsonElement json) {
             return PluginConfigHelper.buildFromJson(json, FromProfileMessageGeoFixerOptions.class);
