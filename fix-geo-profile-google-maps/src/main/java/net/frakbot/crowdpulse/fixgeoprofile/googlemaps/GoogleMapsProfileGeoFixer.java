@@ -31,6 +31,13 @@ import java.io.InputStream;
 import java.util.Properties;
 
 /**
+ * Implementation of an {@link IPlugin} that accepts and streams {@link Profile}s after attempting a geo-location fix
+ * on
+ * them, using the Google Maps reverse geocoding APIs.
+ * <p>
+ * To use this plugin, create a {@code geocoding.properties} file in the classpath with a {@code geocoding.apiKey}
+ * property set to your Google Maps API key.
+ *
  * @author Francesco Pontillo
  */
 public class GoogleMapsProfileGeoFixer extends IPlugin<Profile, Profile, VoidConfig> {
@@ -73,6 +80,11 @@ public class GoogleMapsProfileGeoFixer extends IPlugin<Profile, Profile, VoidCon
         };
     }
 
+    /**
+     * Read the API key from the {@code geocoding.properties} file in the {@code geocoding.apiKey} property.
+     *
+     * @return The Google Maps API key.
+     */
     private String readApiKey() {
         InputStream configInput = getClass().getClassLoader().getResourceAsStream("geocoding.properties");
         Properties prop = new Properties();
