@@ -21,9 +21,11 @@ import net.frakbot.crowdpulse.common.util.spi.IPluginConfig
 import net.frakbot.crowdpulse.common.util.spi.PluginConfigHelper
 
 /**
+ * Configuration for the {@link InfogramPlugin}.
+ *
  * @author Francesco Pontillo
  */
-public data class InfogramConfig(var path : String? = null) : IPluginConfig<InfogramConfig> {
+public data class InfogramConfig(var path: String? = null) : IPluginConfig<InfogramConfig> {
     override fun buildFromJsonElement(json: JsonElement?): InfogramConfig? {
         return PluginConfigHelper.buildFromJson(json, javaClass<InfogramConfig>())
     }

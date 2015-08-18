@@ -17,6 +17,18 @@
 package net.frakbot.crowdpulse.infogram.rest
 
 /**
+ * Data class mapping a response of the Infogr.am API.
+ *
+ * @param id            The ID of the generated graph.
+ * @param title         The title of the graph.
+ * @param theme_id      The theme ID of the graph.
+ * @param published     {@code true} if the graph was published, {@code false} otherwise.
+ * @param thumbnail_url The URL of the thumbnail for the graph.
+ * @param date_modified The date of the last edit to the graph.
+ * @param user_profile  The link to the user profile of the graph author.
+ * @param publish_mode  The mode with which the graph has been published.
+ * @param url           The URL of the graph.
+ *
  * @author Francesco Pontillo
  */
 public data class InfogramResponse(var id: String, var title: String, var theme_id: Int,

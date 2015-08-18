@@ -64,6 +64,12 @@ public class InfogramPlugin : IPlugin<Message, Message, InfogramConfig>() {
         return InfoGraphOperator(parameters)
     }
 
+    /**
+     * Operator implementation that counts, for each element going through it, tags, categories and lemmas, eventually
+     * discarding the ones that are marked as stop words.
+     *
+     * When completed, it generates infograms and saves them on disk.
+     */
     private inner class InfoGraphOperator : Observable.Operator<Message, Message> {
         var infogramApi: InfogramAPI
         var parameters: InfogramConfig?
@@ -157,6 +163,17 @@ public class InfogramPlugin : IPlugin<Message, Message, InfogramConfig>() {
                     t?.onCompleted()
                 }
 
+                /**
+                 * Build an {@link InfogramChart} of type "word cloud" according to the raw values contained in the maps
+                 * object.
+                 *
+                 * @param maps          An {@link Array} (each for every word cloud to generate) of {@link MutableMap},
+                 *                      where the {@link String} key is the word and the {@link Double} value the number
+                 *                      of occurrences.
+                 * @param sheetsNames   The names to give to each word cloud.
+                 *
+                 * @return An {@link InfogramChart} object ready to be sent to the Infogr.am API.
+                 */
                 fun buildChart(maps: Array<MutableMap<String, Double>>, sheetsNames: Array<String>): InfogramChart {
                     var chart = InfogramChart("chart", "wordcloud")
                     val QTY = "#"
@@ -164,17 +181,21 @@ public class InfogramPlugin : IPlugin<Message, Message, InfogramConfig>() {
 
                     var sheets: Array<InfogramChartSheet?> = arrayOfNulls(maps.size())
 
+                    // for each word cloud to generate
                     for (i in 0..(maps.size() - 1)) {
+                        // init the sheet
                         sheets[i] = InfogramChartSheet()
                         if (maps.size() > 1) {
                             sheets[i]!!.header = arrayOf(sheetsNames[i], QTY)
                         }
                         var sheetList: MutableList<InfogramChartSheetRow> = arrayListOf()
                         val map = maps[i]
+                        // for each word, add it as a row of the chart
                         for ((key, value) in map) {
                             val row: Array<Any?>? = arrayOf(key, value)
                             sheetList.add(InfogramChartSheetRow(row))
                         }
+                        // order the list of words and select only the highest ones (so that the cloud isn't too big)
                         var orderedSheetList = sheetList.sortDescendingBy {
                             it.data!![1] as Double
                         }.take(MAX_SHEET_SIZE)
@@ -188,6 +209,21 @@ public class InfogramPlugin : IPlugin<Message, Message, InfogramConfig>() {
         }
     }
 
+    /**
+     * Create and infograph on infogr.am by providing all of the needed values.
+     *
+     * @param infogram      The {@link InfogramAPI} service to use.
+     * @param content       An array of {@link InfogramChart}s to display.
+     * @param title         The title of the infograph.
+     * @param publish       {@code true} if the infograph must be public, {@code false} otherwise.
+     * @param publishMode   The publish mode, as specified by the Infogr.am API.
+     * @param copyright     The copyright to set into the image.
+     * @param width         The width of the image.
+     * @param themeId       The ID of the Infogr.am theme to use (defaults to 45).
+     * @param password      An optional password for the infograph.
+     *
+     * @return An {@link InfogramResponse} containing the outcome of the request.
+     */
     fun post(infogram: InfogramAPI, content: Array<InfogramChart>, title: String? = null,
              publish: Boolean? = null, publishMode: String? = null, copyright: String? = null,
              width: Double? = null, themeId: Int? = 45, password: String? = null): InfogramResponse? {
@@ -230,6 +266,14 @@ public class InfogramPlugin : IPlugin<Message, Message, InfogramConfig>() {
         return null
     }
 
+    /**
+     * Retrieve an infograph as an array of bytes (PNG) by its ID on Infogr.am.
+     *
+     * @param infogram  The {@link InfogramAPI} service.
+     * @param id        The ID of the infograph to retrieve.
+     *
+     * @return An array of bytes representing the infograph as a PNG.
+     */
     fun getPNG(infogram: InfogramAPI, id: String?): ByteArray? {
         val res = infogram.sendRequest("GET", "infographics/${id}", mapOf(Pair("format", "png")))
         if (res.getHttpStatusCode() == 200) {
@@ -242,6 +286,14 @@ public class InfogramPlugin : IPlugin<Message, Message, InfogramConfig>() {
         return null;
     }
 
+    /**
+     * Write some elements into a path using the given filenames in the files object.
+     *
+     * @param path  The path to save files to.
+     * @param files A {@link Pair} of {@link ByteArray} (the PNG bytes) and {@link String} (the file name).
+     *
+     * @return An {@link Array} of {@link String}s containing the saved file paths.
+     */
     fun writePNGs(path: String?, vararg files: Pair<ByteArray?, String>): Array<String?> {
         // get a valid directory and replace ~ with the user dir
         val directory = (path ?: System.getProperty("java.io.tmpdir"))
