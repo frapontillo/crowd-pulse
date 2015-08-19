@@ -27,6 +27,11 @@ import rx.Observable;
 import java.util.List;
 
 /**
+ * A {@link ISingleablePlugin} implementation that delegates the lemmatization process to the Stanford CoreNLP modules.
+ * Stanford CoreNLP is only able to lemmatize some languages.
+ * <p>
+ * {@link Message}s that are marked as stop words won't be processed by this plugin.
+ *
  * @author Francesco Pontillo
  */
 public class CoreNLPLemmatizer extends ISingleablePlugin<Message, VoidConfig> {
