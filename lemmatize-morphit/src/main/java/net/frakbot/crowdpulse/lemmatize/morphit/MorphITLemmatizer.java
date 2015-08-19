@@ -54,50 +54,71 @@ public class MorphITLemmatizer extends ISingleablePlugin<Message, VoidConfig> {
     // <key:(word), value:(morphit-tag,lemma)>
     private HashMap<String, List<String[]>> morphITDictionary;
 
-    public MorphITLemmatizer() {
-        // build the TANL-MorphIT dictionary as <key:(tanl-tag), value:(morphit-tag-1,...)>
-        InputStream mapStream = MorphITLemmatizer.class.getClassLoader().getResourceAsStream("tanl-morphit");
-        tanlMorphITMap = new HashMap<>();
-        try {
-            List<String> mapLines = IOUtils.readLines(mapStream, Charset.forName("UTF-8"));
-            mapLines.forEach(s -> {
-                // for each line, split using spaces
-                String[] values = spacePattern.split(s);
-                if (values.length > 0) {
-                    // the first token is the key
-                    String key = values[0];
-                    // all subsequent tokens are possible values
-                    HashSet<String> valueSet = new HashSet<>();
-                    valueSet.addAll(Arrays.asList(values).subList(1, values.length));
-                    tanlMorphITMap.put(key, valueSet);
-                }
-            });
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        // build the MorphIT dictionary as <key:(word), value:(morphit-tag,lemma)>
-        InputStream dictStream = MorphITLemmatizer.class.getClassLoader().getResourceAsStream("morphit");
-        morphITDictionary = new HashMap<>();
-        try {
-            List<String> mapLines = IOUtils.readLines(dictStream, Charset.forName("UTF-8"));
-            mapLines.forEach(s -> {
-                // for each line, split using spaces
-                String[] values = spacePattern.split(s);
-                if (values.length == 3) {
-                    // the key is made of first and third token
-                    // the value is the second token
-                    List<String[]> candidates = morphITDictionary.get(values[0]);
-                    if (candidates == null) {
-                        candidates = new ArrayList<>();
+    /**
+     * Build the TANL-to-MorphIT mapping dictionary as &lt;key:(tanl-tag), value:(morphit-tag-1,...)&gt;.
+     * Values are read from the resource file "tanl-morphit".
+     *
+     * @return A {@link HashMap} where the key is a {@link String} representing the TANL tag and values are {@link Set}s
+     * of all the MorphIT tag {@link String}s.
+     */
+    private HashMap<String, HashSet<String>> getTanlMorphITMap() {
+        if (tanlMorphITMap == null) {
+            InputStream mapStream = MorphITLemmatizer.class.getClassLoader().getResourceAsStream("tanl-morphit");
+            tanlMorphITMap = new HashMap<>();
+            try {
+                List<String> mapLines = IOUtils.readLines(mapStream, Charset.forName("UTF-8"));
+                mapLines.forEach(s -> {
+                    // for each line, split using spaces
+                    String[] values = spacePattern.split(s);
+                    if (values.length > 0) {
+                        // the first token is the key
+                        String key = values[0];
+                        // all subsequent tokens are possible values
+                        HashSet<String> valueSet = new HashSet<>();
+                        valueSet.addAll(Arrays.asList(values).subList(1, values.length));
+                        tanlMorphITMap.put(key, valueSet);
                     }
-                    candidates.add(new String[] {values[2], values[1]});
-                    morphITDictionary.put(values[0], candidates);
-                }
-            });
-        } catch (IOException e) {
-            e.printStackTrace();
+                });
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
+        return tanlMorphITMap;
+    }
+
+    /**
+     * Build the MorphIT dictionary as &lt;key:(word), value:(morphit-tag,lemma)&gt;.
+     * Values are read from the resource file "morphit".
+     *
+     * @return A {@link HashMap} where the key is a MorphIT tag {@link String} and values are {@link List} of {@link
+     * String} arrays where each element of the list represent a different lemmatization form for the key; the array
+     * specifies the POS tag in the first position and the lemma in the second one.
+     */
+    public HashMap<String, List<String[]>> getMorphITDictionary() {
+        if (morphITDictionary == null) {
+            InputStream dictStream = MorphITLemmatizer.class.getClassLoader().getResourceAsStream("morphit");
+            morphITDictionary = new HashMap<>();
+            try {
+                List<String> mapLines = IOUtils.readLines(dictStream, Charset.forName("UTF-8"));
+                mapLines.forEach(s -> {
+                    // for each line, split using spaces
+                    String[] values = spacePattern.split(s);
+                    if (values.length == 3) {
+                        // the key is made of first and third token
+                        // the value is the second token
+                        List<String[]> candidates = morphITDictionary.get(values[0]);
+                        if (candidates == null) {
+                            candidates = new ArrayList<>();
+                        }
+                        candidates.add(new String[]{values[2], values[1]});
+                        morphITDictionary.put(values[0], candidates);
+                    }
+                });
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return morphITDictionary;
     }
 
     @Override public String getName() {
@@ -132,10 +153,10 @@ public class MorphITLemmatizer extends ISingleablePlugin<Message, VoidConfig> {
         String pos = token.getPos();
 
         // lookup the POS in the tanlMorphITMap
-        Set<String> morphITTags = tanlMorphITMap.get(pos);
+        Set<String> morphITTags = getTanlMorphITMap().get(pos);
 
         // get all the candidate lemmas
-        List<String[]> candidateLemmas = morphITDictionary.get(word);
+        List<String[]> candidateLemmas = getMorphITDictionary().get(word);
 
         // if there's no candidate or no match, return
         if (candidateLemmas == null || morphITTags == null) {

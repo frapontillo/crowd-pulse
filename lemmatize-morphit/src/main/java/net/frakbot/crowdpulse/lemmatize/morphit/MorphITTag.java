@@ -87,7 +87,6 @@ public class MorphITTag {
      * @return true if the current {@link MorphITTag} is more specific or equal to the input {@link MorphITTag}.
      */
     public boolean isChildOf(MorphITTag anotherTag) {
-        // TODO: inline all of the checks after debugging them
         // features must be the same
         // all of the other tag's derivation features must be contained in the current tag
         // all of the other tag's inflectional features must be contained in the current tag
