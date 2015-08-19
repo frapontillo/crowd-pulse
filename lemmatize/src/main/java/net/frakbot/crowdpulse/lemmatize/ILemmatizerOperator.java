@@ -26,6 +26,9 @@ import rx.Subscriber;
 import java.util.List;
 
 /**
+ * {@link rx.Observable.Operator} implementation that lemmatizes incoming {@link Message}s by delegating the process to
+ * the {@link #lemmatizeMessageTokens(Message)} method that lemmatizers should implement.
+ *
  * @author Francesco Pontillo
  */
 public abstract class ILemmatizerOperator implements Observable.Operator<Message, Message> {
@@ -71,6 +74,7 @@ public abstract class ILemmatizerOperator implements Observable.Operator<Message
 
     /**
      * Lemmatize the given {@link Token}s by setting the {@link Token#lemma} property.
+     *
      * @param message The {@link Message} whose {@link List} of {@link Token}s will be modified in order to include the
      *                (optional) lemma.
      * @return The same {@link List} of {@link Token}s of the input {@link Message}, eventually modified.
