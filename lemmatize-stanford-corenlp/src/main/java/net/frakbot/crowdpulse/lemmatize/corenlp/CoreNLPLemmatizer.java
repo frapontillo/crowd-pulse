@@ -31,11 +31,7 @@ import java.util.List;
  */
 public class CoreNLPLemmatizer extends ISingleablePlugin<Message, VoidConfig> {
     public final static String PLUGIN_NAME = "lemmatizer-stanford";
-    private final Morphology morphology;
-
-    public CoreNLPLemmatizer() {
-        morphology = new Morphology();
-    }
+    private Morphology morphology;
 
     @Override public String getName() {
         return PLUGIN_NAME;
@@ -58,11 +54,23 @@ public class CoreNLPLemmatizer extends ISingleablePlugin<Message, VoidConfig> {
         if (message.getTokens() != null) {
             message.getTokens().forEach(token -> {
                 if (!token.isStopWord()) {
-                    String lemma = morphology.lemma(token.getText(), token.getPos());
+                    String lemma = getMorphology().lemma(token.getText(), token.getPos());
                     token.setLemma(lemma);
                 }
             });
         }
         return message;
+    }
+
+    /**
+     * Get the existing or build a CoreNLP {@link Morphology} if none exists.
+     *
+     * @return The CoreNLP {@link Morphology} instance.
+     */
+    private Morphology getMorphology() {
+        if (morphology == null) {
+            morphology = new Morphology();
+        }
+        return morphology;
     }
 }
