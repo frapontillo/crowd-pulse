@@ -33,14 +33,14 @@ import java.util.regex.Pattern;
 /**
  * The MorphIT lemmatizer is able to execute a lemmatization process when given:
  * <ul>
- *     <li>an Italian word</li>
- *     <li>a MorphIT specific POS tag</li>
+ * <li>an Italian word</li>
+ * <li>a MorphIT specific POS tag</li>
  * </ul>
- *
+ * <p>
  * Since CrowdPulse handles Italian POS tags within the standard
  * <a href="http://medialab.di.unipi.it/wiki/Tanl_POS_Tagset">TANL tagset</a>, a conversion process is needed
  * before calling MorphIT.
- *
+ * <p>
  * This implementation therefore uses a resources file, called "tanl-morphit" to achieve the aforementioned mapping.
  *
  * @author Francesco Pontillo
@@ -144,6 +144,19 @@ public class MorphITLemmatizer extends ISingleablePlugin<Message, VoidConfig> {
         return message;
     }
 
+    /**
+     * Lemmatize a token using the available POS tag information available on it:
+     * <ul>
+     * <li>convert the TANL POS tag on the {@link Token} to a {@link Set} of possible MorphIT tags</li>
+     * <li>get a list of possible lemmas for the word</li>
+     * <li>for each candidate lemma and for each MorphIT tag of the token, the lemma is returned if the tag is
+     * compatible with the one from the candidate lemma</li>
+     * </ul>
+     *
+     * If the {@link Token} is considered a stop word the lemmatization process doesn't start at all.
+     *
+     * @param token A {@link Token} (in Italian language) that needs to be lemmatized.
+     */
     private void lemmatizeToken(Token token) {
         if (token.isStopWord()) {
             return;
