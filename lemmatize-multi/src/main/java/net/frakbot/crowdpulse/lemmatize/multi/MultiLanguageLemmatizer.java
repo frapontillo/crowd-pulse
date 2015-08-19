@@ -30,17 +30,17 @@ import java.util.List;
 
 /**
  * A multi-language implementation for {@link IPlugin<Message>}.
- *
+ * <p>
  * When a {@link Message} goes through the lemmatization process, the concrete implementation is searched for in the
  * following (ordered) locations:
- *
+ * <p>
  * <ol>
- *     <li>In the internal {@link HashMap} {@link MultiLanguageLemmatizer#lemmatizerMap}, starting from the language</li>
- *     <li>In any external SPI-enabled implementation with the name format as `lemmatizer-LANG`</li>
- *     <li>Finally, the Stanford-CoreNLP implementation is used if no other is found (note that Stanford-CoreNLP may
- *     not support every language)</li>
+ * <li>In the internal {@link HashMap} {@link MultiLanguageLemmatizer#lemmatizerMap}, starting from the language</li>
+ * <li>In any external SPI-enabled implementation with the name format as `lemmatizer-LANG`</li>
+ * <li>Finally, the Stanford-CoreNLP implementation is used if no other is found (note that Stanford-CoreNLP may
+ * not support every language)</li>
  * </ol>
- *
+ * <p>
  * A class may override {@link MultiLanguageLemmatizer} in order to provide some different default implementation
  * (in stead of Stanford-CoreNLP) or in order to hardcode language-specific implementation in the internal
  * {@link MultiLanguageLemmatizer#lemmatizerMap}.
@@ -89,6 +89,13 @@ public class MultiLanguageLemmatizer extends IPlugin<Message, Message, VoidConfi
         };
     }
 
+    /**
+     * Get the most appropriate lemmatizer {@link IPlugin} implementation for the input {@link Message}, according to
+     * its language and to the available lemmatizers.
+     *
+     * @param message The input {@link Message} to lemmatize.
+     * @return The best available {@link IPlugin} instance to perform the lemmatization for the message.
+     */
     private IPlugin<Message, Message, VoidConfig> getLemmatizerForMessage(Message message) {
         IPlugin<Message, Message, VoidConfig> lemmatizer;
         String lang = message.getLanguage();
@@ -103,12 +110,14 @@ public class MultiLanguageLemmatizer extends IPlugin<Message, Message, VoidConfi
             // look for the lemmatizer implementation in the SPI
             try {
                 lemmatizer = PluginProvider.getPlugin(lemmatizerIdentifier);
-            } catch (ClassNotFoundException ignored) {}
+            } catch (ClassNotFoundException ignored) {
+            }
             // if the lemmatizer isn't provided by the SPI, use the one provided for every language, as "*"
             if (lemmatizer == null) {
                 try {
                     lemmatizer = PluginProvider.getPlugin(lemmatizerMap.get(LEMMATIZER_WILDCARD));
-                } catch (ClassNotFoundException ignored) {}
+                } catch (ClassNotFoundException ignored) {
+                }
             }
             lemmatizers.put(lang, lemmatizer);
         }
