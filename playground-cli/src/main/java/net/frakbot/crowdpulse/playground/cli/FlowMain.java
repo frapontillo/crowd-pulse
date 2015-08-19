@@ -52,8 +52,6 @@ import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import java.util.List;
 
-import static net.frakbot.crowdpulse.data.plugin.MessagePersister.MessagePersisterOptions;
-
 /**
  * Playground to test stream composability.
  *
@@ -70,7 +68,7 @@ public class FlowMain {
         // get all tasks according to some criteria
         IPlugin<Object, Message, ExtractionParameters> messageExtractor = PluginProvider.getPlugin(TwitterExtractor.PLUGIN_NAME);
         IPlugin<Object, Message, ExtractionParameters> repliesExtractor = PluginProvider.getPlugin(TwitterReplyExtractor.PLUGIN_NAME);
-        IPlugin<Message, Message, MessagePersisterOptions> messagePersister = PluginProvider.getPlugin(MessagePersister.PLUGIN_NAME);
+        IPlugin<Message, Message, MessagePersister.MessagePersisterOptions> messagePersister = PluginProvider.getPlugin(MessagePersister.PLUGIN_NAME);
         IPlugin<Message, Profile, VoidConfig> profileExtractor = PluginProvider.getPlugin(TwitterProfiler.PLUGIN_NAME);
         IPlugin<Message, Profile, VoidConfig> profileGraphBldr = PluginProvider.getPlugin(TwitterProfileGrapher.PLUGIN_NAME);
         IPlugin<Profile, Profile, VoidConfig> profileGLocFixer = PluginProvider.getPlugin(GoogleMapsProfileGeoFixer.PLUGIN_NAME);
