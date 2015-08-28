@@ -173,8 +173,16 @@ public class TwitterExtractorRunner {
                 List<Message> messageList = converter.fromExtractor(tweetList);
                 // notify the subscriber of new tweets
                 messageList.forEach(subscriber::onNext);
-                // get the next page query
-                query = result.nextQuery();
+                // since the Twitter API is severely broken (https://gist.github.com/frapontillo/724b02cd1a3098eba96b)
+                // we can't use result.nextQuery() as it may be null
+                // to build the next query simply set the max_id parameter to the last fetched tweet
+                int size = tweetList.size();
+                if (size > 0) {
+                    long lastId = tweetList.get(size - 1).getId();
+                    query.setMaxId(lastId);
+                } else {
+                    query = null;
+                }
             }
             // at this point, there is no other available query: we have finished
             subscriber.onCompleted();
