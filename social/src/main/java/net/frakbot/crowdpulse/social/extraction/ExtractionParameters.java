@@ -175,7 +175,7 @@ public class ExtractionParameters implements IPluginConfig<ExtractionParameters>
         GeoLocationBoxConverter geoConverter = new GeoLocationBoxConverter();
         JsonElement location = json.getAsJsonObject().get("location");
         if (location != null) {
-            this.setGeoLocationBox(geoConverter.convert(location.getAsString()));
+            extractionParameters.setGeoLocationBox(geoConverter.convert(location.getAsString()));
         }
         // normalize the query parameters
         List<String> query = extractionParameters.getQuery();
