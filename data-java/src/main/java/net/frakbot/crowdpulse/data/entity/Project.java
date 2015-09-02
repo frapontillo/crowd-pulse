@@ -19,7 +19,7 @@ package net.frakbot.crowdpulse.data.entity;
 import org.mongodb.morphia.annotations.Reference;
 
 import java.util.Date;
-import java.util.List;
+import java.util.Map;
 
 /**
  * Holds project-level information:
@@ -36,6 +36,7 @@ public class Project extends Entity {
     @Reference
     private User creationUser;
     private Date creationDate;
+    private Map config;
 
     /**
      * Get the name of the Project.
@@ -89,6 +90,24 @@ public class Project extends Entity {
      */
     public void setCreationDate(Date creationDate) {
         this.creationDate = creationDate;
+    }
+
+    /**
+     * Get the configuration map for the Project.
+     *
+     * @return A configuration map.
+     */
+    public Map getConfig() {
+        return config;
+    }
+
+    /**
+     * Set a new configuration map for the Project.
+     *
+     * @param config The configuration map to associate with the Project.
+     */
+    public void setConfig(Map config) {
+        this.config = config;
     }
 }
 
