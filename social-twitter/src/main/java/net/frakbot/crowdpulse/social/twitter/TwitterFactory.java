@@ -75,8 +75,12 @@ public class TwitterFactory {
      */
     public static boolean waitForTwitterTimeout(TwitterException exception, Logger logger)
             throws InterruptedException {
-        if (exception.getCause().getClass() == FileNotFoundException.class) {
+        if (exception.getCause() != null && exception.getCause().getClass() == FileNotFoundException.class) {
             return true;
+        }
+        if (exception.getRateLimitStatus() == null) {
+            exception.printStackTrace();
+            return false;
         }
         int remaining = exception.getRateLimitStatus().getRemaining();
         if (remaining <= 0) {
