@@ -26,6 +26,7 @@ include 'social-facebook'
 include 'social-twitter'
 
 include 'data-java'
+include 'data-node'
 
 include 'fix-geo-profile'
 include 'fix-geo-profile-google-maps'
