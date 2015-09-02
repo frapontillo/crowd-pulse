@@ -33,8 +33,8 @@ import java.util.List;
  */
 public class Project extends Entity {
     private String name;
-    private List<Step> steps;
-    @Reference private User creationUser;
+    @Reference
+    private User creationUser;
     private Date creationDate;
 
     /**
@@ -53,24 +53,6 @@ public class Project extends Entity {
      */
     public void setName(String name) {
         this.name = name;
-    }
-
-    /**
-     * Get the {@link List} of {@link Step}s to perform.
-     *
-     * @return A {@link List} of {@link Step}s.
-     */
-    public List<Step> getSteps() {
-        return steps;
-    }
-
-    /**
-     * Set the {@link List} of {@link Step}s to perform for the Project.
-     *
-     * @param steps A new {@link List} of {@link Step}s.
-     */
-    public void setSteps(List<Step> steps) {
-        this.steps = steps;
     }
 
     /**
