@@ -15,7 +15,7 @@
  */
 
 plugins {
-    id "com.moowork.node" version "0.9"
+    id "com.moowork.node" version "0.10"
 }
 
 version = '1.0'

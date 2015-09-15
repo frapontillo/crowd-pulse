@@ -1,5 +1,5 @@
 {
-  "name": "crowd-pulse-data-nodejs",
+  "name": "crowd-pulse-data-node",
   "version": "0.0.1",
   "description": "Crowd Pulse Data Layer API for NodeJS",
   "main": "index.js",
