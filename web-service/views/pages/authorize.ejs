@@ -1,0 +1,31 @@
+<!-- views/pages/login.ejs -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Crowd Pulse API Authorization</title>
+    <% include ../partials/head.ejs %>
+</head>
+<body class="container">
+
+<main>
+    <form method="post">
+        <p>Are you sure you want to allow the application with ID <%= client_id %> to access and edit
+            Crowd Pulse data on your behalf?</p>
+        <input type="hidden" id="allow" name="allow" value="false"/>
+        <input type="submit" id="submit_not_allow" name="submit_not_allow" value="Cancel" />
+        <input type="submit" id="submit_allow" name="submit_allow" value="Yes, allow" />
+    </form>
+</main>
+
+<script type="text/javascript">
+    document.getElementById('submit_allow').addEventListener('click', function(event) {
+        document.getElementById('allow').value = 'true';
+    });
+    document.getElementById('submit_not_allow').addEventListener('click', function(event) {
+        document.getElementById('allow').value = 'false';
+    });
+</script>
+
+</body>
+</html>

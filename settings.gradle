@@ -28,6 +28,7 @@ include 'social-twitter'
 include 'data-java'
 include 'data-node'
 
+include 'web-service'
 include 'web-ui'
 
 include 'fix-geo-profile'
