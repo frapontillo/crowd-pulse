@@ -1,0 +1,23 @@
+{
+  "name": "webUi",
+  "version": "0.0.0",
+  "dependencies": {
+    "angular": "~1.4.0",
+    "angular-animate": "~1.4.0",
+    "angular-cookies": "~1.4.0",
+    "angular-material": "~0.11.0",
+    "angular-sanitize": "~1.4.0",
+    "angular-touch": "~1.4.0",
+    "angular-ui-ace": "~0.2.3",
+    "angular-ui-router": "~0.2.15",
+    "animate.css": "~3.3.0",
+    "moment": "~2.10.3",
+    "restangular": "~1.5.1"
+  },
+  "devDependencies": {
+    "angular-mocks": "~1.4.0"
+  },
+  "resolutions": {
+    "angular": "~1.4.0"
+  }
+}

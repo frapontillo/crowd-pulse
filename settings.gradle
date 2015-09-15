@@ -28,6 +28,8 @@ include 'social-twitter'
 include 'data-java'
 include 'data-node'
 
+include 'web-ui'
+
 include 'fix-geo-profile'
 include 'fix-geo-profile-google-maps'
 
@@ -69,9 +71,7 @@ include 'lemmatize-morphit'
 include 'sentiment'
 include 'sentiment-sentit'
 include 'sentiment-sentiwordnet'
-
 include 'infogram'
-
 include 'index-uniba'
 
 include 'email-notify'

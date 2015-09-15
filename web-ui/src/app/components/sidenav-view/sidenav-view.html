@@ -1,0 +1,12 @@
+<sidenav>
+  <md-toolbar>
+    <h1 class="md-toolbar-tools">
+      <md-select name="sidenavViewVm.dataViz" ng-model="sidenavViewVm.dataViz"
+                 placeholder="Data visualization" flex required>
+        <md-option ng-value="opt.id" ng-repeat="opt in sidenavViewVm.dataVisualizations">
+          {{ opt.name }}
+        </md-option>
+      </md-select>
+    </h1>
+  </md-toolbar>
+</sidenav>
