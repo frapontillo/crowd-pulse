@@ -15,14 +15,12 @@
  */
 
 var mongoose = require('mongoose');
-var AppSchema = require('./app');
-var UserSchema = require('./user');
 
 var OAuthAccessTokenSchema = new mongoose.Schema({
   id: mongoose.Schema.ObjectId,
-  accessToken: { type: String },
-  app: { type: mongoose.Schema.ObjectId, ref: AppSchema.statics.getSchemaName() },
-  user: { type: mongoose.Schema.ObjectId, ref: UserSchema.statics.getSchemaName() },
+  accessToken: String,
+  clientId: String,
+  userId: String,
   expires: { type: Date }
 });
 

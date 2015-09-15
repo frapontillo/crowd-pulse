@@ -30,13 +30,17 @@ UserSchema.statics.getSchemaName = function() {
 };
 
 UserSchema.statics.findOneIdByNameSecret = function (username, secret, callback) {
-  return this.model(SCHEMA_NAME).findOneQ({ username: username })
+  return this.model(SCHEMA_NAME).findOne({ username: username }).exec()
     .then(function(user) {
+      var foundUserId;
       // TODO: implement hashing system
       if (user.secret === secret) {
-        return callback(user._id);
+        foundUserId = user._id;
       }
-      callback();
+      if (callback) {
+        return callback(undefined, foundUserId);
+      }
+      return foundUserId;
     });
 };
 

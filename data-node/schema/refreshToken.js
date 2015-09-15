@@ -15,15 +15,13 @@
  */
 
 var mongoose = require('mongoose');
-var AppSchema = require('./app');
-var UserSchema = require('./user');
 
 var OAuthRefreshTokenSchema = new mongoose.Schema({
   id: mongoose.Schema.ObjectId,
-  refreshToken: { type: String },
-  app: { type: mongoose.Schema.ObjectId, ref: AppSchema.statics.getSchemaName() },
-  user: { type: mongoose.Schema.ObjectId, ref: UserSchema.statics.getSchemaName() },
-  expires: { type: Date }
+  refreshToken: String,
+  clientId: String,
+  user: String,
+  expires: Date
 });
 
 var SCHEMA_NAME = 'OAuthRefreshTokenSchema';
