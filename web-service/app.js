@@ -17,7 +17,8 @@
 var path = require('path');
 var express = require('express');
 var session = require('express-session');
-var cookieParser = require('cookie-parser')
+var cookieParser = require('cookie-parser');
+var cors = require('cors');
 var logger = require('morgan');
 var bodyParser = require('body-parser');
 var CrowdPulse = require('crowd-pulse-data-node');
@@ -33,6 +34,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(logger('dev'));
 app.use(session(config.session));
+app.use(cors());
 
 var crowdPulse = new CrowdPulse();
 
