@@ -26,6 +26,8 @@ var CrowdPulse = require('crowd-pulse-data-node');
 var bootstrap = require('./bootstrap/bootstrap');
 var oAuthSetup = require('./oauth2/setup');
 
+var projects = require('./endpoint/projects');
+
 var config = require('./config.json');
 
 var app = express();
@@ -42,6 +44,12 @@ var connect = function() {
   return crowdPulse.connect(config.database.url);
 };
 
+var webServiceSetup = function(crowdPulse, app) {
+  var API = '/api';
+  app.use(API, projects(crowdPulse));
+  // TODO: add more endpoints here
+};
+
 var gracefulExit = function() {
   crowdPulse.disconnect();
 };
@@ -49,6 +57,7 @@ var gracefulExit = function() {
 connect()
   .then(bootstrap(crowdPulse, config))
   .then(oAuthSetup(crowdPulse, app))
+  .then(webServiceSetup(crowdPulse, app))
   .then(function() {
     app.set('views', path.join(__dirname, 'views'));
     app.set('view engine', 'ejs');
@@ -58,7 +67,7 @@ connect()
       res.send('Secret area');
     });
     console.log('Listening...');
-    app.listen(3000);
+    app.listen(5000);
   })
   .catch(function(err) {
     console.error(err.stack);
