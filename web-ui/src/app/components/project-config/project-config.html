@@ -1,0 +1,14 @@
+<div layout="column" flex>
+  <md-menu-bar>
+    <md-button ng-click="projectConfigVm.save()" aria-label="Save configuration">
+      <md-icon>save</md-icon>
+      Save
+    </md-button>
+    <md-button aria-label="Upload file">
+      <md-icon>file_upload</md-icon>
+      Upload...
+    </md-button>
+  </md-menu-bar>
+  <div flex ui-ace="{{projectConfigVm.editorConfig}}"
+       ng-model="projectConfigVm.config.config"></div>
+</div>

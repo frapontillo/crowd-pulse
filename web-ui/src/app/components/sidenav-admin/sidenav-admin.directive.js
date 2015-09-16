@@ -57,23 +57,17 @@
     return directive;
 
     /** @ngInject */
-    function SidenavAdminController($state) {
+    function SidenavAdminController($state, $mdSidenav, Project) {
       var sidenavAdminVm = this;
 
-      // TODO: download actual projects
-      sidenavAdminVm.projects = [
-        {id: 'sessismo-donne', name: 'Sessismo donne'},
-        {id: 'omofobia', name: 'Omofobia'},
-        {id: 'razzismo-terrorismo', name: 'Razzismo (musulmani)'},
-        {id: 'razzismo-ebrei', name: 'Razzismo (ebrei)'},
-        {id: 'razzismo-migranti', name: 'Razzismo (migranti)'},
-        {id: 'disabilita', name: 'Disabilità'},
-        {id: 'altro-progetto', name: 'Altro progetto'},
-        {id: 'un-altro-ancora', name: 'Un altro ancora'}
-      ];
+      // download the projects
+      Project.getList().then(function(projects) {
+        sidenavAdminVm.projects = projects;
+      });
 
       sidenavAdminVm.openProject = function(projectId) {
-        $state.go('app.admin.project', {projectId: projectId});
+        $state.go('app.admin.project.edit', {projectId: projectId});
+        $mdSidenav('right-sidenav').close();
       };
     }
   }

@@ -36,10 +36,21 @@
         controllerAs: 'admin'
       })
       .state('app.admin.project', {
-        url: '/project/:projectId',
-        templateUrl: 'app/admin/project/project.html',
-        controller: 'AdminProjectController',
-        controllerAs: 'project'
+        url: '/project',
+        abstract: true,
+        templateUrl: 'app/__abstract.html'
+      })
+      .state('app.admin.project.new', {
+        url: '/new',
+        templateUrl: 'app/admin/project/new/project-new.html',
+        controller: 'AdminProjectNewController',
+        controllerAs: 'vm'
+      })
+      .state('app.admin.project.edit', {
+        url: '/:projectId',
+        templateUrl: 'app/admin/project/edit/project-edit.html',
+        controller: 'AdminProjectEditController',
+        controllerAs: 'vm'
       });
 
     $urlRouterProvider.otherwise('/');

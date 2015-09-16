@@ -4,18 +4,7 @@
     <md-tab flex layout="column">
       <md-tab-label>Configuration file</md-tab-label>
       <md-tab-body flex layout="column">
-        <md-menu-bar>
-          <md-button aria-label="Upload file">
-            <md-icon>file_upload</md-icon>
-            Upload...
-          </md-button>
-          <md-button aria-label="Save configuration">
-            <md-icon>save</md-icon>
-            Save
-          </md-button>
-        </md-menu-bar>
-        <div flex ui-ace="{{project.editorConfig}}"
-             ng-model="project.config"></div>
+        <project-config config="vm.project"></project-config>
       </md-tab-body>
     </md-tab>
 
@@ -26,12 +15,12 @@
 
           <md-subheader>Now running...</md-subheader>
 
-          <md-list-item class="md-2-line" ng-click="project.showLog(run)" ng-repeat="run in project.runs | filter:{date_end:'!'}">
+          <md-list-item class="md-2-line" ng-click="vm.showLog(run)" ng-repeat="run in vm.runs | filter:{date_end:'!'}">
             <md-icon>receipt</md-icon>
             <div class="md-list-item-text" layout="column">
               <h3>Started on {{ run.date_start | date:'shortDate' }}</h3>
             </div>
-            <md-button ng-click="project.stop(run)" class="md-icon-button md-accent" aria-label="Stop">
+            <md-button ng-click="vm.stop(run)" class="md-icon-button md-accent" aria-label="Stop">
               <md-icon>stop</md-icon>
             </md-button>
           </md-list-item>
@@ -39,7 +28,7 @@
 
           <md-subheader>Past executions</md-subheader>
 
-          <md-list-item class="md-2-line" ng-click="project.showLog(run)" ng-repeat="run in project.runs| filter:{date_end:'!!'}">
+          <md-list-item class="md-2-line" ng-click="vm.showLog(run)" ng-repeat="run in vm.runs| filter:{date_end:'!!'}">
             <md-icon>receipt</md-icon>
             <div class="md-list-item-text" layout="column">
               <h3>Started on {{ run.date_start | date:'shortDate' }}</h3>
