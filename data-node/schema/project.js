@@ -22,7 +22,7 @@ var ProjectSchema = new mongoose.Schema({
   name: String,
   creationUser: { type: mongoose.Schema.ObjectId, ref: UserSchema.statics.getSchemaName() },
   creationDate: Date,
-  config: mongoose.Schema.Types.Mixed
+  config: String
 });
 
 var SCHEMA_NAME = 'Project';
