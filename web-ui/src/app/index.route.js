@@ -11,7 +11,10 @@
       .state('app', {
         url: '',
         abstract: true,
-        templateUrl: 'app/__abstract.html'
+        templateUrl: 'app/__abstract.html',
+        resolve: {
+          'config': 'config'
+        }
       })
       .state('app.view', {
         url: '/view',
@@ -38,8 +41,6 @@
         controller: 'AdminProjectController',
         controllerAs: 'project'
       });
-
-
 
     $urlRouterProvider.otherwise('/');
   }
