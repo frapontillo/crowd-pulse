@@ -21,9 +21,8 @@ module.exports = function(crowdPulse) {
   var router = express.Router();
 
   var autoFill = function(project) {
-    if (!project.name) {
-      project.name = project.config.name;
-    }
+    var config = JSON.parse(project.config);
+    project.name = config.process.name;
     project.creationDate = (new Date()).toISOString();
   };
 
