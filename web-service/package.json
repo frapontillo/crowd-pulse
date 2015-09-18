@@ -4,6 +4,7 @@
   "description": "Crowd Pulse OAuth 2.0 Website",
   "main": "app.js",
   "scripts": {
+    "start": "node app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Francesco Pontillo <francescopontillo@gmail.com>",
