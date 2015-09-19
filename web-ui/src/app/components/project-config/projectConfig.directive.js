@@ -73,6 +73,7 @@
           .then(function(model) {
             vm.isSaving = false;
             vm.config = model;
+            Project.cache.updateWithProject(model);
             return showToast('Project saved.');
           })
           .catch(function() {

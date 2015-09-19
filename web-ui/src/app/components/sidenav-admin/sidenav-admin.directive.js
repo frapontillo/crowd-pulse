@@ -57,18 +57,25 @@
     return directive;
 
     /** @ngInject */
-    function SidenavAdminController($state, $mdSidenav, Project) {
+    function SidenavAdminController($scope, $state, $mdSidenav, Project) {
       var sidenavAdminVm = this;
 
-      // download the projects
-      Project.getList().then(function(projects) {
-        sidenavAdminVm.projects = projects;
-      });
+      var updateProjects = function() {
+        sidenavAdminVm.projects = Project.cache.projects;
+      };
+
+      Project.cache.addOnCacheChangeListener(updateProjects);
+
+      Project.cache.getOrLoad();
 
       sidenavAdminVm.openProject = function(projectId) {
         $state.go('app.admin.project.edit', {projectId: projectId});
         $mdSidenav('right-sidenav').close();
       };
+
+      $scope.$on('$destroy', function() {
+        Project.cache.removeOnCacheChangeListener(updateProjects);
+      });
     }
   }
 
