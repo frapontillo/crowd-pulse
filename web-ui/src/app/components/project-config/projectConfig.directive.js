@@ -39,7 +39,7 @@
     return directive;
 
     /** @ngInject */
-    function ProjectConfigController($log, Project) {
+    function ProjectConfigController($log, $mdToast, Project) {
       var vm = this;
 
       vm.editorConfig = {
@@ -59,11 +59,21 @@
         return Project.post(vm.config);
       };
 
+      var showToast = function(message) {
+        var toast = $mdToast.simple()
+          .content(message)
+          .position('bottom right');
+        return $mdToast.show(toast);
+      };
+
       vm.save = function() {
         return _save()
-          .then(function(model) {
-            $log.debug('Project saved.');
-            return model;
+          .then(function() {
+            return showToast('Project saved.');
+          })
+          .catch(function() {
+            $log.error('Couldn\'t save project.');
+            return showToast('Error while saving project.');
           });
       };
     }
