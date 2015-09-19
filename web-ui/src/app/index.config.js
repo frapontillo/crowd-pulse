@@ -23,38 +23,48 @@
     });
 
     /** @ngInject */
-    var interceptor = function($q, $rootScope, $log, toolbarLoadedEvent, toolbarLoadingEvent) {
+    var interceptor = function($q, $rootScope, $log, $timeout, toolbarLoadedEvent, toolbarLoadingEvent) {
       var requests = 0;
+      var completed = 0;
+      var timeoutPromise;
 
-      var broadcastEventually = function() {
-        if (requests === 0) {
-          return $rootScope.$broadcast(toolbarLoadedEvent);
+      var handleCompletion = function() {
+        completed++;
+      };
+
+      var evaluateAsync = function() {
+        // if we are already waiting for something, discard it as this is newer
+        if (timeoutPromise) {
+          $timeout.cancel(timeoutPromise);
         }
-
-        if (requests > 0) {
+        timeoutPromise = $timeout(function() {
+          if (completed >= requests) {
+            completed = 0;
+            requests = 0;
+            return $rootScope.$broadcast(toolbarLoadedEvent);
+          }
           return $rootScope.$broadcast(toolbarLoadingEvent);
-        }
-
-        return $log.warn('Current number of requests is incompatible (' + requests +
-                         '), please check what\'s going on.');
+        }, 300);
       };
 
       return {
         'request': function(config) {
+          if (requests === 0) {
+            $rootScope.$broadcast(toolbarLoadingEvent);
+          }
           requests++;
-          broadcastEventually();
           return config;
         },
 
         'response': function(response) {
-          requests--;
-          broadcastEventually();
+          handleCompletion();
+          evaluateAsync();
           return response;
         },
 
         'responseError': function(rejection) {
-          requests--;
-          broadcastEventually();
+          handleCompletion();
+          evaluateAsync();
           return $q.reject(rejection);
         }
       };
