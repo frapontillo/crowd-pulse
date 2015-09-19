@@ -1,14 +1,23 @@
 <div layout="column" flex>
   <md-menu-bar>
-    <md-button ng-click="projectConfigVm.save()" aria-label="Save configuration">
+    <md-button ng-disabled="projectConfigVm.isSaving" ng-click="projectConfigVm.save()"
+               aria-label="Save configuration">
       <md-icon>save</md-icon>
-      Save
+      {{projectConfigVm.getSaveLabel()}}
     </md-button>
-    <md-button md-choose-file ng-model="projectConfigVm.config.config" aria-label="Upload file">
+    <md-button ng-disabled="projectConfigVm.isSaving" md-choose-file
+               ng-model="projectConfigVm.config.config" aria-label="Upload file">
       <md-icon>file_upload</md-icon>
       Upload...
     </md-button>
   </md-menu-bar>
-  <div flex ui-ace="{{projectConfigVm.editorConfig}}"
+  <div flex ui-ace="{
+          useWrapMode: true,
+          showGutter: true,
+          theme: 'solarized_dark',
+          mode: 'json',
+          onLoad: projectConfigVm.editorLoaded
+        }"
+       ng-readonly="projectConfigVm.isSaving"
        ng-model="projectConfigVm.config.config"></div>
 </div>

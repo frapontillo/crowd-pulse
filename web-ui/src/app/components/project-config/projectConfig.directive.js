@@ -30,7 +30,6 @@
       controllerAs: 'projectConfigVm',
       bindToController: true,
       replace: true,
-      // require: 'ngModel',
       scope: {
         config: '='
       }
@@ -42,14 +41,9 @@
     function ProjectConfigController($log, $mdToast, Project) {
       var vm = this;
 
-      vm.editorConfig = {
-        useWrapMode: true,
-        showGutter: true,
-        theme: 'solarized_dark',
-        mode: 'json',
-        onLoad: function(_editor) {
-          _editor.$blockScrolling = Infinity;
-        }
+      vm.editorLoaded = function(_editor) {
+        _editor.$blockScrolling = Infinity;
+        _editor.getSession().setTabSize(2);
       };
 
       var _save = function() {
@@ -66,9 +60,19 @@
         return $mdToast.show(toast);
       };
 
+      vm.getSaveLabel = function() {
+        if (vm.isSaving) {
+          return "Saving...";
+        }
+        return "Save";
+      };
+
       vm.save = function() {
+        vm.isSaving = true;
         return _save()
-          .then(function() {
+          .then(function(model) {
+            vm.isSaving = false;
+            vm.config = model;
             return showToast('Project saved.');
           })
           .catch(function() {
