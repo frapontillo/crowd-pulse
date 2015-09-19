@@ -22,7 +22,7 @@
     .directive('mdChooseFile', mdChooseFile);
 
   /** @ngInject */
-  function mdChooseFile($log) {
+  function mdChooseFile($log, FileReader) {
     var directive = {
       restrict: 'A',
       require: 'ngModel',
