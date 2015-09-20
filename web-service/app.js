@@ -50,12 +50,8 @@ var webServiceSetup = function(crowdPulse, app) {
   // TODO: add more endpoints here
 };
 
-var gracefulExit = function() {
-  crowdPulse.disconnect();
-};
-
 connect()
-  .then(bootstrap(crowdPulse, config))
+  // .then(bootstrap(crowdPulse, config))
   .then(oAuthSetup(crowdPulse, app))
   .then(webServiceSetup(crowdPulse, app))
   .then(function() {
