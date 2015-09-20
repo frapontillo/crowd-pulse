@@ -25,8 +25,15 @@
   function AdminProjectNewController() {
     var vm = this;
 
+    var newTemplate = {
+      process: {
+        name: "My new shiny project"
+      }
+    };
+    newTemplate = JSON.stringify(newTemplate, null, '  ');
+
     vm.project = {
-      config: '{"name":"My new shiny project"}'
+      config: newTemplate
     };
   }
 })();
