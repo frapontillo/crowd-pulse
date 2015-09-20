@@ -26,12 +26,16 @@
     var name = 'projects';
     var ProjectService = Restangular.service(name);
 
+    ProjectService.from = function(object) {
+      return Restangular.restangularizeElement(null, object, name);
+    };
+
     ProjectService.cache = {};
     ProjectService.cache.projects = undefined;
     ProjectService.cache.listeners = [];
 
     ProjectService.cache.addOnCacheChangeListener = function(fn) {
-      ProjectService.cache.listeners.push(fn)
+      ProjectService.cache.listeners.push(fn);
     };
 
     ProjectService.cache.removeOnCacheChangeListener = function(fn) {
@@ -48,19 +52,24 @@
     };
 
     ProjectService.cache.updateWithProject = function(project) {
+      var found = false;
       if (ProjectService.cache.isLoaded()) {
-        for (var p in ProjectService.cache.projects) {
-          if (ProjectService.cache.projects[p]._id === project._id) {
-            ProjectService.cache.projects[p] = project;
-            noticeListeners(project);
+        ProjectService.cache.projects.forEach(function(element, p) {
+          if (found) {
             return;
           }
-        }
+          if (ProjectService.cache.projects[p]._id === project._id) {
+            ProjectService.cache.projects[p] = project;
+            found = true;
+          }
+        });
       } else {
         ProjectService.cache.projects = [];
       }
 
-      ProjectService.cache.projects.push(project);
+      if (!found) {
+        ProjectService.cache.projects.push(project);
+      }
       noticeListeners(project);
     };
 

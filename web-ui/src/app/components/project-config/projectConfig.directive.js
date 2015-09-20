@@ -38,7 +38,7 @@
     return directive;
 
     /** @ngInject */
-    function ProjectConfigController($log, $mdToast, Project) {
+    function ProjectConfigController($log, $mdToast, $mdDialog, $state, Project) {
       var vm = this;
 
       vm.editorLoaded = function(_editor) {
@@ -46,11 +46,9 @@
         _editor.getSession().setTabSize(2);
       };
 
-      var _save = function() {
-        if (vm.config.hasOwnProperty('save')) {
-          return vm.config.save();
-        }
-        return Project.post(vm.config);
+      vm.isNew = function() {
+        // a project is new if it is not defined or if it doesn't have an ID
+        return !(vm.config && vm.config.hasOwnProperty('_id'));
       };
 
       var showToast = function(message) {
@@ -60,26 +58,34 @@
         return $mdToast.show(toast);
       };
 
-      vm.getSaveLabel = function() {
-        if (vm.isSaving) {
-          return "Saving...";
-        }
-        return "Save";
-      };
-
       vm.save = function() {
         vm.isSaving = true;
+        try {
+          var objConfig = JSON.parse(vm.config.config);
+          vm.config.config = JSON.stringify(objConfig, null, '  ');
+        } catch (Error) {
+          return showToast('Error in the JSON configuration.');
+        }
         return _save()
           .then(function(model) {
-            vm.isSaving = false;
             vm.config = model;
             Project.cache.updateWithProject(model);
-            return showToast('Project saved.');
+            showToast('Project saved.');
+            $state.go('^.edit', {projectId: vm.config._id});
+            return true;
           })
           .catch(function() {
             $log.error('Couldn\'t save project.');
-            return showToast('Error while saving project.');
+            showToast('Error while saving project.');
+            return false;
+          })
+          .finally(function() {
+            vm.isSaving = false;
           });
+      };
+
+      var _save = function() {
+        return vm.isNew() ? Project.post(vm.config) : vm.config.save();
       };
     }
   }

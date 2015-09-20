@@ -73,6 +73,11 @@
         $mdSidenav('right-sidenav').close();
       };
 
+      sidenavAdminVm.goToNew = function() {
+        $state.go('app.admin.project.new');
+        $mdSidenav('right-sidenav').close();
+      };
+
       $scope.$on('$destroy', function() {
         Project.cache.removeOnCacheChangeListener(updateProjects);
       });

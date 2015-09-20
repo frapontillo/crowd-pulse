@@ -1,9 +1,9 @@
 <div layout="column" flex>
-  <md-menu-bar>
+  <md-menu-bar layout="row">
     <md-button ng-disabled="projectConfigVm.isSaving" ng-click="projectConfigVm.save()"
                aria-label="Save configuration">
       <md-icon>save</md-icon>
-      {{projectConfigVm.getSaveLabel()}}
+      Save
     </md-button>
     <md-button ng-disabled="projectConfigVm.isSaving" md-choose-file
                ng-model="projectConfigVm.config.config" aria-label="Upload file">
