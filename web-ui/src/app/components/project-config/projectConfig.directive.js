@@ -87,6 +87,34 @@
       var _save = function() {
         return vm.isNew() ? Project.post(vm.config) : vm.config.save();
       };
+
+      vm.delete = function(event) {
+        vm.isSaving = true;
+        var confirm = $mdDialog.confirm()
+          .title('Delete project ' + vm.config.name)
+          .content('Do you really want to delete this project?')
+          .ariaLabel('Delete project')
+          .targetEvent(event)
+          .ok('Yes, delete it')
+          .cancel('Don\'t delete it');
+        return $mdDialog.show(confirm)
+          .then(function() {
+            return _delete();
+          })
+          .then(function() {
+            Project.cache.removeProject(vm.config);
+            showToast('Project removed.');
+            $state.go('^.main');
+            return true;
+          })
+          .finally(function() {
+            vm.isSaving = false;
+          });
+      };
+
+      var _delete = function() {
+        return vm.config.remove();
+      };
     }
   }
 

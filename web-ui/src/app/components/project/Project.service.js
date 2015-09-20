@@ -73,6 +73,18 @@
       noticeListeners(project);
     };
 
+    ProjectService.cache.removeProject = function(project) {
+      if (!ProjectService.cache.isLoaded()) {
+        return;
+      }
+      ProjectService.cache.projects.forEach(function(element, p) {
+        if (ProjectService.cache.projects[p]._id === project._id) {
+          ProjectService.cache.projects.splice(p, 1);
+        }
+      });
+      noticeListeners(project);
+    };
+
     ProjectService.cache.isLoaded = function() {
       return (typeof ProjectService.cache.projects !== 'undefined');
     };
