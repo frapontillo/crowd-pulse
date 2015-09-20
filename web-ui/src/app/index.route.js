@@ -40,6 +40,10 @@
         abstract: true,
         templateUrl: 'app/__abstract.html'
       })
+      .state('app.admin.project.main', {
+        url: '',
+        templateUrl: 'app/admin/project/main/project-main.html'
+      })
       .state('app.admin.project.new', {
         url: '/new',
         templateUrl: 'app/admin/project/new/project-new.html',
