@@ -73,4 +73,10 @@ connect()
     console.error(err.stack);
   });
 
+var gracefulExit = function() {
+  crowdPulse.disconnect();
+};
+
 process.on('SIGTERM', gracefulExit);
+
+module.exports = app;
