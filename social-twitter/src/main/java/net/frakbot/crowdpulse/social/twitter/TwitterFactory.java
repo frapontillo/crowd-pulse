@@ -24,6 +24,7 @@ import twitter4j.TwitterStreamFactory;
 import twitter4j.conf.ConfigurationBuilder;
 
 import java.io.FileNotFoundException;
+import java.net.UnknownHostException;
 
 /**
  * @author Francesco Pontillo
@@ -75,23 +76,42 @@ public class TwitterFactory {
      */
     public static boolean waitForTwitterTimeout(TwitterException exception, Logger logger)
             throws InterruptedException {
+
         if (exception.getCause() != null && exception.getCause().getClass() == FileNotFoundException.class) {
             return true;
         }
-        if (exception.getRateLimitStatus() == null) {
-            exception.printStackTrace();
-            return false;
-        }
-        int remaining = exception.getRateLimitStatus().getRemaining();
-        if (remaining <= 0) {
-            int secondsToWait = exception.getRateLimitStatus().getSecondsUntilReset() + 5;
-            logger.warn("Encountered Twitter rate limit, waiting for {} seconds...", secondsToWait);
-            Thread.sleep(1000 * secondsToWait);
-            logger.warn("{} seconds have elapsed, now retrying the Twitter call...", secondsToWait);
-            // return true if the exception was rate limit related
+
+        // if the error code stands for "Over capacity", retry
+        if (exception.getErrorCode() == 130) {
+            waitWithMessage(3, "Twitter is over capacity right now, waiting for {} seconds...", logger);
             return true;
         }
-        // return false otherwise
+
+        // if the exception happened because of network errors, always retry after 3 secs
+        if (exception.getCause() instanceof UnknownHostException) {
+            waitWithMessage(3, "Couldn't find Twitter host, probably because of some network error, waiting for {} seconds...", logger);
+            return true;
+        }
+
+        if (exception.getRateLimitStatus() != null) {
+            // if the exception is related to rate limitations, wait for some time
+            int remaining = exception.getRateLimitStatus().getRemaining();
+            if (remaining <= 0) {
+                int secondsToWait = exception.getRateLimitStatus().getSecondsUntilReset() + 5;
+                waitWithMessage(secondsToWait, "Encountered Twitter rate limit, waiting for {} seconds...", logger);
+                // return true if the exception was rate limit related
+                return true;
+            }
+        }
+
+        // return false if there's nothing else to do (this should never happen)
+        exception.printStackTrace();
         return false;
+    }
+
+    private static void waitWithMessage(int secondsToWait, String message, Logger logger) throws InterruptedException {
+        logger.warn(message, secondsToWait);
+        Thread.sleep(1000 * secondsToWait);
+        logger.warn("{} seconds have elapsed, now retrying the Twitter call...", secondsToWait);
     }
 }

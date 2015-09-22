@@ -59,7 +59,8 @@ public class TwitterExtractorRunner {
             // if the generating user is not specified, we need to use the Search API
             // which are very limited in the time span they can search (6-9 days top)
             oldMessages = Observable.create(new Observable.OnSubscribe<Message>() {
-                @Override public void call(Subscriber<? super Message> subscriber) {
+                @Override
+                public void call(Subscriber<? super Message> subscriber) {
                     logger.info("SEARCH: started.");
                     getOldMessagesBySearch(parameters, subscriber);
                 }
@@ -68,7 +69,8 @@ public class TwitterExtractorRunner {
             // otherwise, we can use the author's timeline, but we have to manually filter on:
             // query, location, to user, referenced users, since, until, language, locale
             oldMessages = Observable.create(new Observable.OnSubscribe<Message>() {
-                @Override public void call(Subscriber<? super Message> subscriber) {
+                @Override
+                public void call(Subscriber<? super Message> subscriber) {
                     logger.info("SEARCH: started.");
                     getOldMessagesByTimeline(parameters, subscriber);
                 }
@@ -77,7 +79,8 @@ public class TwitterExtractorRunner {
 
         // create the new messages (streamed) Observable
         Observable<Message> newMessages = Observable.create(new Observable.OnSubscribe<Message>() {
-            @Override public void call(Subscriber<? super Message> subscriber) {
+            @Override
+            public void call(Subscriber<? super Message> subscriber) {
                 logger.info("STREAMING: started.");
                 getNewMessages(parameters, subscriber);
             }
@@ -88,7 +91,7 @@ public class TwitterExtractorRunner {
                 .filter(Checker.checkToUser(parameters))
                 .filter(checkReferencedUsers(parameters))
                 .filter(Checker.checkUntilDate(parameters))
-                // continue producing elements until the target date is reached
+                        // continue producing elements until the target date is reached
                 .takeUntil(timeToWait(parameters));
 
         // both observables should execute the subscribe function in separate threads
@@ -99,17 +102,20 @@ public class TwitterExtractorRunner {
         // make it as a ConnectableObservable so that multiple subscribers can subscribe to it
         Observable<Message> messages = Observable.merge(oldMessages, newMessages);
         messages = messages.lift(subscriber -> new SafeSubscriber<>(new Subscriber<Message>() {
-            @Override public void onCompleted() {
+            @Override
+            public void onCompleted() {
                 cleanup();
                 subscriber.onCompleted();
             }
 
-            @Override public void onError(Throwable e) {
+            @Override
+            public void onError(Throwable e) {
                 cleanup();
                 subscriber.onError(e);
             }
 
-            @Override public void onNext(Message message) {
+            @Override
+            public void onNext(Message message) {
                 subscriber.onNext(message);
             }
 
@@ -164,7 +170,8 @@ public class TwitterExtractorRunner {
                 try {
                     result = twitter.search(query);
                 } catch (TwitterException timeout) {
-                    if (net.frakbot.crowdpulse.social.twitter.TwitterFactory.waitForTwitterTimeout(timeout, logger)) {
+                    boolean canRepeat = net.frakbot.crowdpulse.social.twitter.TwitterFactory.waitForTwitterTimeout(timeout, logger);
+                    if (canRepeat) {
                         continue;
                     }
                     throw timeout;
@@ -277,28 +284,34 @@ public class TwitterExtractorRunner {
             TwitterStream twitterStream = getTwitterStreamInstance();
             final TwitterMessageConverter converter = new TwitterMessageConverter(parameters);
             twitterStream.addListener(new StatusListener() {
-                @Override public void onStatus(Status status) {
+                @Override
+                public void onStatus(Status status) {
                     subscriber.onNext(converter.fromExtractor(status));
                 }
 
-                @Override public void onDeletionNotice(StatusDeletionNotice statusDeletionNotice) {
+                @Override
+                public void onDeletionNotice(StatusDeletionNotice statusDeletionNotice) {
                     // ignore
                 }
 
-                @Override public void onTrackLimitationNotice(int numberOfLimitedStatuses) {
+                @Override
+                public void onTrackLimitationNotice(int numberOfLimitedStatuses) {
                     // ignore
                 }
 
-                @Override public void onScrubGeo(long userId, long upToStatusId) {
+                @Override
+                public void onScrubGeo(long userId, long upToStatusId) {
                     // ignore
                 }
 
-                @Override public void onStallWarning(StallWarning warning) {
+                @Override
+                public void onStallWarning(StallWarning warning) {
                     logger.error(warning.toString());
                     System.err.println(warning);
                 }
 
-                @Override public void onException(Exception ex) {
+                @Override
+                public void onException(Exception ex) {
                     subscriber.onError(ex);
                 }
             });
