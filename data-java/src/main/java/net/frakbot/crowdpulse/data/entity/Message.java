@@ -17,7 +17,12 @@
 package net.frakbot.crowdpulse.data.entity;
 
 import net.frakbot.crowdpulse.common.util.StringUtil;
+import org.joda.time.DateTime;
 
+import java.text.DateFormat;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -390,8 +395,10 @@ public class Message extends Entity {
      *
      * @return A brief description of the Message.
      */
-    @Override public String toString() {
+    @Override
+    public String toString() {
         return getId().toString() + ":"
+                + ZonedDateTime.ofInstant(getDate().toInstant(), ZoneId.of("Z")).toString()
                 + getSource() + ":"
                 + StringUtil.ellipsize(getText(), 20);
     }
