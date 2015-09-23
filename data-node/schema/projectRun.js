@@ -15,24 +15,24 @@
  */
 
 var mongoose = require('mongoose');
-var UserSchema = require('./user');
-var ProjectRunSchema = require('./projectRun');
+var ProjectSchema = require('./project');
 
-var ProjectSchema = new mongoose.Schema({
+var ProjectRunSchema = new mongoose.Schema({
   id: mongoose.Schema.ObjectId,
-  name: String,
-  creationUser: { type: mongoose.Schema.ObjectId, ref: UserSchema.statics.getSchemaName() },
-  creationDate: Date,
-  config: String,
-  runs: [{ type: mongoose.Schema.ObjectId, ref: ProjectRunSchema.statics.getSchemaName() }]
+  date_start: Date,
+  date_end: Date,
+  log: String,
+  status: Number,
+  pid: Number,
+  project: { type: mongoose.Schema.ObjectId, ref: ProjectSchema.statics.getSchemaName() }
 });
 
-var SCHEMA_NAME = 'Project';
+var SCHEMA_NAME = 'ProjectRun';
 
-ProjectSchema.statics.getSchemaName = function() {
+ProjectRunSchema.statics.getSchemaName = function() {
   return SCHEMA_NAME;
 };
 
-ProjectSchema.set('collection', SCHEMA_NAME);
+ProjectRunSchema.set('collection', SCHEMA_NAME);
 
-module.exports = ProjectSchema;
+module.exports = ProjectRunSchema;
