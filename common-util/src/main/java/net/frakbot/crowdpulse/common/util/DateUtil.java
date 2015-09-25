@@ -18,6 +18,8 @@ package net.frakbot.crowdpulse.common.util;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Date;
 
 /**
@@ -47,5 +49,15 @@ public class DateUtil {
      */
     public static long getUnixEpoch(Date date) {
         return date.getTime() / 1000;
+    }
+
+    /**
+     * Convert a {@link Date} into a ISO-8601 {@link String} at ZULU time.
+     *
+     * @param date The {@link Date} to convert.
+     * @return A ISO-8601 {@link String}.
+     */
+    public static String toISOString(Date date) {
+        return ZonedDateTime.ofInstant(date.toInstant(), ZoneId.of("Z")).toString();
     }
 }
