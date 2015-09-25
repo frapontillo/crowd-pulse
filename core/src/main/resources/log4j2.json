@@ -1,0 +1,23 @@
+{
+  "configuration": {
+    "status": "warn",
+    "name": "CrowdPulse logging configuration",
+    "packages": "org.apache.logging.log4j.test",
+    "appenders": {
+      "Console": {
+        "name": "Console",
+        "PatternLayout": {
+          "pattern": "%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"
+        }
+      }
+    },
+    "loggers": {
+      "root": {
+        "level": "all",
+        "AppenderRef": {
+          "ref": "Console"
+        }
+      }
+    }
+  }
+}

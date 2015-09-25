@@ -8,7 +8,7 @@ build/
 gradle/
 temp/
 
-# Ingore all resource files
+# Ignore all resource files
 */src/main/resources/*
 # Keep SPIs, samples and jsons
 !*/src/main/resources/services
@@ -17,6 +17,8 @@ temp/
 
 # core: ignore all json files
 core/src/main/resources/*.json
+# core: keep the logging configuration
+!core/src/main/resources/log4j2.json
 
 # web-ui: ignore dist and temporary dirs
 web-ui/.sass-cache/
