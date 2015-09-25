@@ -109,5 +109,34 @@ module.exports = function(crowdPulse) {
     })
     .delete(_delete);
 
+  // POST to start a run
+  router.route('/projects/:projectId/runs')
+    .post(function(req, res) {
+      var run = new crowdPulse.ProjectRun({
+        date_start: new Date(),
+        project: new crowdPulse.ObjectId(req.params.projectId)
+      });
+      return run.save()
+        .then(function(savedRun) {
+          run = savedRun;
+          return crowdPulse.Project.findById(req.params.projectId).exec();
+        })
+        .then(function(project) {
+          project.runs.push(run._id);
+          return project.save();
+        })
+        .then(function() {
+          // TODO: start the run here
+          res.send(run);
+        });
+    });
+
+  // DELETE to stop a run
+  router.route('/projects/:projectId/runs/:runId')
+    .delete(function(req, res) {
+      // TODO: stop the run here
+      res.send('stopped');
+    });
+
   return router;
 };
