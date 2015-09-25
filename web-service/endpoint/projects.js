@@ -112,20 +112,20 @@ module.exports = function(crowdPulse) {
   // POST to start a run
   router.route('/projects/:projectId/runs')
     .post(function(req, res) {
-      var run = new crowdPulse.ProjectRun({
-        date_start: new Date(),
-        project: new crowdPulse.ObjectId(req.params.projectId)
-      });
-      return run.save()
-        .then(function(savedRun) {
-          run = savedRun;
-          return crowdPulse.Project.findById(req.params.projectId).exec();
-        })
+      // retrieve the project
+      Q(crowdPulse.Project.findById(req.params.projectId).exec())
         .then(function(project) {
-          project.runs.push(run._id);
-          return project.save();
+          var newRun = new crowdPulse.ProjectRun({
+            date_start: new Date(),
+            project: req.params.projectId
+          });
+          return [project, newRun.save()];
         })
-        .then(function() {
+        .spread(function(project, run) {
+          project.runs.push(run);
+          return [project.save(), run];
+        })
+        .spread(function(project, run) {
           // TODO: start the run here
           res.send(run);
         });
