@@ -16,6 +16,7 @@
 
 package net.frakbot.crowdpulse.data.entity;
 
+import net.frakbot.crowdpulse.common.util.DateUtil;
 import net.frakbot.crowdpulse.common.util.StringUtil;
 import org.joda.time.DateTime;
 
@@ -398,7 +399,7 @@ public class Message extends Entity {
     @Override
     public String toString() {
         return getId().toString() + ":"
-                + ZonedDateTime.ofInstant(getDate().toInstant(), ZoneId.of("Z")).toString()
+                + DateUtil.toISOString(getDate())
                 + getSource() + ":"
                 + StringUtil.ellipsize(getText(), 20);
     }

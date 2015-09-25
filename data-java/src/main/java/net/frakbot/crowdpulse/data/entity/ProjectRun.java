@@ -123,7 +123,7 @@ public class ProjectRun extends Entity {
      *
      * @param pid The {@link Double} PID.
      */
-    public void setPid(Double pid) {
+    public void setPid(Integer pid) {
         this.pid = pid;
     }
 
