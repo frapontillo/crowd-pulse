@@ -133,6 +133,14 @@ module.exports = function(crowdPulse) {
 
   // DELETE to stop a run
   router.route('/projects/:projectId/runs/:runId')
+    .get(function(req, res) {
+      crowdPulse.ProjectRun.findById(req.params.runId)
+        .populate('project')
+        .exec()
+        .then(function(run) {
+          res.send(run);
+        });
+    })
     .delete(function(req, res) {
       // TODO: stop the run here
       res.send('stopped');
