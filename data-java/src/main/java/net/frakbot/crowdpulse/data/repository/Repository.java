@@ -50,6 +50,17 @@ public class Repository<T, K> extends BasicDAO<T, K> {
     }
 
     /**
+     * Find an element by its ID.
+     *
+     * @param id The ID of the element to find.
+     * @return The found element or {@code null}.
+     */
+    public T findById(K id) {
+        Query<T> query = createQuery().field("_id").equal(id);
+        return findOne(query);
+    }
+
+    /**
      * Create a {@link Query} to retrieve elements between two {@link K} representations of object IDs.
      *
      * @param from The ID to start retrieve elements from.
