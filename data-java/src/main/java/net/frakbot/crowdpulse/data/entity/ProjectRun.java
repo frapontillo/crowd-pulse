@@ -16,7 +16,7 @@
 
 package net.frakbot.crowdpulse.data.entity;
 
-import org.mongodb.morphia.annotations.Reference;
+import org.bson.types.ObjectId;
 
 import java.util.Date;
 
@@ -30,9 +30,8 @@ public class ProjectRun extends Entity {
     private Date dateEnd;
     private String log;
     private Integer status;
-    private Double pid;
-    @Reference
-    private Project project;
+    private Integer pid;
+    private ObjectId project;
 
     /**
      * Get the {@link Date} this run was started.
@@ -112,36 +111,36 @@ public class ProjectRun extends Entity {
     /**
      * Get the process ID on the machine where the process was started.
      *
-     * @return A {@link Double} process ID (PID):
+     * @return A {@link Integer} process ID (PID).
      */
-    public Double getPid() {
+    public Integer getPid() {
         return pid;
     }
 
     /**
      * Set the process ID that a started process has on the machine where it runs.
      *
-     * @param pid The {@link Double} PID.
+     * @param pid The {@link Integer} PID.
      */
     public void setPid(Integer pid) {
         this.pid = pid;
     }
 
     /**
-     * Get the {@link Project} this run was started from.
+     * Get the {@link Project} ID this run was started from.
      *
-     * @return The {@link Project} of the run.
+     * @return The {@link ObjectId} of the project.
      */
-    public Project getProject() {
+    public ObjectId getProject() {
         return project;
     }
 
     /**
-     * Set the {@link Project} to associate this run with.
+     * Set the {@link Project} ID to associate this run with.
      *
-     * @param project The {@link Project} of the run.
+     * @param project The {@link ObjectId} of the project.
      */
-    public void setProject(Project project) {
+    public void setProject(ObjectId project) {
         this.project = project;
     }
 }

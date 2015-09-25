@@ -16,6 +16,7 @@
 
 package net.frakbot.crowdpulse.data.entity;
 
+import org.bson.types.ObjectId;
 import org.mongodb.morphia.annotations.Reference;
 
 import java.util.Date;
@@ -37,7 +38,7 @@ public class Project extends Entity {
     @Reference private User creationUser;
     private Date creationDate;
     private Map config;
-    @Reference private List<ProjectRun> runs;
+    private List<ObjectId> runs;
 
     /**
      * Get the name of the Project.
@@ -112,20 +113,20 @@ public class Project extends Entity {
     }
 
     /**
-     * Get the {@link ProjectRun}s associated with this project.
+     * Get the {@link ObjectId}s of the runs associated with this project.
      *
      * @return A {@link List} of pending and/or completed runs.
      */
-    public List<ProjectRun> getRuns() {
+    public List<ObjectId> getRuns() {
         return runs;
     }
 
     /**
-     * Set the {@link ProjectRun}s for this project.
+     * Set the {@link ObjectId}s of the runs for this project.
      *
-     * @param runs A {@link List} of pending and/or completed runs.
+     * @param runs A {@link List} of IDs of pending and/or completed runs.
      */
-    public void setRuns(List<ProjectRun> runs) {
+    public void setRuns(List<ObjectId> runs) {
         this.runs = runs;
     }
 }

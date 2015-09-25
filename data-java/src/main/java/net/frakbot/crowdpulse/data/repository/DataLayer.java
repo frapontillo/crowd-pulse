@@ -78,7 +78,7 @@ public class DataLayer {
      *
      * @param db The target database to connect to.
      */
-    private DataLayer(String db) {
+    public DataLayer(String db) {
         InputStream configInput = getClass().getClassLoader().getResourceAsStream("database.properties");
         Properties prop = new Properties();
         try {
