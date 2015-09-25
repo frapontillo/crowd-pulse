@@ -14,9 +14,13 @@
  * limitations under the License.
  */
 
-var mongoose = require('mongoose');
+'use strict';
 
-var AppSchema = new mongoose.Schema({
+var mongoose = require('mongoose');
+var builder = require('./schemaBuilder');
+var schemas = require('./schemaName');
+
+var AppSchema = builder(schemas.app, {
   id: mongoose.Schema.ObjectId,
   name: String,
   secret: String,
@@ -24,26 +28,20 @@ var AppSchema = new mongoose.Schema({
   allowedGrants: [ String ]
 });
 
-var SCHEMA_NAME = 'App';
-
-AppSchema.statics.getSchemaName = function() {
-  return SCHEMA_NAME;
-};
-
 AppSchema.statics.findByName = function (name) {
-  return this.model(SCHEMA_NAME).find({ name: name }).exec();
+  return this.model(schemas.app).find({ name: name }).exec();
 };
 
 AppSchema.statics.findOneByIdSecret = function (id, secret, callback) {
-  return this.model(SCHEMA_NAME).findOne({ _id: mongoose.Types.ObjectId(id), secret: secret }).exec(callback);
+  return this.model(schemas.app).findOne({ _id: mongoose.Types.ObjectId(id), secret: secret }).exec(callback);
 };
 
 AppSchema.statics.hasAllowedGrant = function (id, grantType, callback) {
-  return this.model(SCHEMA_NAME).findOne({ _id: mongoose.Types.ObjectId(id), allowedGrants: grantType }).exec(function(err, res) {
-    callback(err, !!res);
-  });
+  return this.model(schemas.app)
+    .findOne({ _id: mongoose.Types.ObjectId(id), allowedGrants: grantType })
+    .exec(function(err, res) {
+      callback(err, !!res);
+    });
 };
-
-AppSchema.set('collection', SCHEMA_NAME);
 
 module.exports = AppSchema;

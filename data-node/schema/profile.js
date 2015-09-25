@@ -14,9 +14,13 @@
  * limitations under the License.
  */
 
-var mongoose = require('mongoose');
+'use strict';
 
-var ProfileSchema = new mongoose.Schema({
+var mongoose = require('mongoose');
+var builder = require('./schemaBuilder');
+var schemas = require('./schemaName');
+
+var ProfileSchema = builder(schemas.profile, {
   id: mongoose.Schema.ObjectId,
   source: String,
   username: String,
@@ -30,13 +34,5 @@ var ProfileSchema = new mongoose.Schema({
   longitude: Number,
   connections: [String]
 });
-
-var SCHEMA_NAME = 'Profile';
-
-ProfileSchema.statics.getSchemaName = function() {
-  return SCHEMA_NAME;
-};
-
-ProfileSchema.set('collection', SCHEMA_NAME);
 
 module.exports = ProfileSchema;

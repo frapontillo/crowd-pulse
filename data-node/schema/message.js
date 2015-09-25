@@ -14,11 +14,13 @@
  * limitations under the License.
  */
 
-var mongoose = require('mongoose');
-var TagSchema = require('./tag');
-var TokenSchema = require('./token');
+'use strict';
 
-var MessageSchema = new mongoose.Schema({
+var mongoose = require('mongoose');
+var builder = require('./schemaBuilder');
+var schemas = require('./schemaName');
+
+var MessageSchema = builder(schemas.message, {
   id: mongoose.Schema.ObjectId,
   oId: String,
   text: String,
@@ -34,17 +36,9 @@ var MessageSchema = new mongoose.Schema({
   longitude: Number,
   favs: Number,
   shares: Number,
-  tags: [TagSchema],
-  tokens: [TokenSchema],
+  tags: [schemas.tag],
+  tokens: [schemas.token],
   sentiment: Number
 });
-
-var SCHEMA_NAME = 'Message';
-
-MessageSchema.statics.getSchemaName = function() {
-  return SCHEMA_NAME;
-};
-
-MessageSchema.set('collection', SCHEMA_NAME);
 
 module.exports = MessageSchema;

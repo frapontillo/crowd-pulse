@@ -14,9 +14,13 @@
  * limitations under the License.
  */
 
-var mongoose = require('mongoose');
+'use strict';
 
-var TokenSchema = new mongoose.Schema({
+var mongoose = require('mongoose');
+var builder = require('./schemaBuilder');
+var schemas = require('./schemaName');
+
+var TokenSchema = builder(schemas.token, {
   text: String,
   pos: String,
   simplePos: String,
@@ -24,13 +28,5 @@ var TokenSchema = new mongoose.Schema({
   lemma: String,
   score: Number
 });
-
-var SCHEMA_NAME = 'Token';
-
-TokenSchema.statics.getSchemaName = function() {
-  return SCHEMA_NAME;
-};
-
-TokenSchema.set('collection', SCHEMA_NAME);
 
 module.exports = TokenSchema;

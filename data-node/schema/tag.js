@@ -14,22 +14,17 @@
  * limitations under the License.
  */
 
-var mongoose = require('mongoose');
-var CategorySchema = require('./category');
+'use strict';
 
-var TagSchema = new mongoose.Schema({
+var mongoose = require('mongoose');
+var builder = require('./schemaBuilder');
+var schemas = require('./schemaName');
+
+var TagSchema = builder(schemas.tag, {
   sources: [String],
   language: String,
-  categories: [CategorySchema],
+  categories: [schemas.category],
   stopWord: Boolean
 });
-
-var SCHEMA_NAME = 'Tag';
-
-TagSchema.statics.getSchemaName = function() {
-  return SCHEMA_NAME;
-};
-
-TagSchema.set('collection', SCHEMA_NAME);
 
 module.exports = TagSchema;

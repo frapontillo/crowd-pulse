@@ -14,23 +14,21 @@
  * limitations under the License.
  */
 
-var mongoose = require('mongoose');
+'use strict';
 
-var UserSchema = new mongoose.Schema({
+var mongoose = require('mongoose');
+var builder = require('./schemaBuilder');
+var schemas = require('./schemaName');
+
+var UserSchema = builder(schemas.user, {
   id: mongoose.Schema.ObjectId,
   username: String,
   email: String,
   secret: String
 });
 
-var SCHEMA_NAME = 'User';
-
-UserSchema.statics.getSchemaName = function() {
-  return SCHEMA_NAME;
-};
-
 UserSchema.statics.findOneIdByNameSecret = function (username, secret, callback) {
-  return this.model(SCHEMA_NAME).findOne({ username: username }).exec()
+  return this.model(schemas.user).findOne({ username: username }).exec()
     .then(function(user) {
       var foundUserId;
       // TODO: implement hashing system
@@ -43,7 +41,5 @@ UserSchema.statics.findOneIdByNameSecret = function (username, secret, callback)
       return foundUserId;
     });
 };
-
-UserSchema.set('collection', SCHEMA_NAME);
 
 module.exports = UserSchema;

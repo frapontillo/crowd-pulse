@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+'use strict';
+
 var Q = require('q');
 var mongoose = require('mongoose');
 
@@ -23,6 +25,7 @@ var DataLayer = function() {
   self.AccessToken = require('./model/accessToken');
   self.App = require('./model/app');
   self.Project = require('./model/project');
+  self.ProjectRun = require('./model/projectRun');
   self.RefreshToken = require('./model/refreshToken');
   self.User = require('./model/user');
   self.Message = require('./model/message');

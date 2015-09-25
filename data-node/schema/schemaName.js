@@ -16,13 +16,16 @@
 
 'use strict';
 
-var mongoose = require('mongoose');
-var builder = require('./schemaBuilder');
-var schemas = require('./schemaName');
-
-var CategorySchema = builder(schemas.category, {
-  text: String,
-  stopWord: Boolean
-});
-
-module.exports = CategorySchema;
+module.exports = {
+  accessToken: 'OAuthAccessToken',
+  app: 'App',
+  category: 'Category',
+  message: 'Message',
+  profile: 'Profile',
+  project: 'Project',
+  projectRun: 'ProjectRun',
+  refreshToken: 'OAuthRefreshTokenSchema',
+  tag: 'Tag',
+  token: 'Token',
+  user: 'User'
+};

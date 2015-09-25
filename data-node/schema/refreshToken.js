@@ -14,9 +14,13 @@
  * limitations under the License.
  */
 
-var mongoose = require('mongoose');
+'use strict';
 
-var OAuthRefreshTokenSchema = new mongoose.Schema({
+var mongoose = require('mongoose');
+var builder = require('./schemaBuilder');
+var schemas = require('./schemaName');
+
+var OAuthRefreshTokenSchema = builder(schemas.refreshToken, {
   id: mongoose.Schema.ObjectId,
   refreshToken: String,
   clientId: String,
@@ -24,16 +28,8 @@ var OAuthRefreshTokenSchema = new mongoose.Schema({
   expires: Date
 });
 
-var SCHEMA_NAME = 'OAuthRefreshTokenSchema';
-
-OAuthRefreshTokenSchema.statics.getSchemaName = function() {
-  return SCHEMA_NAME;
-};
-
 OAuthRefreshTokenSchema.statics.findOneByToken = function (token, callback) {
-  return this.model(SCHEMA_NAME).findOne({ refreshToken: token }).exec(callback);
+  return this.model(schemas.refreshToken).findOne({ refreshToken: token }).exec(callback);
 };
-
-OAuthRefreshTokenSchema.set('collection', SCHEMA_NAME);
 
 module.exports = OAuthRefreshTokenSchema;

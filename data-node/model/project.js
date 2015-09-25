@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+'use strict';
+
 var mongoose = require('mongoose');
 var ProjectSchema = require('./../schema/project');
 

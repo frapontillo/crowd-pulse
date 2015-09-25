@@ -14,25 +14,19 @@
  * limitations under the License.
  */
 
-var mongoose = require('mongoose');
-var UserSchema = require('./user');
-var ProjectRunSchema = require('./projectRun');
+'use strict';
 
-var ProjectSchema = new mongoose.Schema({
+var mongoose = require('mongoose');
+var builder = require('./schemaBuilder');
+var schemas = require('./schemaName');
+
+var ProjectSchema = builder(schemas.project, {
   id: mongoose.Schema.ObjectId,
   name: String,
-  creationUser: { type: mongoose.Schema.ObjectId, ref: UserSchema.statics.getSchemaName() },
+  creationUser: { type: mongoose.Schema.ObjectId, ref: schemas.user },
   creationDate: Date,
   config: String,
-  runs: [{ type: mongoose.Schema.ObjectId, ref: ProjectRunSchema.statics.getSchemaName() }]
+  runs: [{ type: mongoose.Schema.ObjectId, ref: schemas.projectRun }]
 });
-
-var SCHEMA_NAME = 'Project';
-
-ProjectSchema.statics.getSchemaName = function() {
-  return SCHEMA_NAME;
-};
-
-ProjectSchema.set('collection', SCHEMA_NAME);
 
 module.exports = ProjectSchema;
