@@ -216,10 +216,15 @@ public class Graph {
      * @return The same Graph, useful for chaining.
      */
     public Graph prependSingleRoot(Node newRoot) {
+        nodes.put(newRoot.getName(), newRoot);
+        // ad the new edges
+        roots.forEach(r -> edges.put(newRoot.getName(), Collections.singletonList(r.getName())));
         // add all roots to the newRoot next
         newRoot.setNext(roots);
+        List<Node> newRoots = Collections.singletonList(newRoot);
         // for every root node, set the previous
-        roots.forEach(r -> r.setPrev(Collections.singletonList(newRoot)));
+        roots.forEach(r -> r.setPrev(newRoots));
+        roots = newRoots;
         return this;
     }
 
@@ -232,10 +237,15 @@ public class Graph {
      * @return The same Graph, useful for chaining.
      */
     public Graph appendSingleTerminal(Node newTerminal) {
+        nodes.put(newTerminal.getName(), newTerminal);
+        // ad the new edges
+        terminals.forEach(t -> edges.put(t.getName(), Collections.singletonList(newTerminal.getName())));
         // add all terminals to the newTerminal prev
         newTerminal.setPrev(terminals);
+        List<Node> newTerminals = Collections.singletonList(newTerminal);
         // for every terminal, set the next
-        terminals.forEach(r -> r.setNext(Collections.singletonList(newTerminal)));
+        terminals.forEach(t -> t.setNext(newTerminals));
+        terminals = newTerminals;
         return this;
     }
 }

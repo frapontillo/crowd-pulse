@@ -105,7 +105,15 @@ public class Node {
      * @param prev {@link List} of the previous Nodes.
      */
     public void setPrev(List<Node> prev) {
-        this.next = prev;
+        // save the current node state in the graph (can be root)
+        boolean wasRoot = !this.hasPrev();
+
+        this.prev = prev;
+
+        // update the root nodes
+        if (wasRoot) {
+            graph.updateRootNodes();
+        }
     }
 
     /**
@@ -154,7 +162,15 @@ public class Node {
      * @param next {@link List} of the following Nodes.
      */
     public void setNext(List<Node> next) {
+        // save the current node state in the graph (can be a terminal)
+        boolean wasTerminal = !this.hasNext();
+
         this.next = next;
+
+        // conditionally update terminals
+        if (wasTerminal) {
+            graph.updateTerminalNodes();
+        }
     }
 
     /**
