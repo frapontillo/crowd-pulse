@@ -29,6 +29,11 @@ import java.io.*;
  */
 public class GraphUtil {
     private final static Logger logger = CrowdLogger.getLogger(GraphUtil.class);
+    private final static Gson gson = new Gson();
+
+    public static Graph readGraphFromString(String string) {
+        return gson.fromJson(string, Graph.class).buildGraph();
+    }
 
     /**
      * Read a {@link Graph} from a file.
@@ -37,8 +42,7 @@ public class GraphUtil {
      * @return The {@link Graph} read from the file.
      * @throws FileNotFoundException if the input path doesn't match any file on the file system.
      */
-    public static Graph readGraph(String filePath) throws FileNotFoundException {
-        Gson gson = new Gson();
+    public static Graph readGraphFromPath(String filePath) throws FileNotFoundException {
         File file = new File(filePath);
         FileReader fileReader = new FileReader(file);
         return gson.fromJson(fileReader, Graph.class).buildGraph();
@@ -51,8 +55,7 @@ public class GraphUtil {
      * @param resourceClassOwner The {@link Class} in the same classpath as the resource.
      * @return The {@link Graph} read from the resource file.
      */
-    public static Graph readGraph(String resourceName, Class resourceClassOwner) {
-        Gson gson = new Gson();
+    public static Graph readGraphFromResources(String resourceName, Class resourceClassOwner) {
         InputStream configInput;
         try {
             configInput = resourceClassOwner.getClassLoader().getResourceAsStream(resourceName);

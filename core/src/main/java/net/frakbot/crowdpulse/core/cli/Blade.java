@@ -16,7 +16,11 @@
 
 package net.frakbot.crowdpulse.core.cli;
 
+import com.beust.jcommander.JCommander;
+import com.google.gson.JsonObject;
 import net.frakbot.crowdpulse.common.util.CrowdLogger;
+import net.frakbot.crowdpulse.common.util.DateUtil;
+import net.frakbot.crowdpulse.common.util.FileUtil;
 import net.frakbot.crowdpulse.common.util.rx.SubscriptionGroupLatch;
 import net.frakbot.crowdpulse.common.util.spi.IPlugin;
 import net.frakbot.crowdpulse.common.util.spi.PluginProvider;
@@ -29,10 +33,11 @@ import rx.Subscriber;
 import rx.Subscription;
 import rx.observables.ConnectableObservable;
 
+import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -48,17 +53,35 @@ public class Blade {
     private HashMap<String, Observable> observableMap;
     private List<Observable> terminalObservables;
 
-    public static void main(String args[]) throws ClassNotFoundException {
+    public static void main(String args[]) throws ClassNotFoundException, FileNotFoundException {
         Blade runner = new Blade(args);
         runner.run();
     }
 
-    public Blade(String args[]) throws ClassNotFoundException {
-        String configFile = "config.json";
-        if (args != null && args.length > 0) {
-            configFile = args[0];
+    public Blade(String args[]) throws ClassNotFoundException, FileNotFoundException {
+        BladeParameters parameters = new BladeParameters();
+        new JCommander(parameters, args);
+
+        // get the appropriate input stream (file or stdin)
+        InputStream inputStream;
+        if (parameters.hasFile()) {
+            inputStream = FileUtil.readFileFromPathOrResource(parameters.getFile(), Blade.class);
+        } else {
+            inputStream = System.in;
         }
-        Graph graph = GraphUtil.readGraph(configFile, Blade.class);
+
+        // read line by line from the input stream
+        Scanner scanner = new Scanner(new InputStreamReader(inputStream));
+        StringBuilder sb = new StringBuilder();
+        while (scanner.hasNextLine()) {
+            sb.append(scanner.nextLine());
+        }
+
+        String config = sb.toString();
+        Graph graph = GraphUtil.readGraphFromString(config);
+
+        // if the parameters are appropriate, wrap the graph with a fixed root and terminal node
+        wrapGraphMaybe(graph, parameters);
 
         observableMap = new HashMap<>(graph.getNodes().size());
         terminalObservables = new ArrayList<>();
@@ -69,11 +92,43 @@ public class Blade {
     }
 
     /**
+     * Wrap the given {@link Graph} between two new steps:
+     * <ul>
+     * <li>the first one sets the starting date, the process ID and the log path into the project run</li>
+     * <li>the last one sets the ending date into the project run</li>
+     * </ul>
+     *
+     * @param graph      The {@link Graph} to wrap.
+     * @param parameters The {@link BladeParameters} to use (they can specify the log, db and project run).
+     */
+    private void wrapGraphMaybe(Graph graph, BladeParameters parameters) {
+        if (parameters.mustSetProjectRun()) {
+            String uid = DateUtil.toISOString(new Date());
+            JsonObject config = new JsonObject();
+            config.addProperty("projectRunId", parameters.getRun());
+            config.addProperty("log", parameters.getLog());
+            config.addProperty("db", parameters.getDb());
+
+            Node first = new Node();
+            first.setGraph(graph);
+            first.setName("wrap_start_" + uid);
+            first.setConfig(config);
+
+            Node last = new Node();
+            last.setGraph(graph);
+            last.setName("wrap_end_" + uid);
+            last.setConfig(config);
+
+            graph.prependSingleRoot(first);
+            graph.appendSingleTerminal(last);
+        }
+    }
+
+    /**
      * Merges all of the terminal {@link Observable}s, publishes them, subscribes to them and eventually connect to
      * them.
      *
      * @throws ClassNotFoundException If an {@link IPlugin} instance could not be found.
-     * @throws FileNotFoundException
      */
     public void run() throws ClassNotFoundException {
         ConnectableObservable stream = mergeObservables(terminalObservables).publish();
@@ -82,17 +137,20 @@ public class Blade {
 
         // subscribe to the connectable stream
         Subscription subscription = stream.subscribe(new Subscriber<Object>() {
-            @Override public void onCompleted() {
+            @Override
+            public void onCompleted() {
                 logger.debug("EXECUTION: COMPLETED");
                 allSubscriptions.countDown();
             }
 
-            @Override public void onError(Throwable e) {
+            @Override
+            public void onError(Throwable e) {
                 logger.error("EXECUTION: ERRORED");
                 allSubscriptions.countDown();
             }
 
-            @Override public void onNext(Object o) {
+            @Override
+            public void onNext(Object o) {
                 logger.debug(o.toString());
             }
         });
@@ -142,7 +200,7 @@ public class Blade {
                     .map(prevNode -> observableMap.get(prevNode.getName()))
                     .collect(Collectors.toList());
         }
-        // at this point we know for sure that the previous nodes of node are already built and in the observableMapx
+        // at this point we know for sure that the previous nodes of node are already built and in the observableMap
 
         // the previous observable creation may have already created the observable we're trying to build: skip it!
         if (observableMap.get(node.getName()) != null) {

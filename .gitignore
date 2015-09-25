@@ -10,7 +10,8 @@ temp/
 
 # Ingore all resource files
 */src/main/resources/*
-# Keep all samples and json
+# Keep SPIs, samples and jsons
+!*/src/main/resources/services
 !*/src/main/resources/*.sample
 !*/src/main/resources/*.json
 

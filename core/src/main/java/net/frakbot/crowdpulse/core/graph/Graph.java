@@ -28,7 +28,8 @@ import java.util.stream.Collectors;
  */
 public class Graph {
     private ProcessInfo process;
-    private List<Node> roots;
+    private transient List<Node> roots;
+    private transient List<Node> terminals;
     private HashMap<String, Node> nodes;
     private HashMap<String, List<String>> edges;
 
@@ -66,6 +67,24 @@ public class Graph {
      */
     public void setRoots(List<Node> roots) {
         this.roots = roots;
+    }
+
+    /**
+     * Get the terminal {@link Node}s of the Graph.
+     *
+     * @return The terminal {@link Node}s of the Graph.
+     */
+    public List<Node> getTerminals() {
+        return terminals;
+    }
+
+    /**
+     * Set the terminal {@link Node}s of the Graph.
+     *
+     * @param terminals The terminal {@link Node}s of the Graph.
+     */
+    public void setTerminals(List<Node> terminals) {
+        this.terminals = terminals;
     }
 
     /**
@@ -107,23 +126,40 @@ public class Graph {
     }
 
     /**
-     * Get a {@link List} of {@link Node}s that aren't referenced by any other node in the directed Graph.
+     * Update the {@link List} of {@link Node}s that aren't referenced by any other node in the directed Graph.
      *
      * @return {@link List} of root {@link Node}s for the Graph.
      */
-    private List<Node> getRootNodes() {
-        List<Node> rootNodes = new ArrayList<>();
+    protected List<Node> updateRootNodes() {
+        roots = new ArrayList<>();
         Set<String> referencesNodes = new HashSet<>();
         // build a set of referenced nodes
         for (String edgeKey : edges.keySet()) {
             referencesNodes.addAll(edges.get(edgeKey));
         }
         // add to rootNodes all the nodes not contained in the set of referenced nodes
-        rootNodes.addAll(nodes.keySet().stream()
+        roots.addAll(nodes.keySet().stream()
                 .filter(nodeKey -> !referencesNodes.contains(nodeKey))
                 .map(nodes::get)
                 .collect(Collectors.toList()));
-        return rootNodes;
+        return roots;
+    }
+
+    /**
+     * Update the {@link List} of {@link Node}s that are terminal in the current Graph.
+     *
+     * @return {@link List} of terminal {@link Node}s for the Graph.
+     */
+    protected List<Node> updateTerminalNodes() {
+        terminals = new ArrayList<>();
+        // build the set of nodes that have an outgoing edge
+        Set<String> fatherNodes = edges.keySet();
+        // the terminal nodes are all the nodes not contained in the fatherNodes set
+        terminals.addAll(nodes.keySet().stream()
+                .filter(nodeKey -> !fatherNodes.contains(nodeKey))
+                .map(nodes::get)
+                .collect(Collectors.toList()));
+        return terminals;
     }
 
     /**
@@ -132,11 +168,16 @@ public class Graph {
      * @return The built Graph.
      */
     public Graph buildGraph() {
-        // set the names to all of the nodes
-        nodes.keySet().forEach(key -> nodes.get(key).setName(key));
-        // get the root nodes and start setting the adjacent nodes in the graph (recursive function)
-        roots = getRootNodes();
+        // set the graph and the node names to every node
+        nodes.keySet().forEach(key -> {
+            Node node = nodes.get(key);
+            node.setName(key);
+            node.setGraph(this);
+        });
+        updateRootNodes();
+        // set the adjacent nodes in the graph (recursive function)
         roots.forEach(this::buildNode);
+        updateTerminalNodes();
         return this;
     }
 
@@ -165,5 +206,36 @@ public class Graph {
             });
         }
         return node;
+    }
+
+    /**
+     * Prepend the whole Graph with a single {@link Node}, making it the root.
+     * All previous roots will become "next" to the {@code newRoot}.
+     *
+     * @param newRoot The new root {@link Node}.
+     * @return The same Graph, useful for chaining.
+     */
+    public Graph prependSingleRoot(Node newRoot) {
+        // add all roots to the newRoot next
+        newRoot.setNext(roots);
+        // for every root node, set the previous
+        roots.forEach(r -> r.setPrev(Collections.singletonList(newRoot)));
+        return this;
+    }
+
+    /**
+     * Append a single {@link Node} to the terminal {@link Node}s of the Graph, making it the new
+     * terminal.
+     * All previous terminals will become "prev" to the {@code newTerminal}.
+     *
+     * @param newTerminal The new terminal {@link Node}.
+     * @return The same Graph, useful for chaining.
+     */
+    public Graph appendSingleTerminal(Node newTerminal) {
+        // add all terminals to the newTerminal prev
+        newTerminal.setPrev(terminals);
+        // for every terminal, set the next
+        terminals.forEach(r -> r.setNext(Collections.singletonList(newTerminal)));
+        return this;
     }
 }
