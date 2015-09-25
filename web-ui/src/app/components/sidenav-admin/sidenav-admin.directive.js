@@ -14,25 +14,6 @@
  * limitations under the License.
  */
 
-/**
- <md-sidenav md-component-id="right-sidenav" md-is-locked-open="$mdMedia('gt-md')"
- layout="column" flex
- ng-class="{ 'md-whiteframe-z2': sidenavAdminVm.evalMdMedia('gt-md'), 'md-whiteframe-z5': sidenavAdminVm.evalMdMedia('md') }">
-
- <md-content>
- <md-list>
- <md-list-item class="md-3-line" ng-repeat="project in sidenavAdminVm.projects">
- <div class="md-list-item-text">
- <h3>{{project.name}}</h3>
- </div>
- <md-divider ng-if="!$last"></md-divider>
- </md-list-item>
- </md-list>
- </md-content>
-
- </md-sidenav>
- */
-
 (function() {
   'use strict';
 
