@@ -27,13 +27,14 @@ import net.frakbot.crowdpulse.common.util.spi.PluginProvider;
 import net.frakbot.crowdpulse.core.graph.Graph;
 import net.frakbot.crowdpulse.core.graph.GraphUtil;
 import net.frakbot.crowdpulse.core.graph.Node;
+import net.frakbot.crowdpulse.core.plugin.ProjectRunEndPlugin;
+import net.frakbot.crowdpulse.core.plugin.ProjectRunStartPlugin;
 import org.apache.logging.log4j.Logger;
 import rx.Observable;
 import rx.Subscriber;
 import rx.Subscription;
 import rx.observables.ConnectableObservable;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -112,11 +113,13 @@ public class Blade {
             Node first = new Node();
             first.setGraph(graph);
             first.setName("wrap_start_" + uid);
+            first.setPlugin(ProjectRunStartPlugin.PLUGIN_NAME);
             first.setConfig(config);
 
             Node last = new Node();
             last.setGraph(graph);
             last.setName("wrap_end_" + uid);
+            last.setPlugin(ProjectRunEndPlugin.PLUGIN_NAME);
             last.setConfig(config);
 
             graph.prependSingleRoot(first);

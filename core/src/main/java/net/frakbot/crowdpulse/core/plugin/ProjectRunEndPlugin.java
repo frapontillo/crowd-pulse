@@ -27,7 +27,7 @@ import java.util.Date;
  * @author Francesco Pontillo
  */
 public class ProjectRunEndPlugin extends ProjectRunPlugin {
-    private static final String PLUGIN_NAME = "project-run-end";
+    public static final String PLUGIN_NAME = "project-run-end";
     private final Logger logger = CrowdLogger.getLogger(ProjectRunEndPlugin.class);
 
     @Override

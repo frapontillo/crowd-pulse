@@ -36,11 +36,12 @@ public abstract class ProjectRunPlugin extends IPlugin<Void, Void, ProjectRunOpt
     }
 
     @Override
-    protected Observable.Operator<Void, Void> getOperator(ProjectRunOptions parameters) {
+    protected Observable.Operator<Void, Void> getOperator(ProjectRunOptions params) {
         return subscriber -> new SafeSubscriber<>(new Subscriber<Object>() {
             @Override
             public void onCompleted() {
                 reportCompletion(true);
+                subscriber.onCompleted();
             }
 
             @Override
@@ -56,9 +57,13 @@ public abstract class ProjectRunPlugin extends IPlugin<Void, Void, ProjectRunOpt
             }
 
             private void reportCompletion(boolean success) {
-                projectRunRepository = new ProjectRunRepository(parameters.getDb());
-                ProjectRun run = projectRunRepository.get(new ObjectId(parameters.getProjectRunId()));
-                handleWake(run, parameters, success);
+                projectRunRepository = new ProjectRunRepository(params.getDb());
+                ProjectRun run = projectRunRepository.get(new ObjectId(params.getProjectRunId()));
+                if (run == null) {
+                    logger.warn("No project run was found for ID {}, won't set anything.", params.getProjectRunId());
+                    return;
+                }
+                handleWake(run, params, success);
                 projectRunRepository.save(run);
             }
         });
