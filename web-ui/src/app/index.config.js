@@ -3,13 +3,27 @@
 
   angular
     .module('webUi')
-    .config(config);
+    .config(iconConfig)
+    .config(logConfig)
+    .config(restConfig)
+    .config(httpConfig);
 
   /** @ngInject */
-  function config($logProvider, $httpProvider, configProvider, RestangularProvider) {
+  function iconConfig($mdIconProvider) {
+    // set the icon as SVGs
+    //$mdIconProvider
+    //  .iconSet('social', 'bower_components/material-design-icons/icons/sets/social-icons.svg', 24)
+    //  .defaultIconSet('img/icons/sets/core-icons.svg', 24);
+  }
+
+  /** @ngInject */
+  function logConfig($logProvider) {
     // Enable log
     $logProvider.debugEnabled(true);
+  }
 
+  /** @ngInject */
+  function restConfig(configProvider, RestangularProvider) {
     // Set the config.json path
     configProvider.useConfigPath('/config.json');
     configProvider.addConfigResolvedListener(function(data) {
@@ -21,7 +35,10 @@
     RestangularProvider.setRestangularFields({
       id: "_id"
     });
+  }
 
+  /** @ngInject */
+  function httpConfig($httpProvider) {
     /** @ngInject */
     var interceptor = function($q, $rootScope, $log, $timeout, toolbarLoadedEvent, toolbarLoadingEvent) {
       var requests = 0;

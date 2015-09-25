@@ -11,6 +11,7 @@
     "angular-ui-ace": "~0.2.3",
     "angular-ui-router": "~0.2.15",
     "animate.css": "~3.3.0",
+    "material-design-icons": "~2.0.0",
     "moment": "~2.10.3",
     "restangular": "~1.5.1"
   },
