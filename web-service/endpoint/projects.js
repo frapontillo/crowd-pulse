@@ -16,11 +16,12 @@
 
 'use strict';
 
+var Q = require('q');
+var express = require('express');
+var StatusHelper = require('./../statusHelper');
+var router = express.Router();
+
 module.exports = function(crowdPulse) {
-  var Q = require('q');
-  var express = require('express');
-  var StatusHelper = require('./../statusHelper');
-  var router = express.Router();
 
   var autoFill = function(project) {
     var config = JSON.parse(project.config);
@@ -69,7 +70,9 @@ module.exports = function(crowdPulse) {
 
   router.route('/projects')
     .get(function(req, res) {
-      crowdPulse.Project.find().exec()
+      crowdPulse.Project.find()
+        .populate('runs')
+        .exec()
         .then(function(projects) {
           res.send(projects);
         });
@@ -86,7 +89,9 @@ module.exports = function(crowdPulse) {
 
   router.route('/projects/:projectId')
     .get(function(req, res) {
-      crowdPulse.Project.findById(req.params.projectId).exec()
+      crowdPulse.Project.findById(req.params.projectId)
+        .populate('runs')
+        .exec()
         .then(function(project) {
           res.send(project);
         });
@@ -94,9 +99,10 @@ module.exports = function(crowdPulse) {
     .put(function(req, res) {
       var project = req.body;
       autoFill(project);
-      crowdPulse.Project.findByIdAndUpdate(
-        crowdPulse.ObjectId(req.params.projectId),
-        {$set: project}).exec()
+      crowdPulse.Project
+        .findByIdAndUpdate(crowdPulse.ObjectId(req.params.projectId), {$set: project})
+        .populate('runs')
+        .exec()
         .then(function() {
           res.send(project);
         });
