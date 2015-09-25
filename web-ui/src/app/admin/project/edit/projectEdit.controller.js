@@ -22,7 +22,7 @@
     .controller('AdminProjectEditController', AdminProjectEditController);
 
   /** @ngInject */
-  function AdminProjectEditController($stateParams, Project) {
+  function AdminProjectEditController($stateParams, $mdDialog, $mdToast, Project) {
     var vm = this;
 
     Project.one($stateParams.projectId).get()
@@ -30,25 +30,41 @@
         vm.project = model;
       });
 
-    // TODO: read all the actual runs
-    vm.runs = [
-      {
-        id: 'run4',
-        date_start: '2015-09-13T08:08:08+02:00'
-      }, {
-        id: 'run3',
-        date_start: '2015-09-11T10:20:08+02:00',
-        date_end: '2015-09-11T10:32:08+02:00'
-      }, {
-        id: 'run2',
-        date_start: '2015-09-10T15:18:08+02:00',
-        date_end: '2015-09-10T16:01:08+02:00'
-      }, {
-        id: 'run1',
-        date_start: '2015-09-09T23:43:08+02:00',
-        date_end: '2015-09-09T23:59:08+02:00'
-      }
-    ];
+    vm.start = function(event) {
+      var confirm = $mdDialog.confirm()
+        .title('Start new run')
+        .content('Do you really want to start a new run for the project ' + vm.project.name + '?')
+        .ariaLabel('Start new run')
+        .targetEvent(event)
+        .ok('Yes, start it')
+        .cancel('Don\'t start it');
+      return $mdDialog.show(confirm)
+        .then(function() {
+          return _start();
+        })
+        .then(function() {
+          showToast('Run started.');
+        });
+    };
+
+    var _start = function() {
+      // create a new run, then refresh the project
+      return vm.project.customPOST({}, 'runs')
+        .then(function() {
+          return vm.project.customGET();
+        })
+        .then(function(updatedProject) {
+          vm.project = updatedProject;
+          Project.cache.updateWithProject(updatedProject);
+        });
+    };
+
+    var showToast = function(message) {
+      var toast = $mdToast.simple()
+        .content(message)
+        .position('bottom right');
+      return $mdToast.show(toast);
+    };
 
   }
 })();
