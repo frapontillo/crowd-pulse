@@ -41,8 +41,7 @@ public class ProjectRunStartPlugin extends ProjectRunPlugin {
         projectRun.setDateStart(new Date());
         projectRun.setLog(parameters.getLog());
         projectRun.setPid(getPid());
-        logger.info("Project run has started at {}.",
-                success ? "completed" : "errored", DateUtil.toISOString(projectRun.getDateEnd()));
+        logger.info("Project run has started at {}.", DateUtil.toISOString(projectRun.getDateStart()));
     }
 
     private static Integer getPid() {

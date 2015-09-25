@@ -16,9 +16,12 @@
 
 package net.frakbot.crowdpulse.core.plugin;
 
+import net.frakbot.crowdpulse.common.util.CrowdLogger;
 import net.frakbot.crowdpulse.common.util.spi.IPlugin;
+import net.frakbot.crowdpulse.data.entity.Project;
 import net.frakbot.crowdpulse.data.entity.ProjectRun;
 import net.frakbot.crowdpulse.data.repository.ProjectRunRepository;
+import org.apache.logging.log4j.Logger;
 import org.bson.types.ObjectId;
 import rx.Observable;
 import rx.Subscriber;
@@ -29,6 +32,7 @@ import rx.observers.SafeSubscriber;
  */
 public abstract class ProjectRunPlugin extends IPlugin<Void, Void, ProjectRunOptions> {
     private ProjectRunRepository projectRunRepository;
+    private final Logger logger = CrowdLogger.getLogger(ProjectRunPlugin.class);
 
     @Override
     public ProjectRunOptions getNewParameter() {

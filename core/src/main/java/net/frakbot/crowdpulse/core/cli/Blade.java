@@ -67,8 +67,10 @@ public class Blade {
         InputStream inputStream;
         if (parameters.hasFile()) {
             inputStream = FileUtil.readFileFromPathOrResource(parameters.getFile(), Blade.class);
+            logger.debug("Reading configuration from file...");
         } else {
             inputStream = System.in;
+            logger.debug("Reading configuration from standard input...");
         }
 
         // read line by line from the input stream
@@ -77,9 +79,11 @@ public class Blade {
         while (scanner.hasNextLine()) {
             sb.append(scanner.nextLine());
         }
+        logger.debug("Configuration read.");
 
         String config = sb.toString();
         Graph graph = GraphUtil.readGraphFromString(config);
+        logger.debug("Graph built.");
 
         // if the parameters are appropriate, wrap the graph with a fixed root and terminal node
         wrapGraphMaybe(graph, parameters);
@@ -89,7 +93,10 @@ public class Blade {
 
         // start from the root nodes and transform the Graph into Observables
         List<Node> rootNodes = graph.getRoots();
+
+        logger.debug("Building Observables...");
         buildObservables(graph, rootNodes);
+        logger.debug("Observables built.");
     }
 
     /**
@@ -104,6 +111,8 @@ public class Blade {
      */
     private void wrapGraphMaybe(Graph graph, BladeParameters parameters) {
         if (parameters.mustSetProjectRun()) {
+            logger.debug("Using project run information from CLI parameters, wrapping graph...");
+
             String uid = DateUtil.toISOString(new Date());
             JsonObject config = new JsonObject();
             config.addProperty("projectRunId", parameters.getRun());
@@ -124,6 +133,8 @@ public class Blade {
 
             graph.prependSingleRoot(first);
             graph.appendSingleTerminal(last);
+
+            logger.debug("Graph wrapped with info from CLI parameters.");
         }
     }
 
@@ -159,11 +170,12 @@ public class Blade {
         });
 
         allSubscriptions.setSubscriptions(subscription);
+
         stream.connect();
-        logger.info("Connected.");
+        logger.info("Starting process...");
 
         allSubscriptions.waitAllUnsubscribed();
-        logger.info("Done.");
+        logger.info("Process completed.");
     }
 
     /**
