@@ -9,14 +9,26 @@
         "PatternLayout": {
           "pattern": "%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"
         }
+      },
+      "File": {
+        "name": "File",
+        "fileName": "/Users/fra/logs/${date:yyyyMMdd-HHmmss}.log",
+        "PatternLayout": {
+          "pattern": "%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"
+        }
       }
     },
     "loggers": {
       "root": {
         "level": "all",
-        "AppenderRef": {
-          "ref": "Console"
-        }
+        "AppenderRef": [
+          {
+            "ref": "Console"
+          },
+          {
+            "ref": "File"
+          }
+        ]
       }
     }
   }
