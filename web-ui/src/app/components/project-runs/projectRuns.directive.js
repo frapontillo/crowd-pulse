@@ -51,11 +51,11 @@
       $scope.$watchCollection('projectRunsVm.config.runs', function(newValue) {
         var runs = newValue || [];
         projectRunsVm.stopped = runs.filter(function(run) {
-          return angular.isDefined(run.date_end);
+          return angular.isDefined(run.dateEnd);
         });
 
         projectRunsVm.running = runs.filter(function(run) {
-          return angular.isUndefined(run.date_end);
+          return angular.isUndefined(run.dateEnd);
         });
       }, true);
 
@@ -72,7 +72,7 @@
       };
 
       projectRunsVm.stop = function(run, event) {
-        var formattedDate = $filter('date')(run.date_start, 'short');
+        var formattedDate = $filter('date')(run.dateStart, 'short');
         var confirm = $mdDialog.confirm()
           .title('Stop run')
           .content('Do you really want to stop the run started at' + formattedDate + '?')
