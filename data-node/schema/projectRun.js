@@ -26,8 +26,7 @@ var ProjectRunSchema = builder(schemas.projectRun, {
   date_end: Date,
   log: String,
   status: Number,
-  pid: Number,
-  project: { type: mongoose.Schema.ObjectId, ref: schemas.project }
+  pid: Number
 });
 
 module.exports = ProjectRunSchema;

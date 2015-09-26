@@ -116,8 +116,7 @@ module.exports = function(crowdPulse) {
       Q(crowdPulse.Project.findById(req.params.projectId).exec())
         .then(function(project) {
           var newRun = new crowdPulse.ProjectRun({
-            date_start: new Date(),
-            project: req.params.projectId
+            date_start: new Date()
           });
           return [project, newRun.save()];
         })
@@ -134,9 +133,7 @@ module.exports = function(crowdPulse) {
   // DELETE to stop a run
   router.route('/projects/:projectId/runs/:runId')
     .get(function(req, res) {
-      crowdPulse.ProjectRun.findById(req.params.runId)
-        .populate('project')
-        .exec()
+      crowdPulse.ProjectRun.findById(req.params.runId).exec()
         .then(function(run) {
           res.send(run);
         });
