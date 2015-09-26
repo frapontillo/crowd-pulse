@@ -16,8 +16,6 @@
 
 package net.frakbot.crowdpulse.data.entity;
 
-import org.bson.types.ObjectId;
-
 import java.util.Date;
 
 /**
@@ -31,7 +29,6 @@ public class ProjectRun extends Entity {
     private String log;
     private Integer status;
     private Integer pid;
-    private ObjectId project;
 
     /**
      * Get the {@link Date} this run was started.
@@ -111,7 +108,7 @@ public class ProjectRun extends Entity {
     /**
      * Get the process ID on the machine where the process was started.
      *
-     * @return A {@link Integer} process ID (PID).
+     * @return A {@link Integer} process ID (PID):
      */
     public Integer getPid() {
         return pid;
@@ -126,21 +123,4 @@ public class ProjectRun extends Entity {
         this.pid = pid;
     }
 
-    /**
-     * Get the {@link Project} ID this run was started from.
-     *
-     * @return The {@link ObjectId} of the project.
-     */
-    public ObjectId getProject() {
-        return project;
-    }
-
-    /**
-     * Set the {@link Project} ID to associate this run with.
-     *
-     * @param project The {@link ObjectId} of the project.
-     */
-    public void setProject(ObjectId project) {
-        this.project = project;
-    }
 }
