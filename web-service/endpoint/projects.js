@@ -19,6 +19,8 @@
 var Q = require('q');
 var express = require('express');
 var StatusHelper = require('./../statusHelper');
+var cpLauncher = require('../lib/cpLauncher');
+var config = require('../config.json');
 var router = express.Router();
 
 module.exports = function(crowdPulse) {
@@ -125,8 +127,18 @@ module.exports = function(crowdPulse) {
           return [project.save(), run];
         })
         .spread(function(project, run) {
+          // start the run
+          cpLauncher.execute(
+            config['crowd-pulse'].main, run._id.toString(),
+            '/Users/fra/logs/curlog.txt', 'admin',
+            project.config);
           // TODO: start the run here
           res.send(run);
+        })
+        .catch(function(err) {
+          console.error(err.stack);
+          res.status(500);
+          res.send(err);
         });
     });
 
