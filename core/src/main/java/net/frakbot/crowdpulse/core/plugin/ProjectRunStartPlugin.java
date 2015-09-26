@@ -18,6 +18,7 @@ package net.frakbot.crowdpulse.core.plugin;
 
 import net.frakbot.crowdpulse.common.util.CrowdLogger;
 import net.frakbot.crowdpulse.common.util.DateUtil;
+import net.frakbot.crowdpulse.core.CoreUtil;
 import net.frakbot.crowdpulse.data.entity.ProjectRun;
 import org.apache.logging.log4j.Logger;
 
@@ -40,11 +41,7 @@ public class ProjectRunStartPlugin extends ProjectRunPlugin {
     protected void handleWake(ProjectRun projectRun, ProjectRunOptions parameters, boolean success) {
         projectRun.setDateStart(new Date());
         projectRun.setLog(parameters.getLog());
-        projectRun.setPid(getPid());
+        projectRun.setPid(CoreUtil.getPid());
         logger.info("Project run has started at {}.", DateUtil.toISOString(projectRun.getDateStart()));
-    }
-
-    private static Integer getPid() {
-        return Integer.parseInt(ManagementFactory.getRuntimeMXBean().getName().split("@")[0]);
     }
 }

@@ -24,6 +24,7 @@ import net.frakbot.crowdpulse.common.util.FileUtil;
 import net.frakbot.crowdpulse.common.util.rx.SubscriptionGroupLatch;
 import net.frakbot.crowdpulse.common.util.spi.IPlugin;
 import net.frakbot.crowdpulse.common.util.spi.PluginProvider;
+import net.frakbot.crowdpulse.core.CoreUtil;
 import net.frakbot.crowdpulse.core.graph.Graph;
 import net.frakbot.crowdpulse.core.graph.GraphUtil;
 import net.frakbot.crowdpulse.core.graph.Node;
@@ -60,6 +61,8 @@ public class Blade {
     }
 
     public Blade(String args[]) throws ClassNotFoundException, FileNotFoundException {
+        logger.info("Crowd Pulse Blade runner started with PID {}.", CoreUtil.getPid());
+
         BladeParameters parameters = new BladeParameters();
         new JCommander(parameters, args);
 
