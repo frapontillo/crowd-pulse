@@ -22,8 +22,8 @@ var schemas = require('./schemaName');
 
 var ProjectRunSchema = builder(schemas.projectRun, {
   id: mongoose.Schema.ObjectId,
-  date_start: Date,
-  date_end: Date,
+  dateStart: Date,
+  dateEnd: Date,
   log: String,
   status: Number,
   pid: Number

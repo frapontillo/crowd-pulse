@@ -31,7 +31,7 @@ module.exports = function(crowdPulse) {
 
   var hasActiveRuns = function(project) {
     return (project.runs || []).some(function(run) {
-        return (typeof run.date_end === 'undefined');
+        return (typeof run.dateEnd === 'undefined');
       });
   };
 
@@ -116,7 +116,7 @@ module.exports = function(crowdPulse) {
       Q(crowdPulse.Project.findById(req.params.projectId).exec())
         .then(function(project) {
           var newRun = new crowdPulse.ProjectRun({
-            date_start: new Date()
+            dateStart: new Date()
           });
           return [project, newRun.save()];
         })
