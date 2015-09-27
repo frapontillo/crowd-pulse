@@ -16,6 +16,7 @@
 
 'use strict';
 
+var Q = require('q');
 var mongoose = require('mongoose');
 
 module.exports = function(name, schema) {
@@ -25,6 +26,10 @@ module.exports = function(name, schema) {
     return name;
   };
   TheSchema.set('collection', name);
+
+  TheSchema.statics.getById = function(id) {
+    return Q(this.findById(id).exec());
+  };
 
   return TheSchema;
 };

@@ -16,6 +16,7 @@
 
 'use strict';
 
+var Q = require('q');
 var mongoose = require('mongoose');
 var builder = require('./schemaBuilder');
 var schemas = require('./schemaName');
@@ -23,10 +24,79 @@ var schemas = require('./schemaName');
 var ProjectSchema = builder(schemas.project, {
   id: mongoose.Schema.ObjectId,
   name: String,
-  creationUser: { type: mongoose.Schema.ObjectId, ref: schemas.user },
+  creationUser: {type: mongoose.Schema.ObjectId, ref: schemas.user},
   creationDate: Date,
   config: String,
-  runs: [{ type: mongoose.Schema.ObjectId, ref: schemas.projectRun }]
+  runs: [{type: mongoose.Schema.ObjectId, ref: schemas.projectRun}]
 });
+
+// Model methods
+
+ProjectSchema.statics.newFromObject = function(object) {
+  var project = new this(object);
+  project.updateNameFromConfig();
+  project.creationDate = new Date();
+  return project;
+};
+
+ProjectSchema.statics.fromPreObject = function(object) {
+  var project = new this(object);
+  project.updateNameFromConfig();
+  return project;
+};
+
+ProjectSchema.statics.getAll = function() {
+  return Q(this.find().populate('runs').exec());
+};
+
+ProjectSchema.statics.getById = function(id) {
+  return Q(this.findById(id).populate('runs').exec());
+};
+
+ProjectSchema.statics.safeDelete = function(id) {
+  var model = this;
+  return model.getById(id)
+    .then(function(project) {
+      if (project.hasActiveRuns()) {
+        throw new Error('The project has pending jobs and can\'t be deleted.');
+      }
+      return Q(model.findByIdAndRemove(id).exec());
+    });
+};
+
+// Instance methods
+
+ProjectSchema.methods.updateNameFromConfig = function() {
+  var config = JSON.parse(this.config);
+  this.name = config.process.name;
+  return this;
+};
+
+ProjectSchema.methods.updateElement = function() {
+  return Q(this.model(schemas.project)
+    .findByIdAndUpdate(this._id, {$set: this}, {new: true})
+    .populate('runs').exec());
+};
+
+ProjectSchema.methods.hasActiveRuns = function() {
+  return (this.runs || []).some(function(run) {
+    return (typeof run.dateEnd === 'undefined');
+  });
+};
+
+ProjectSchema.methods.createNewRun = function() {
+  var project = this;
+  var run = project.model(schemas.projectRun)({
+    dateStart: new Date()
+  });
+  return Q(run.save())
+    .then(function(newRun) {
+      project.runs.push(newRun);
+      return [Q(project.save()), newRun];
+    })
+    .spread(function(project, run) {
+      return [project, run];
+    });
+};
 
 module.exports = ProjectSchema;
