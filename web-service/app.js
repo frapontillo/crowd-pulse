@@ -15,28 +15,30 @@
  */
 
 var path = require('path');
+
+var http = require('http');
+var socket = require('socket.io');
 var express = require('express');
+
 var session = require('express-session');
 var cookieParser = require('cookie-parser');
 var cors = require('cors');
 var logger = require('morgan');
 var bodyParser = require('body-parser');
+
 var CrowdPulse = require('crowd-pulse-data-node');
 
 var bootstrap = require('./bootstrap/bootstrap');
 var oAuthSetup = require('./oauth2/setup');
-
 var projects = require('./endpoint/projects');
-
 var config = require('./config.json');
 
-var app = express();
-app.use(cookieParser());
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({extended: true}));
-app.use(logger('dev'));
-app.use(session(config.session));
-app.use(cors());
+// the main server
+var server = undefined;
+// the express application
+var app = undefined;
+// the websocket server
+var io = undefined;
 
 var crowdPulse = new CrowdPulse();
 
@@ -44,10 +46,29 @@ var connect = function() {
   return crowdPulse.connect(config.database.url);
 };
 
-var webServiceSetup = function(crowdPulse, app) {
+var webServiceSetup = function(crowdPulse) {
+  // create the application and bind it to a server
+  app = express();
+  server = http.createServer(app);
+
+  // setup middlewares
+  app.use(cookieParser());
+  app.use(bodyParser.json());
+  app.use(bodyParser.urlencoded({extended: true}));
+  app.use(logger('dev'));
+  app.use(session(config.session));
+  app.use(cors());
+
+  // TODO: add more endpoints here
   var API = '/api';
   app.use(API, projects(crowdPulse));
-  // TODO: add more endpoints here
+};
+
+var webSocketSetup = function() {
+  io = socket(server);
+  io.on('connection', function() {
+    console.log('someone connected');
+  });
 };
 
 connect()
@@ -58,6 +79,9 @@ connect()
     return webServiceSetup(crowdPulse);
   })
   .then(function() {
+    return webSocketSetup();
+  })
+  .then(function() {
     return oAuthSetup(crowdPulse, app);
   })
   .then(function() {
@@ -65,11 +89,17 @@ connect()
     app.set('view engine', 'ejs');
     app.use(express.static(path.join(__dirname, 'public')));
 
-    app.get('/', app.oAuth.authorise(), function (req, res) {
+    app.get('/', app.oAuth.authorise(), function(req, res) {
       res.send('Secret area');
     });
-    console.log('Listening...');
-    app.listen(5000);
+
+    app.set('port', process.env.PORT || 5000);
+
+    server.listen(app.get('port'), function() {
+      console.log('Crowd Pulse Web Service listening at %s:%s...',
+        server.address().address, server.address().port);
+      console.log('Press CTRL+C to quit.');
+    });
   })
   .catch(function(err) {
     console.error(err.stack);
