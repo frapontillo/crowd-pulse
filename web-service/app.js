@@ -51,9 +51,15 @@ var webServiceSetup = function(crowdPulse, app) {
 };
 
 connect()
-  // .then(bootstrap(crowdPulse, config))
-  .then(oAuthSetup(crowdPulse, app))
-  .then(webServiceSetup(crowdPulse, app))
+  /*.then(function() {
+    return bootstrap(crowdPulse, config);
+  })*/
+  .then(function() {
+    return webServiceSetup(crowdPulse);
+  })
+  .then(function() {
+    return oAuthSetup(crowdPulse, app);
+  })
   .then(function() {
     app.set('views', path.join(__dirname, 'views'));
     app.set('view engine', 'ejs');
