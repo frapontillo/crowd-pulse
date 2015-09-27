@@ -89,7 +89,13 @@ var executeProjectRun = function(project, run) {
     });
 };
 
+var stopProjectRun = function(run) {
+  process.kill(run.pid);
+  return run;
+};
+
 module.exports = {
   execute: execute,
   executeProjectRun: executeProjectRun,
+  stopProjectRun: stopProjectRun
 };

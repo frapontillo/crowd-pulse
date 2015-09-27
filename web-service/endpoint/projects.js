@@ -117,8 +117,13 @@ module.exports = function(crowdPulse) {
     })
     // DELETE to stop a run
     .delete(function(req, res) {
-      // TODO: stop the run here
-      res.send('stopped');
+      return crowdPulse.ProjectRun
+        // mark the run as stopped
+        .stopRun(req.params.runId)
+        // stop the run PID
+        .then(cpLauncher.stopProjectRun)
+        .then(qSend(res))
+        .catch(qErr(res));
     });
 
   return router;
