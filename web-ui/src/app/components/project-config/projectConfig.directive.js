@@ -107,6 +107,9 @@
             $state.go('^.main');
             return true;
           })
+          .catch(function(err) {
+            showToast(err.data.message);
+          })
           .finally(function() {
             vm.isSaving = false;
           });
