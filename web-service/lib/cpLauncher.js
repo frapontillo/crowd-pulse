@@ -16,8 +16,13 @@
 
 'use strict';
 
+var Q = require('q');
 var fs = require('fs');
+var path = require('path');
 var spawn = require('child_process').spawn;
+var mkdirp = require('mkdirp');
+var sanitize = require('sanitize-filename');
+var config = require('../config.json');
 
 /**
  * Execute Crowd Pulse Core using the provided parameters.
@@ -55,7 +60,7 @@ var execute = function(exec, projectRunId, log, databaseConnection, configuratio
   // spawn the process as detached so it doesn't depend on the NodeJS application
   var child = spawn(exec, args, {
     detached: true,
-    stdio: [ input, output, error ]
+    stdio: [input, output, error]
   });
 
   // write the configuration JSON and end the stream
@@ -68,6 +73,23 @@ var execute = function(exec, projectRunId, log, databaseConnection, configuratio
   console.log('Crowd Pulse launched');
 };
 
+var executeProjectRun = function(project, run) {
+  return Q.nfcall(mkdirp, config.logs.path)
+    .then(function() {
+      var exe = config['crowd-pulse'].main;
+      var log = path.join(config.logs.path,
+        sanitize(project.name + '-' + run.dateStart.toISOString().replace(':', '')) + ".log");
+      var projectRunId = run._id.toString();
+      var db = config.database.db;
+      var jsonConfig = project.config;
+      console.log('Crowd Pulse will log to:', log);
+      // start crowd-pulse-core
+      execute(exe, projectRunId, log, db, jsonConfig);
+      return run;
+    });
+};
+
 module.exports = {
-  execute: execute
+  execute: execute,
+  executeProjectRun: executeProjectRun,
 };

@@ -20,26 +20,15 @@ var Q = require('q');
 var express = require('express');
 var StatusHelper = require('./../statusHelper');
 var cpLauncher = require('../lib/cpLauncher');
-var config = require('../config.json');
+var qSend = require('../lib/expressQ').send;
+var qErr = require('../lib/expressQ').error;
 var router = express.Router();
 
 module.exports = function(crowdPulse) {
 
-  var autoFill = function(project) {
-    var config = JSON.parse(project.config);
-    project.name = config.process.name;
-    project.creationDate = (new Date()).toISOString();
-  };
-
-  var hasActiveRuns = function(project) {
-    return (project.runs || []).some(function(run) {
-        return (typeof run.dateEnd === 'undefined');
-      });
-  };
-
   var checkForActiveRuns = function(project) {
     var q = Q.defer();
-    if (hasActiveRuns(project)) {
+    if (project.hasActiveRuns()) {
       q.reject(new Error('The project has pending jobs and can\'t be deleted.\n' +
                          'Please stop all of its jobs, then retry.'));
     } else {
@@ -72,84 +61,61 @@ module.exports = function(crowdPulse) {
 
   router.route('/projects')
     .get(function(req, res) {
-      crowdPulse.Project.find()
-        .populate('runs')
-        .exec()
-        .then(function(projects) {
-          res.send(projects);
-        });
+      return crowdPulse.Project.getAll().then(qSend(res)).catch(qErr(res));
     })
     .post(function(req, res) {
-      var project = new crowdPulse.Project(req.body);
-      autoFill(project);
-      // TODO: add project.creationUser
-      project.save()
-        .then(function(saved) {
-          res.send(saved);
-        });
+      var project = crowdPulse.Project.newFromObject(req.body);
+      return Q(project.save()).then(qSend(res)).catch(qErr(res));
     });
 
   router.route('/projects/:projectId')
     .get(function(req, res) {
-      crowdPulse.Project.findById(req.params.projectId)
-        .populate('runs')
-        .exec()
-        .then(function(project) {
-          res.send(project);
-        });
+      return crowdPulse.Project.getById(req.params.projectId).then(qSend(res)).catch(qErr(res));
     })
     .put(function(req, res) {
-      var project = req.body;
-      autoFill(project);
-      crowdPulse.Project
-        .findByIdAndUpdate(crowdPulse.ObjectId(req.params.projectId), {$set: project})
-        .populate('runs')
-        .exec()
-        .then(function() {
-          res.send(project);
-        });
+      var project = crowdPulse.Project.fromPreObject(req.body);
+      return project.updateElement().then(qSend(res)).catch(qErr(res));
     })
-    .delete(_delete);
+    .delete(function(req, res) {
+      return crowdPulse.Project.safeDelete(req.params.projectId).then(qSend(res)).catch(qErr(res));
+    });
 
   // POST to start a run
   router.route('/projects/:projectId/runs')
     .post(function(req, res) {
-      // retrieve the project
-      Q(crowdPulse.Project.findById(req.params.projectId).exec())
+      var newRun;
+      return crowdPulse.Project.getById(req.params.projectId)
         .then(function(project) {
-          var newRun = new crowdPulse.ProjectRun({
-            dateStart: new Date()
-          });
-          return [project, newRun.save()];
+          return project.createNewRun();
         })
         .spread(function(project, run) {
-          project.runs.push(run);
-          return [project.save(), run];
+          newRun = run;
+          return [project, run];
         })
-        .spread(function(project, run) {
-          // start the run
-          cpLauncher.execute(
-            config['crowd-pulse'].main, run._id.toString(),
-            '/Users/fra/logs/curlog.txt', 'admin',
-            project.config);
-          // TODO: start the run here
-          res.send(run);
-        })
-        .catch(function(err) {
-          console.error(err.stack);
-          res.status(500);
-          res.send(err);
+        // launch the run
+        .spread(cpLauncher.executeProjectRun)
+        // send the run information
+        .then(qSend(res))
+        // in case there's an error
+        .catch(function(error) {
+          // if the new run was saved, set it to errored and send it to the client
+          if (newRun) {
+            newRun.status = 1;
+            newRun.dateEnd = new Date();
+            return Q(newRun.save())
+              .then(qSend(res))
+              .catch(qErr(res));
+          }
+          // if the run wasn't saved, it means the error comes from previous steps, send it
+          return qErr(res)(error);
         });
     });
 
-  // DELETE to stop a run
   router.route('/projects/:projectId/runs/:runId')
     .get(function(req, res) {
-      crowdPulse.ProjectRun.findById(req.params.runId).exec()
-        .then(function(run) {
-          res.send(run);
-        });
+      return crowdPulse.ProjectRun.getById(req.params.runId).then(qSend(res)).catch(qErr(res));
     })
+    // DELETE to stop a run
     .delete(function(req, res) {
       // TODO: stop the run here
       res.send('stopped');
