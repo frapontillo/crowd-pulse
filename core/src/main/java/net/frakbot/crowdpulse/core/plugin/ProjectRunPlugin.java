@@ -30,7 +30,7 @@ import rx.observers.SafeSubscriber;
 /**
  * @author Francesco Pontillo
  */
-public abstract class ProjectRunPlugin extends IPlugin<Void, Void, ProjectRunOptions> {
+public abstract class ProjectRunPlugin extends IPlugin<Object, Object, ProjectRunOptions> {
     private ProjectRunRepository projectRunRepository;
     private final Logger logger = CrowdLogger.getLogger(ProjectRunPlugin.class);
 
@@ -40,7 +40,7 @@ public abstract class ProjectRunPlugin extends IPlugin<Void, Void, ProjectRunOpt
     }
 
     @Override
-    protected Observable.Operator<Void, Void> getOperator(ProjectRunOptions params) {
+    protected Observable.Operator<Object, Object> getOperator(ProjectRunOptions params) {
         return subscriber -> new SafeSubscriber<>(new Subscriber<Object>() {
             @Override
             public void onCompleted() {
@@ -57,7 +57,7 @@ public abstract class ProjectRunPlugin extends IPlugin<Void, Void, ProjectRunOpt
 
             @Override
             public void onNext(Object o) {
-                // do nothing
+                subscriber.onNext(o);
             }
 
             private void reportCompletion(boolean success) {
