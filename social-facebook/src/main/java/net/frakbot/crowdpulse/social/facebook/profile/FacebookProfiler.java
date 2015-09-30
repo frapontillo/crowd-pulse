@@ -19,6 +19,9 @@ package net.frakbot.crowdpulse.social.facebook.profile;
 import net.frakbot.crowdpulse.data.entity.Profile;
 import net.frakbot.crowdpulse.social.profile.IProfiler;
 import net.frakbot.crowdpulse.social.profile.ProfileParameters;
+import net.frakbot.crowdpulse.social.profile.ProfilerException;
+
+import java.util.List;
 
 /**
  * @author Francesco Pontillo
@@ -31,8 +34,9 @@ public class FacebookProfiler extends IProfiler {
         return PLUGIN_NAME;
     }
 
-    @Override public Profile getSingleProfile(ProfileParameters parameters) {
-        return getRunnerInstance().getSingleProfile(parameters);
+    @Override
+    public List<Profile> getProfiles(ProfileParameters parameters) throws ProfilerException {
+        return getRunnerInstance().getProfiles(parameters);
     }
 
     private FacebookProfilerRunner getRunnerInstance() {

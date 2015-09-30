@@ -26,7 +26,7 @@ import net.frakbot.crowdpulse.social.facebook.FacebookFactory;
 import net.frakbot.crowdpulse.social.profile.ProfileParameters;
 import org.apache.logging.log4j.Logger;
 
-import java.util.HashMap;
+import java.util.*;
 
 /**
  * @author Francesco Pontillo
@@ -34,8 +34,9 @@ import java.util.HashMap;
 public class FacebookProfilerRunner {
     private static final Logger logger = CrowdLogger.getLogger(FacebookProfilerRunner.class);
 
-    public Profile getSingleProfile(ProfileParameters parameters) {
+    public List<Profile> getProfiles(ProfileParameters parameters) {
         Profile profile = null;
+        String username = parameters.getProfiles().get(0);
         try {
             long followings = 0;
             long followers = 0;
@@ -47,7 +48,8 @@ public class FacebookProfilerRunner {
             includeMetadata.metadata();
             HashMap<String, String> rawMap = new HashMap<>();
             rawMap.put("metadata", "1");
-            RawAPIResponse res = FacebookFactory.getFacebookInstance().rawAPI().callGetAPI(parameters.getProfile(), rawMap);
+            RawAPIResponse res = FacebookFactory.getFacebookInstance().rawAPI()
+                    .callGetAPI(username, rawMap);
 
             // we now have the full JSON, so we go into it and check the object type
             JSONObject json = res.asJSONObject();
@@ -60,18 +62,23 @@ public class FacebookProfilerRunner {
 
             Page locationPage = null;
 
+            assert jsonType != null;
+
             if (jsonType.equals("user")) {
                 // if the profile is a user, fetch both friends and followers (subscribers)
                 userOrPage = DataObjectFactory.createUser(res.asString());
                 objectType = FacebookProfileConverter.DATA_OBJECT_TYPE_USER;
                 try {
-                    followings = FacebookFactory.getFacebookInstance().friends().getFriends(parameters.getProfile()).getCount();
+                    followings = FacebookFactory.getFacebookInstance().friends().getFriends(
+                            username).getCount();
                 } catch (FacebookException ignored) {}
                 try {
-                    followers = FacebookFactory.getFacebookInstance().getSubscribers(parameters.getProfile()).getCount();
+                    followers = FacebookFactory.getFacebookInstance().getSubscribers(
+                            username).getCount();
                 } catch (FacebookException ignored) {}
                 if (((User) userOrPage).getLocation() != null) {
-                    locationPage = FacebookFactory.getFacebookInstance().getPage(((User) userOrPage).getLocation().getId());
+                    locationPage = FacebookFactory.getFacebookInstance()
+                            .getPage(((User) userOrPage).getLocation().getId());
                 }
             } else if (jsonType.equals("page")) {
                 // if the profile is a page, followings stays to 0
@@ -91,7 +98,7 @@ public class FacebookProfilerRunner {
             // convert the user or page
             profile = new FacebookProfileConverter(parameters).fromExtractor(userOrPage, conversionMap);
         } catch (FacebookException ignored) { }
-        return profile;
+        return Collections.singletonList(profile);
     }
 
 }

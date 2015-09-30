@@ -19,6 +19,9 @@ package net.frakbot.crowdpulse.social.twitter.profile;
 import net.frakbot.crowdpulse.data.entity.Profile;
 import net.frakbot.crowdpulse.social.profile.IProfiler;
 import net.frakbot.crowdpulse.social.profile.ProfileParameters;
+import net.frakbot.crowdpulse.social.profile.ProfilerException;
+
+import java.util.List;
 
 /**
  * @author Francesco Pontillo
@@ -38,7 +41,8 @@ public class TwitterProfiler extends IProfiler {
         return runner;
     }
 
-    @Override public Profile getSingleProfile(ProfileParameters parameters) {
-        return getRunnerInstance().getSingleProfile(parameters);
+    @Override
+    public List<Profile> getProfiles(ProfileParameters parameters) throws ProfilerException {
+        return getRunnerInstance().getProfiles(parameters);
     }
 }

@@ -16,10 +16,16 @@
 
 package net.frakbot.crowdpulse.social.profile;
 
+import net.frakbot.crowdpulse.common.util.rx.CrowdSubscriber;
+import net.frakbot.crowdpulse.common.util.rx.RxUtil;
 import net.frakbot.crowdpulse.common.util.spi.IPlugin;
 import net.frakbot.crowdpulse.data.entity.Message;
 import net.frakbot.crowdpulse.data.entity.Profile;
 import rx.Observable;
+import rx.Subscriber;
+import rx.observers.SafeSubscriber;
+
+import java.util.List;
 
 /**
  * Crowd Pulse plugin interface to retrieve a stream of {@link Profile}s starting from a stream of {@link Message}s.
@@ -29,28 +35,55 @@ import rx.Observable;
 public abstract class IProfiler extends IPlugin<Message, Profile, ProfileParameters> {
 
     /**
-     * Gets a {@link Profile} from the given parameters.
+     * Gets a {@link List} of {@link Profile}s from the given parameters.
      *
-     * @param parameters The input {@link ProfileParameters} containing the information to retrieve the profile.
-     * @return A {@link Profile} retrieved from the current implementation.
+     * @param parameters The input {@link ProfileParameters} containing the information to retrieve the profiles.
+     * @return A {@link List} of {@link Profile}s retrieved from the current implementation.
      */
-    public abstract Profile getSingleProfile(ProfileParameters parameters);
+    public abstract List<Profile> getProfiles(ProfileParameters parameters) throws ProfilerException;
 
     @Override public Observable.Transformer<Message, Profile> transform(ProfileParameters params) {
         return messageObservable -> messageObservable
-                .distinct(message -> new ProfileKey(message.getSource(), message.getFromUser()))
-                .map(message -> {
-                    ProfileParameters parameters = new ProfileParameters();
-                    parameters.setSource(getName());
-                    parameters.setProfile(message.getFromUser());
-                    if (params != null) {
-                        parameters.setTags(params.getTags());
+                .map(Message::getFromUser)
+                .distinct()
+                .buffer(100)
+                .lift(new Observable.Operator<List<Profile>, List<String>>() {
+                    @Override
+                    public Subscriber<? super List<String>> call(Subscriber<? super List<Profile>> subscriber) {
+                        return new SafeSubscriber<>(new Subscriber<List<String>>() {
+                            @Override
+                            public void onCompleted() {
+                                subscriber.onCompleted();
+                            }
+
+                            @Override
+                            public void onError(Throwable e) {
+                                subscriber.onError(e);
+                            }
+
+                            @Override
+                            public void onNext(List<String> profileNames) {
+                                ProfileParameters parameters = new ProfileParameters();
+                                parameters.setSource(getName());
+                                parameters.setProfiles(profileNames);
+                                if (params != null) {
+                                    parameters.setTags(params.getTags());
+                                }
+                                profileNames.forEach(IProfiler.this::reportElementAsStarted);
+                                List<Profile> profiles = null;
+                                try {
+                                    profiles = getProfiles(parameters);
+                                } catch (ProfilerException e) {
+                                    subscriber.onError(e);
+                                }
+                                profileNames.forEach(IProfiler.this::reportElementAsEnded);
+                                subscriber.onNext(profiles);
+                            }
+                        });
                     }
-                    reportElementAsStarted(message.getFromUser());
-                    Profile profile = getSingleProfile(parameters);
-                    reportElementAsEnded(message.getFromUser());
-                    return profile;
                 })
+                .filter(profile -> (profile != null))
+                .compose(RxUtil.flatten())
                 .doOnCompleted(this::reportPluginAsCompleted)
                 .doOnError((err) -> reportPluginAsErrored());
     }
