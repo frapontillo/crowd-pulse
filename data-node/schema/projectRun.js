@@ -30,6 +30,10 @@ var ProjectRunSchema = builder(schemas.projectRun, {
   pid: Number
 });
 
+ProjectRunSchema.statics.getById = function(id) {
+  return Q(this.findById(id).exec());
+};
+
 ProjectRunSchema.statics.stopRun = function(runId) {
   return Q(this.findByIdAndUpdate(runId, {$set: {
     status: 0,
