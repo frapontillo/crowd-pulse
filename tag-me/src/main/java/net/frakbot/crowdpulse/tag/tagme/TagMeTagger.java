@@ -16,13 +16,16 @@
 
 package net.frakbot.crowdpulse.tag.tagme;
 
+import net.frakbot.crowdpulse.common.util.CrowdLogger;
 import net.frakbot.crowdpulse.common.util.spi.IPlugin;
 import net.frakbot.crowdpulse.common.util.spi.VoidConfig;
 import net.frakbot.crowdpulse.data.entity.Message;
 import net.frakbot.crowdpulse.data.entity.Tag;
 import net.frakbot.crowdpulse.tag.ITaggerOperator;
+import org.apache.logging.log4j.Logger;
 import retrofit.RestAdapter;
 import retrofit.RetrofitError;
+import retrofit.client.Response;
 import rx.Observable;
 
 import java.util.ArrayList;
@@ -37,20 +40,25 @@ public class TagMeTagger extends IPlugin<Message, Message, VoidConfig> {
     public final static String PLUGIN_NAME = "tagme";
     private final static String TAG_ME_ENDPOINT = "http://tagme.di.unipi.it";
     private final static List<String> supportedLangs = Arrays.asList("IT", "EN");
+    private Logger logger = CrowdLogger.getLogger(TagMeTagger.class);
 
     private TagMeService service;
 
-    @Override public String getName() {
+    @Override
+    public String getName() {
         return PLUGIN_NAME;
     }
 
-    @Override public VoidConfig getNewParameter() {
+    @Override
+    public VoidConfig getNewParameter() {
         return new VoidConfig();
     }
 
-    @Override protected Observable.Operator<Message, Message> getOperator(VoidConfig parameters) {
+    @Override
+    protected Observable.Operator<Message, Message> getOperator(VoidConfig parameters) {
         return new ITaggerOperator(this) {
-            @Override protected List<Tag> getTagsImpl(String text, String language) {
+            @Override
+            protected List<Tag> getTagsImpl(String text, String language) {
                 // get the tags
                 TagMeResponse response;
                 List<Tag> tags = new ArrayList<>();
@@ -66,11 +74,16 @@ public class TagMeTagger extends IPlugin<Message, Message, VoidConfig> {
                         }
                     } catch (RetrofitError e) {
                         // ignored
-                        System.err.println(String.format("%s returned\n%s: %s", e.getUrl(), e.getResponse().getStatus
-                                (), e.getResponse().getReason()));
+                        Response res = e.getResponse();
+                        if (res != null) {
+                            logger.error(String.format("%s returned\n%s: %s",
+                                    e.getUrl(), res.getStatus(), res.getReason()), e);
+                        } else {
+                            logger.error(String.format("%s returned an error", e.getUrl()), e);
+                        }
                     } catch (Exception e) {
                         // ignored
-                        e.printStackTrace();
+                        logger.error(e);
                     }
                 }
                 // publish the tags as a connectable observable
