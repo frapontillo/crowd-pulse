@@ -36,6 +36,13 @@ public class StopWordConfig implements IPluginConfig<StopWordConfig> {
     private List<String> applyTo;
     private StopWordDictionaries dictionaries;
 
+    public StopWordConfig() {
+        // default is "apply stop word removal to all"
+        applyTo = Arrays.asList(APPLY_TO_TOKENS, APPLY_TO_TAGS, APPLY_TO_CATEGORIES);
+        // avoid NPEs and instantiate it
+        dictionaries = new StopWordDictionaries();
+    }
+
     public List<String> getApplyTo() {
         return applyTo;
     }
@@ -66,9 +73,6 @@ public class StopWordConfig implements IPluginConfig<StopWordConfig> {
 
     @Override public StopWordConfig buildFromJsonElement(JsonElement json) {
         StopWordConfig config = PluginConfigHelper.buildFromJson(json, StopWordConfig.class);
-        if (config.getApplyTo() == null || config.getApplyTo().size() == 0) {
-            config.setApplyTo(Arrays.asList(APPLY_TO_TOKENS, APPLY_TO_TAGS, APPLY_TO_CATEGORIES));
-        }
         return config;
     }
 
