@@ -29,6 +29,7 @@ import rx.Observable;
 
 import java.io.InputStream;
 import java.util.Properties;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Implementation of an {@link IPlugin} that accepts and streams {@link Profile}s after attempting a geo-location fix
@@ -46,7 +47,10 @@ public class GoogleMapsProfileGeoFixer extends IPlugin<Profile, Profile, VoidCon
     private final GeoApiContext context;
 
     public GoogleMapsProfileGeoFixer() {
-        context = new GeoApiContext().setApiKey(readApiKey());
+        context = new GeoApiContext()
+                .setApiKey(readApiKey())
+                // if the request doesn't succeed within 10 seconds, discard it
+                .setRetryTimeout(10, TimeUnit.SECONDS);
     }
 
     @Override public String getName() {
