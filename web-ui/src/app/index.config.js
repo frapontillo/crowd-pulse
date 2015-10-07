@@ -3,18 +3,9 @@
 
   angular
     .module('webUi')
-    .config(iconConfig)
     .config(logConfig)
     .config(restConfig)
     .config(httpConfig);
-
-  /** @ngInject */
-  function iconConfig($mdIconProvider) {
-    // set the icon as SVGs
-    //$mdIconProvider
-    //  .iconSet('social', 'bower_components/material-design-icons/icons/sets/social-icons.svg', 24)
-    //  .defaultIconSet('img/icons/sets/core-icons.svg', 24);
-  }
 
   /** @ngInject */
   function logConfig($logProvider) {

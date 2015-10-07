@@ -38,7 +38,7 @@
     return directive;
 
     /** @ngInject */
-    function ProjectRunsController($scope, $mdToast, $mdDialog, $filter, Project) {
+    function ProjectRunsController($scope, $mdToast, $mdDialog, $filter, Project, logsSocket) {
       var projectRunsVm = this;
 
       var showToast = function(message) {
@@ -72,6 +72,7 @@
       };
 
       projectRunsVm.stop = function(run, event) {
+        event.stopPropagation();
         var formattedDate = $filter('date')(run.dateStart, 'short');
         var confirm = $mdDialog.confirm()
           .title('Stop run')
@@ -97,7 +98,22 @@
           .then(function(updatedProject) {
             projectRunsVm.config = updatedProject;
             Project.cache.updateWithProject(updatedProject);
-          })
+          });
+      };
+
+      projectRunsVm.showLog = function(run, event) {
+        return $mdDialog.show({
+          controller: 'LogDialogCtrl',
+          templateUrl: 'app/components/log-dialog/log-dialog.html',
+          parent: angular.element(document.body),
+          targetEvent: event,
+          clickOutsideToClose: true,
+          locals: {
+            run: run
+          }
+        }).finally(function() {
+          logsSocket.emit('closeLog', run._id);
+        });
       };
     }
   }

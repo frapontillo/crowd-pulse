@@ -6,10 +6,11 @@
   <md-subheader ng-show="projectRunsVm.showRunning()">Now running...</md-subheader>
 
   <md-list-item ng-repeat="run in projectRunsVm.running | orderBy:'dateStart':-1"
-                ng-click="showLog.stop(run, $event)">
+                ng-click="projectRunsVm.showLog(run, $event)">
     <md-icon>receipt</md-icon>
     <p>Started on {{ run.dateStart | date:'short' }}</p>
-    <md-icon ng-click="projectRunsVm.stop(run, $event)" aria-label="Stop run" class="md-accent">
+    <md-icon ng-click="projectRunsVm.stop(run, $event)"
+             aria-label="Stop run" class="md-accent">
       stop
     </md-icon>
   </md-list-item>
@@ -18,8 +19,9 @@
 
   <md-subheader ng-show="projectRunsVm.showStopped()">Past executions</md-subheader>
 
-  <md-list-item class="md-2-line" ng-click="vm.showLog(run)"
-                ng-repeat="run in projectRunsVm.stopped | orderBy:'date_end':-1">
+  <md-list-item class="md-2-line"
+                ng-repeat="run in projectRunsVm.stopped | orderBy:'date_end':-1"
+                ng-click="projectRunsVm.showLog(run, $event)">
     <md-icon>receipt</md-icon>
     <div class="md-list-item-text" layout="column">
       <h3>Finished on {{ run.dateStart | date:'short' }}</h3>

@@ -4,6 +4,6 @@
   angular
     .module('webUi',
     ['ngAnimate', 'ngCookies', 'ngTouch', 'ngSanitize', 'restangular', 'ui.router', 'ngMaterial',
-     'ui.ace']);
+     'ui.ace', 'btford.socket-io']);
 
 })();
