@@ -18,46 +18,12 @@
 
 var Q = require('q');
 var express = require('express');
-var StatusHelper = require('./../statusHelper');
 var cpLauncher = require('../lib/cpLauncher');
 var qSend = require('../lib/expressQ').send;
 var qErr = require('../lib/expressQ').error;
 var router = express.Router();
 
 module.exports = function(crowdPulse) {
-
-  var checkForActiveRuns = function(project) {
-    var q = Q.defer();
-    if (project.hasActiveRuns()) {
-      q.reject(new Error('The project has pending jobs and can\'t be deleted.\n' +
-                         'Please stop all of its jobs, then retry.'));
-    } else {
-      q.resolve(project);
-    }
-    return q.promise;
-  };
-
-  var _delete = function(req, res) {
-    crowdPulse.Project.findById(req.params.projectId).exec()
-      .then(null, function(err) {
-        StatusHelper.notFound(res, req.params.projectId, err);
-        throw err;
-      })
-      .then(function(project) {
-        return checkForActiveRuns(project)
-          .catch(function(err) {
-            StatusHelper.forbidden(res, req.params.projectId, err);
-            throw err;
-          });
-      })
-      .then(function() {
-        return crowdPulse.Project.findByIdAndRemove(req.params.projectId).exec();
-      })
-      .then(function() {
-        res.status(204);
-        res.send();
-      });
-  };
 
   router.route('/projects')
     .get(function(req, res) {
