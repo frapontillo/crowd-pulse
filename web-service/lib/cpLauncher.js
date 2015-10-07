@@ -96,7 +96,12 @@ var executeProjectRun = function(project, run) {
 };
 
 var stopProjectRun = function(run) {
-  process.kill(run.pid);
+  try {
+    process.kill(run.pid);
+  } catch (error) {
+    console.warn('It looks like the run with PID ' + run.pid + ' is already stopped.');
+    console.warn(error.stack);
+  }
   return run;
 };
 
