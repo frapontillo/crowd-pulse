@@ -17,6 +17,8 @@
 'use strict';
 
 var Q = require('q');
+var path = require('path');
+var sanitize = require('sanitize-filename');
 var mongoose = require('mongoose');
 var builder = require('./schemaBuilder');
 var schemas = require('./schemaName');
@@ -84,10 +86,14 @@ ProjectSchema.methods.hasActiveRuns = function() {
   });
 };
 
-ProjectSchema.methods.createNewRun = function() {
+ProjectSchema.methods.createNewRun = function(logsPath) {
   var project = this;
+  var dateStart = new Date();
+  var log = path.join(logsPath,
+    sanitize(project.name + '-' + dateStart.toISOString().replace(':', '')) + ".log");
   var run = project.model(schemas.projectRun)({
-    dateStart: new Date()
+    dateStart: new Date(),
+    log: log
   });
   return Q(run.save())
     .then(function(newRun) {
