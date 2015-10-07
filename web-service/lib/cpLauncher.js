@@ -18,10 +18,9 @@
 
 var Q = require('q');
 var fs = require('fs');
-var path = require('path');
+var qFs = require('q-io/fs');
 var spawn = require('child_process').spawn;
 var mkdirp = require('mkdirp');
-var sanitize = require('sanitize-filename');
 var config = require('../config.json');
 
 /**
@@ -77,12 +76,19 @@ var executeProjectRun = function(project, run) {
   return Q.nfcall(mkdirp, config.logs.path)
     .then(function() {
       var exe = config['crowd-pulse'].main;
-      var log = path.join(config.logs.path,
-        sanitize(project.name + '-' + run.dateStart.toISOString().replace(':', '')) + ".log");
       var projectRunId = run._id.toString();
       var db = config.database.db;
       var jsonConfig = project.config;
-      console.log('Crowd Pulse will log to:', log);
+      console.log('Crowd Pulse will log to:', run.log);
+      return qFs.open(run.log, 'w')
+        .then(function(logFile) {
+          return logFile.close();
+        })
+        .then(function() {
+          return [exe, projectRunId, run.log, db, jsonConfig];
+        });
+    })
+    .spread(function(exe, projectRunId, log, db, jsonConfig) {
       // start crowd-pulse-core
       execute(exe, projectRunId, log, db, jsonConfig);
       return run;
