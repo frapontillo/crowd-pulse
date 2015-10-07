@@ -30,7 +30,10 @@ var CrowdPulse = require('crowd-pulse-data-node');
 
 var bootstrap = require('./bootstrap/bootstrap');
 var oAuthSetup = require('./oauth2/setup');
-var projects = require('./endpoint/projects');
+
+var endpointProjects = require('./endpoint/projects');
+var socketLogs = require('./sockets/logs');
+
 var config = require('./config.json');
 
 // the main server
@@ -61,14 +64,14 @@ var webServiceSetup = function(crowdPulse) {
 
   // TODO: add more endpoints here
   var API = '/api';
-  app.use(API, projects(crowdPulse));
+  app.use(API, endpointProjects(crowdPulse));
+
+  return crowdPulse;
 };
 
 var webSocketSetup = function() {
   io = socket(server);
-  io.on('connection', function() {
-    console.log('someone connected');
-  });
+  socketLogs(io, crowdPulse)
 };
 
 connect()
@@ -79,7 +82,7 @@ connect()
     return webServiceSetup(crowdPulse);
   })
   .then(function() {
-    return webSocketSetup();
+    return webSocketSetup(crowdPulse);
   })
   .then(function() {
     return oAuthSetup(crowdPulse, app);

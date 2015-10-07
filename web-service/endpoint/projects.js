@@ -17,10 +17,12 @@
 'use strict';
 
 var Q = require('q');
+var fs = require('q-io/fs');
 var express = require('express');
 var cpLauncher = require('../lib/cpLauncher');
 var qSend = require('../lib/expressQ').send;
 var qErr = require('../lib/expressQ').error;
+var config = require('../config.json');
 var router = express.Router();
 
 module.exports = function(crowdPulse) {
@@ -52,7 +54,7 @@ module.exports = function(crowdPulse) {
       var newRun;
       return crowdPulse.Project.getById(req.params.projectId)
         .then(function(project) {
-          return project.createNewRun();
+          return project.createNewRun(config.logs.path);
         })
         .spread(function(project, run) {
           newRun = run;
