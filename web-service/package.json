@@ -22,6 +22,7 @@
     "morgan": "^1.6.1",
     "oauth2-server": "^2.4.1",
     "q": "^1.4.1",
+    "q-io": "^1.13.1",
     "sanitize-filename": "^1.4.4",
     "socket.io": "^1.3.7"
   }

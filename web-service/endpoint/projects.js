@@ -92,5 +92,16 @@ module.exports = function(crowdPulse) {
         .catch(qErr(res));
     });
 
+  router.route('/projects/:projectId/runs/:runId/log')
+    .get(function(req, res) {
+      return crowdPulse.ProjectRun.getById(req.params.runId)
+        .then(function(run) {
+          res.type('text/plain');
+          return fs.read(run.log)
+        })
+        .then(qSend(res))
+        .catch(qErr(res));
+    });
+
   return router;
 };
