@@ -18,3 +18,4 @@ net.frakbot.crowdpulse.data.plugin.MessagePersister
 net.frakbot.crowdpulse.data.plugin.MessageFetcher
 net.frakbot.crowdpulse.data.plugin.ProfilePersister
 net.frakbot.crowdpulse.data.plugin.Streamer
+net.frakbot.crowdpulse.data.plugin.MessageFilter
