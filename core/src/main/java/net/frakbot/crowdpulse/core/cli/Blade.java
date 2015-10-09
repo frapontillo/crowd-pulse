@@ -162,7 +162,7 @@ public class Blade {
 
             @Override
             public void onError(Throwable e) {
-                logger.error("EXECUTION: ERRORED");
+                logger.error("EXECUTION: ERRORED", e);
                 allSubscriptions.countDown();
             }
 
