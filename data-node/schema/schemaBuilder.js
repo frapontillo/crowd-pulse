@@ -14,15 +14,22 @@
  * limitations under the License.
  */
 
-package net.frakbot.crowdpulse.data.repository;
+'use strict';
 
-import net.frakbot.crowdpulse.data.entity.Step;
-import org.bson.types.ObjectId;
+var Q = require('q');
+var mongoose = require('mongoose');
 
-/**
- * {@link Repository} for {@link Step}s.
- *
- * @author Francesco Pontillo
- */
-public class StepRepository extends Repository<Step, ObjectId> {
-}
+module.exports = function(name, schema) {
+
+  var TheSchema = new mongoose.Schema(schema);
+  TheSchema.statics.getSchemaName = function() {
+    return name;
+  };
+  TheSchema.set('collection', name);
+
+  TheSchema.statics.getById = function(id) {
+    return Q(this.findById(id).exec());
+  };
+
+  return TheSchema;
+};

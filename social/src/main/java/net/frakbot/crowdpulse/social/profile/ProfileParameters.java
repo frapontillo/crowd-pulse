@@ -32,8 +32,8 @@ public class ProfileParameters implements IPluginConfig<ProfileParameters> {
     @Parameter(names = "-source", description = "Source for extraction")
     private String source;
 
-    @Parameter(names = "-profile", description = "Profile ID or name to fetch information from")
-    private String profile;
+    @Parameter(names = "-profiles", description = "Profile names to fetch information from")
+    private List<String> profiles;
 
     @Parameter(names = "-tags", description = "Tags to add to profiles")
     private List<String> tags;
@@ -46,12 +46,12 @@ public class ProfileParameters implements IPluginConfig<ProfileParameters> {
         this.source = source;
     }
 
-    public String getProfile() {
-        return profile;
+    public List<String> getProfiles() {
+        return profiles;
     }
 
-    public void setProfile(String profile) {
-        this.profile = profile;
+    public void setProfiles(List<String> profiles) {
+        this.profiles = profiles;
     }
 
     public List<String> getTags() {

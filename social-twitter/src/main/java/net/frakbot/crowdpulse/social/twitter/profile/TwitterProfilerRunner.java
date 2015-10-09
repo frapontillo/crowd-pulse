@@ -20,8 +20,12 @@ import net.frakbot.crowdpulse.common.util.CrowdLogger;
 import net.frakbot.crowdpulse.data.entity.Profile;
 import net.frakbot.crowdpulse.social.profile.ProfileParameters;
 import net.frakbot.crowdpulse.social.twitter.TwitterFactory;
+import twitter4j.ResponseList;
 import twitter4j.TwitterException;
 import twitter4j.User;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Francesco Pontillo
@@ -29,12 +33,25 @@ import twitter4j.User;
 public class TwitterProfilerRunner {
     private static final org.apache.logging.log4j.Logger logger = CrowdLogger.getLogger(TwitterProfilerRunner.class);
 
-    public Profile getSingleProfile(ProfileParameters parameters) {
-        Profile profile = null;
-        try {
-            User user = TwitterFactory.getTwitterInstance().showUser(parameters.getProfile());
-            profile = new TwitterProfileConverter(parameters).fromExtractor(user, null);
-        } catch (TwitterException ignored) { }
-        return profile;
+    public List<Profile> getProfiles(ProfileParameters parameters) {
+        List<Profile> profiles = new ArrayList<>();
+        boolean mustRepeat = false;
+        do {
+            try {
+                String[] usernames = new String[parameters.getProfiles().size()];
+                usernames = parameters.getProfiles().toArray(usernames);
+                ResponseList<User> users = TwitterFactory.getTwitterInstance().lookupUsers(usernames);
+                users.stream().forEach(u ->
+                        profiles.add(new TwitterProfileConverter(parameters).fromExtractor(u, null)));
+                mustRepeat = false;
+            } catch (TwitterException twitterException) {
+                try {
+                    mustRepeat = TwitterFactory.waitForTwitterTimeout(twitterException, logger);
+                } catch (InterruptedException ignored) {}
+                // if the error isn't handled, just ignore it and return an empty list
+                // e.g. a query for non-existing users may return 404, we don't care LOL
+            }
+        } while (mustRepeat);
+        return profiles;
     }
 }

@@ -1,0 +1,27 @@
+<div flex layout="column">
+  <md-tabs flex layout="column" md-border-bottom class="md-full-tabs-template">
+
+    <md-tab flex layout="column">
+      <md-tab-label>Configuration file</md-tab-label>
+      <md-tab-body flex layout="column">
+        <project-config config="vm.project"></project-config>
+      </md-tab-body>
+    </md-tab>
+
+    <md-tab>
+      <md-tab-label>Runs & Logs</md-tab-label>
+      <md-tab-body flex class="md-padding">
+        <project-runs config="vm.project"></project-runs>
+      </md-tab-body>
+    </md-tab>
+
+  </md-tabs>
+
+  <!--TODO: hide this when tabs change-->
+  <div layout="row">
+    <md-button ng-click="vm.start($event)" class="md-accent md-fab md-fab-bottom-right">
+      <md-icon>play_arrow</md-icon>
+    </md-button>
+  </div>
+
+</div>

@@ -1,0 +1,9 @@
+<md-sidenav md-component-id="right-sidenav" md-is-locked-open="$mdMedia('gt-md')"
+            layout="column" flex
+            ng-class="{ 'md-whiteframe-z2': sidenavVm.evalMdMedia('gt-md'), 'md-whiteframe-z5': sidenavVm.evalMdMedia('md') }">
+
+  <md-content>
+    <ng-transclude></ng-transclude>
+  </md-content>
+
+</md-sidenav>

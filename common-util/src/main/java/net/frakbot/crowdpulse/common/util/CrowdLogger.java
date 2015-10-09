@@ -32,21 +32,13 @@ public class CrowdLogger {
 
     /**
      * Return a {@link Logger} with a given input name.
-     * The logger will read its configuration file from <code>log4j2.json</code>
-     * and will force the logging level to DEBUG, no matter what the configuration file says.
+     * The logger will read its configuration file from <code>log4j2.json</code>.
      *
      * @param loggerName The name to assign to the {@link Logger}.
      * @return The appropriate {@link Logger} implementation.
      */
     public static Logger getLogger(String loggerName) {
-        System.setProperty("log4j.configurationFile", "log4j2.json");
-        org.apache.logging.log4j.Logger logger = LogManager.getLogger(loggerName);
-        LoggerContext ctx = (LoggerContext) LogManager.getContext(false);
-        Configuration config = ctx.getConfiguration();
-        LoggerConfig loggerConfig = config.getLoggerConfig(loggerName);
-        loggerConfig.setLevel(Level.DEBUG);
-        ctx.updateLoggers();
-        return logger;
+        return LogManager.getLogger(loggerName);
     }
 
     /**

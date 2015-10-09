@@ -17,10 +17,12 @@
 package net.frakbot.crowdpulse.remstopword;
 
 import com.google.gson.JsonElement;
+import net.frakbot.crowdpulse.common.util.CrowdLogger;
 import net.frakbot.crowdpulse.common.util.rx.CrowdSubscriber;
 import net.frakbot.crowdpulse.common.util.spi.IPlugin;
 import net.frakbot.crowdpulse.common.util.spi.IPluginConfig;
 import net.frakbot.crowdpulse.data.entity.Message;
+import org.apache.logging.log4j.Logger;
 import rx.Observable;
 
 /**
@@ -29,6 +31,7 @@ import rx.Observable;
  * @author Francesco Pontillo
  */
 public abstract class StopWordRemover<Config extends IPluginConfig<Config>> extends IPlugin<Message, Message, Config> {
+    private final Logger logger = CrowdLogger.getLogger(StopWordRemover.class);
 
     protected abstract boolean isTokenStopWord(String token, String language, Config stopWordConfig);
 
@@ -40,7 +43,11 @@ public abstract class StopWordRemover<Config extends IPluginConfig<Config>> exte
         return subscriber -> new CrowdSubscriber<Message>(subscriber) {
             @Override public void onNext(Message message) {
                 reportElementAsStarted(message.getId());
-                processMessage(message, parameters);
+                try {
+                    processMessage(message, parameters);
+                } catch (Exception e) {
+                    logger.error("Handled exception", e);
+                }
                 reportElementAsEnded(message.getId());
                 subscriber.onNext(message);
             }

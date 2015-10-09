@@ -1,0 +1,29 @@
+<div layout="column" flex>
+  <md-menu-bar layout="row">
+    <md-button ng-disabled="projectConfigVm.isSaving" ng-click="projectConfigVm.save()"
+               aria-label="Save configuration">
+      <md-icon>save</md-icon>
+      Save
+    </md-button>
+    <md-button ng-disabled="projectConfigVm.isSaving" md-choose-file
+               ng-model="projectConfigVm.config.config" aria-label="Upload file">
+      <md-icon>file_upload</md-icon>
+      Upload...
+    </md-button>
+    <span flex></span>
+    <md-button ng-disabled="projectConfigVm.isSaving" ng-click="projectConfigVm.delete($event)"
+               class="md-accent" aria-label="Delete project" ng-show="!projectConfigVm.isNew()">
+      <md-icon>delete</md-icon>
+      Delete
+    </md-button>
+  </md-menu-bar>
+  <div flex ui-ace="{
+          useWrapMode: true,
+          showGutter: true,
+          theme: 'solarized_dark',
+          mode: 'json',
+          onLoad: projectConfigVm.editorLoaded
+        }"
+       ng-readonly="projectConfigVm.isSaving"
+       ng-model="projectConfigVm.config.config"></div>
+</div>

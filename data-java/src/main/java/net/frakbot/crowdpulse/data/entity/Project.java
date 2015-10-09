@@ -20,6 +20,7 @@ import org.mongodb.morphia.annotations.Reference;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Holds project-level information:
@@ -33,9 +34,12 @@ import java.util.List;
  */
 public class Project extends Entity {
     private String name;
-    private List<Step> steps;
-    @Reference private User creationUser;
+    @Reference
+    private User creationUser;
     private Date creationDate;
+    private Map config;
+    @Reference(idOnly = true)
+    private List<ProjectRun> runs;
 
     /**
      * Get the name of the Project.
@@ -53,24 +57,6 @@ public class Project extends Entity {
      */
     public void setName(String name) {
         this.name = name;
-    }
-
-    /**
-     * Get the {@link List} of {@link Step}s to perform.
-     *
-     * @return A {@link List} of {@link Step}s.
-     */
-    public List<Step> getSteps() {
-        return steps;
-    }
-
-    /**
-     * Set the {@link List} of {@link Step}s to perform for the Project.
-     *
-     * @param steps A new {@link List} of {@link Step}s.
-     */
-    public void setSteps(List<Step> steps) {
-        this.steps = steps;
     }
 
     /**
@@ -107,6 +93,42 @@ public class Project extends Entity {
      */
     public void setCreationDate(Date creationDate) {
         this.creationDate = creationDate;
+    }
+
+    /**
+     * Get the configuration map for the Project.
+     *
+     * @return A configuration map.
+     */
+    public Map getConfig() {
+        return config;
+    }
+
+    /**
+     * Set a new configuration map for the Project.
+     *
+     * @param config The configuration map to associate with the Project.
+     */
+    public void setConfig(Map config) {
+        this.config = config;
+    }
+
+    /**
+     * Get the {@link ProjectRun}s associated with this project.
+     *
+     * @return A {@link List} of pending and/or completed runs.
+     */
+    public List<ProjectRun> getRuns() {
+        return runs;
+    }
+
+    /**
+     * Set the {@link ProjectRun}s for this project.
+     *
+     * @param runs A {@link List} of pending and/or completed runs.
+     */
+    public void setRuns(List<ProjectRun> runs) {
+        this.runs = runs;
     }
 }
 

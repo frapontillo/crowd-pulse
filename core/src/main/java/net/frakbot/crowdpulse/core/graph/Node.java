@@ -30,8 +30,9 @@ public class Node {
     private String name;
     private String plugin;
     private JsonObject config;
-    private List<Node> prev;
-    private List<Node> next;
+    private transient List<Node> prev;
+    private transient List<Node> next;
+    private transient Graph graph;
 
     protected boolean _wasBuilt;
 
@@ -104,7 +105,15 @@ public class Node {
      * @param prev {@link List} of the previous Nodes.
      */
     public void setPrev(List<Node> prev) {
-        this.next = prev;
+        // save the current node state in the graph (can be root)
+        boolean wasRoot = !this.hasPrev();
+
+        this.prev = prev;
+
+        // update the root nodes
+        if (wasRoot) {
+            graph.updateRootNodes();
+        }
     }
 
     /**
@@ -116,7 +125,17 @@ public class Node {
         if (this.prev == null) {
             this.prev = new ArrayList<>();
         }
+
+        // save the current node state in the graph (can be root)
+        boolean wasRoot = !this.hasPrev();
+
+        // add the previous node
         this.prev.add(prev);
+
+        // update the root nodes
+        if (wasRoot) {
+            graph.updateRootNodes();
+        }
     }
 
     /**
@@ -143,7 +162,15 @@ public class Node {
      * @param next {@link List} of the following Nodes.
      */
     public void setNext(List<Node> next) {
+        // save the current node state in the graph (can be a terminal)
+        boolean wasTerminal = !this.hasNext();
+
         this.next = next;
+
+        // conditionally update terminals
+        if (wasTerminal) {
+            graph.updateTerminalNodes();
+        }
     }
 
     /**
@@ -155,7 +182,17 @@ public class Node {
         if (this.next == null) {
             this.next = new ArrayList<>();
         }
+
+        // save the current node state in the graph (can be a terminal)
+        boolean wasTerminal = !this.hasNext();
+
+        // add the next node
         this.next.add(next);
+
+        // conditionally update terminals
+        if (wasTerminal) {
+            graph.updateTerminalNodes();
+        }
     }
 
     /**
@@ -166,4 +203,23 @@ public class Node {
     public boolean hasNext() {
         return (this.next != null && this.next.size() > 0);
     }
+
+    /**
+     * Get the {@link Graph} this Node is contained in.
+     *
+     * @return The container {@link Graph}.
+     */
+    public Graph getGraph() {
+        return graph;
+    }
+
+    /**
+     * Set the {@link Graph} this Node is contained in.
+     *
+     * @param graph The container {@link Graph}.
+     */
+    public void setGraph(Graph graph) {
+        this.graph = graph;
+    }
+
 }

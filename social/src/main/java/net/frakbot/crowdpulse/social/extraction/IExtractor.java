@@ -16,13 +16,17 @@
 
 package net.frakbot.crowdpulse.social.extraction;
 
+import net.frakbot.crowdpulse.common.util.CrowdLogger;
 import net.frakbot.crowdpulse.common.util.StringUtil;
 import net.frakbot.crowdpulse.common.util.spi.IPlugin;
 import net.frakbot.crowdpulse.data.entity.Message;
 import net.frakbot.crowdpulse.social.exception.InvalidParametersSocialException;
 import net.frakbot.crowdpulse.social.exception.MissingParametersSocialException;
 import net.frakbot.crowdpulse.social.exception.SocialException;
+import org.apache.logging.log4j.Logger;
 import rx.Observable;
+import rx.Subscriber;
+import rx.observers.SafeSubscriber;
 
 import java.util.List;
 
@@ -30,6 +34,9 @@ import java.util.List;
  * @author Francesco
  */
 public abstract class IExtractor extends IPlugin<Void, Message, ExtractionParameters> {
+
+    private final Logger logger = CrowdLogger.getLogger(IExtractor.class);
+
     /**
      * Returns the maximum number of parameters that this extractor supports per each query.
      *
@@ -175,18 +182,29 @@ public abstract class IExtractor extends IPlugin<Void, Message, ExtractionParame
      */
     protected abstract Observable<Message> getMessages(ExtractionParameters parameters);
 
-    // TODO: the operator isn't used in the Extractor since this is an entry point plugin (for now)
     @Override protected Observable.Operator<Message, Void> getOperator(ExtractionParameters parameters) {
-        return null;
+        return subscriber -> new SafeSubscriber<>(new Subscriber<Object>() {
+            @Override
+            public void onCompleted() {
+                parameters.setSource(getName());
+                getMessages(parameters).subscribe(subscriber);
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                logger.error("Error before extracting messages.", e);
+                subscriber.onError(e);
+            }
+
+            @Override
+            public void onNext(Object o) {
+                // ignore this, we're going to send only generated Messages
+            }
+        });
     }
 
     @Override public ExtractionParameters getNewParameter() {
         return new ExtractionParameters();
-    }
-
-    @Override public Observable<Message> process(ExtractionParameters params, Observable<?>... streams) {
-        params.setSource(getName());
-        return getMessages(params);
     }
 
 }

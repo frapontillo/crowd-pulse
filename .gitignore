@@ -1,13 +1,26 @@
 .idea/
 .gradle/
 *.iml
+*/bower_components/
 */build/
 */node_modules/
 build/
 gradle/
 temp/
-*/src/test/resources/*.properties
+
+# Ignore all resource files
 */src/main/resources/*
+# Keep SPIs, samples and jsons
+!*/src/main/resources/services
 !*/src/main/resources/*.sample
 !*/src/main/resources/*.json
+
+# core: ignore all json files
 core/src/main/resources/*.json
+# core: keep the logging configuration
+!core/src/main/resources/log4j2.json
+
+# web-ui: ignore dist and temporary dirs
+web-ui/.sass-cache/
+web-ui/.tmp/
+web-ui/dist/

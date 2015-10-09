@@ -160,6 +160,9 @@ public class SimpleStopWordRemover extends StopWordRemover<StopWordConfig> {
      * @return true if the word is considered a stop word, false otherwise.
      */
     private boolean isStopWord(String word, List<String> fileNames) {
+        if (word == null) {
+            return true;
+        }
         HashSet<String> dict = getDictionariesByFileNames(fileNames);
         return dict.contains(word.toLowerCase());
     }

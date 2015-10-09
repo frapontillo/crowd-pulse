@@ -78,7 +78,7 @@ public class DataLayer {
      *
      * @param db The target database to connect to.
      */
-    private DataLayer(String db) {
+    public DataLayer(String db) {
         InputStream configInput = getClass().getClassLoader().getResourceAsStream("database.properties");
         Properties prop = new Properties();
         try {
@@ -98,15 +98,11 @@ public class DataLayer {
         }
 
         client = null;
-        try {
-            List<MongoCredential> credentialList = new ArrayList<MongoCredential>(1);
-            if (username != null && !username.equals("") && password != null && !password.equals("")) {
-                credentialList.add(MongoCredential.createMongoCRCredential(username, dbName, password.toCharArray()));
-            }
-            client = new MongoClient(new ServerAddress(host, port), credentialList);
-        } catch (UnknownHostException e) {
-            e.printStackTrace();
+        List<MongoCredential> credentialList = new ArrayList<MongoCredential>(1);
+        if (username != null && !username.equals("") && password != null && !password.equals("")) {
+            credentialList.add(MongoCredential.createMongoCRCredential(username, dbName, password.toCharArray()));
         }
+        client = new MongoClient(new ServerAddress(host, port), credentialList);
 
         // map all Morphia classes
         morphia = new Morphia();

@@ -46,7 +46,18 @@ public class Repository<T, K> extends BasicDAO<T, K> {
      * @param db The database name to use for this Repository instance.
      */
     public Repository(String db) {
-        super(DataLayer.getDataLayer(db).getDatastore());
+        super(new DataLayer(db).getDatastore());
+    }
+
+    /**
+     * Find an element by its ID.
+     *
+     * @param id The ID of the element to find.
+     * @return The found element or {@code null}.
+     */
+    public T findById(K id) {
+        Query<T> query = createQuery().field("_id").equal(id);
+        return findOne(query);
     }
 
     /**

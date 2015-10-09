@@ -1,0 +1,20 @@
+<sidenav>
+  <md-list>
+    <md-subheader class="with-flex-md-subheader-content" layout="row">
+      <p flex>Projects</p>
+      <md-button ng-click="sidenavAdminVm.goToNew()" class="md-icon-button" aria-label="New project">
+        <md-icon>add</md-icon>
+        <md-tooltip>
+          Create a new project
+        </md-tooltip>
+      </md-button>
+    </md-subheader>
+    <md-list-item class="md-3-line" ng-repeat="project in sidenavAdminVm.projects"
+                  ng-click="sidenavAdminVm.openProject(project._id)" >
+      <div class="md-list-item-text">
+        <h3>{{project.name}}</h3>
+      </div>
+      <md-divider ng-if="!$last"></md-divider>
+    </md-list-item>
+  </md-list>
+</sidenav>

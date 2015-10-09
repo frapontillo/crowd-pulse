@@ -46,4 +46,9 @@ public class MessageRepository extends Repository<Message, ObjectId> {
         query.field("oId").equal(originalId);
         return query.get();
     }
+
+    @Override
+    public Query<Message> findBetweenKeys(ObjectId from, ObjectId to) {
+        return super.findBetweenKeys(from, to).order("date");
+    }
 }
