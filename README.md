@@ -35,7 +35,7 @@ Here is a complete Crowd Pulse flow:
 ## Module descriptions
 
 - `common-util`: shared Java/RxJava utility classes
-- `data-java`: data access layer for Java modules
+- `data-java`: data access layer for Java modules and plugins for fetching, filtering and persisting messages and profiles on the database
 - `data-node`: data access layer for NodeJS modules
 - `web-service`: OAuth 2.0 authenticated Web Service
 - `web-ui`: administration/viewing interface for Crowd Pulse
