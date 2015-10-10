@@ -16,12 +16,25 @@
           'config': 'config'
         }
       })
+
       .state('app.view', {
         url: '/view',
-        templateUrl: 'app/view/main/main.html',
-        controller: 'ViewMainController',
-        controllerAs: 'main'
+        abstract: true,
+        templateUrl: 'app/view/index.html',
+        controller: 'ViewIndexController',
+        controllerAs: 'vm'
       })
+      .state('app.view.main', {
+        url: '',
+        templateUrl: 'app/view/main/main.html'
+      })
+      .state('app.view.chart', {
+        url: '/:chartType',
+        templateUrl: 'app/view/chart/chart.html',
+        controller: 'ViewChartController',
+        controllerAs: 'chartVm'
+      })
+
       .state('app.admin', {
         url: '/admin',
         abstract: true,

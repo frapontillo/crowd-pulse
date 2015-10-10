@@ -1,12 +1,13 @@
 <sidenav>
-  <md-toolbar>
-    <h1 class="md-toolbar-tools">
-      <md-select name="sidenavViewVm.dataViz" ng-model="sidenavViewVm.dataViz"
-                 placeholder="Data visualization" flex required>
-        <md-option ng-value="opt.id" ng-repeat="opt in sidenavViewVm.dataVisualizations">
-          {{ opt.name }}
-        </md-option>
-      </md-select>
-    </h1>
-  </md-toolbar>
+  <md-list>
+    <div ng-repeat="(groupName,group) in sidenavViewVm.vizGroups">
+      <md-subheader>
+        <p>{{groupName}}</p>
+      </md-subheader>
+      <md-list-item ng-repeat="viz in group" ng-click="sidenavViewVm.openChart(viz.id)">
+        <p>{{viz.name}}</p>
+        <md-divider ng-if="!$last"></md-divider>
+      </md-list-item>
+    </div>
+  </md-list>
 </sidenav>

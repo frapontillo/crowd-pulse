@@ -17,15 +17,13 @@
 (function() {
   'use strict';
 
-  angular.module('webUi')
-    .factory('logsSocket', logsSocketFactory);
+  angular
+    .module('webUi')
+    .factory('Term', Term);
 
   /** @ngInject */
-  function logsSocketFactory(io, socketFactory, config) {
-    var logsIoSocket = io.connect(config.socket + 'logs');
-    return socketFactory({
-      ioSocket: logsIoSocket
-    });
+  function Term(Restangular) {
+    return Restangular.service('terms');
   }
 
 })();

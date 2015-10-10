@@ -38,7 +38,7 @@
     return directive;
 
     /** @ngInject */
-    function ProjectRunsController($scope, $mdToast, $mdDialog, $filter, Project, logsSocket) {
+    function ProjectRunsController($scope, $mdToast, $mdDialog, $filter, $document, Project, logsSocket) {
       var projectRunsVm = this;
 
       var showToast = function(message) {
@@ -105,7 +105,7 @@
         return $mdDialog.show({
           controller: 'LogDialogCtrl',
           templateUrl: 'app/components/log-dialog/log-dialog.html',
-          parent: angular.element(document.body),
+          parent: angular.element($document.body),
           targetEvent: event,
           clickOutsideToClose: true,
           locals: {

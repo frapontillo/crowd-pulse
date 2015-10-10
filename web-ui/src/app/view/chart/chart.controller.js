@@ -17,15 +17,17 @@
 (function() {
   'use strict';
 
-  angular.module('webUi')
-    .factory('logsSocket', logsSocketFactory);
+  angular
+    .module('webUi')
+    .controller('ViewChartController', ViewChartController);
 
   /** @ngInject */
-  function logsSocketFactory(io, socketFactory, config) {
-    var logsIoSocket = io.connect(config.socket + 'logs');
-    return socketFactory({
-      ioSocket: logsIoSocket
-    });
+  function ViewChartController($stateParams) {
+    var chartVm = this;
+
+    this.getChartType = function() {
+      return $stateParams.chartType;
+    };
   }
 
 })();

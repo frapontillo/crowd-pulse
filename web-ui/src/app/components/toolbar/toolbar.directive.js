@@ -24,8 +24,12 @@
     function ToolbarController($mdSidenav) {
       var vm = this;
 
-      vm.toggleBoundSidenav = function() {
-        return $mdSidenav('right-sidenav').toggle();
+      vm.toggleMainSidenav = function() {
+        return $mdSidenav('main-sidenav').toggle();
+      };
+
+      vm.toggleFilterSidenav = function() {
+        return $mdSidenav('filter-sidenav').toggle();
       };
     }
   }

@@ -22,7 +22,7 @@
     .directive('sidenavView', sidenavView);
 
   /** @ngInject */
-  function sidenavView() {
+  function sidenavView(filterTerm, filterQuery) {
     var directive = {
       restrict: 'E',
       templateUrl: 'app/components/sidenav-view/sidenav-view.html',
@@ -38,13 +38,29 @@
     return directive;
 
     /** @ngInject */
-    function SidenavViewController() {
+    function SidenavViewController($state) {
       var sidenavViewVm = this;
 
-      sidenavViewVm.dataVisualizations = [
-        {id: 'map', name: 'Map'},
-        {id: 'bar', name: 'Bar chart'}
-      ];
+      sidenavViewVm.openChart = function(chartType) {
+        return $state.go('app.view.chart', {chartType: chartType});
+      };
+
+      sidenavViewVm.vizGroups = {
+        'Words': [
+          {id: 'word-cloud', name: 'Word Cloud', filters: [filterTerm]},
+          {id: 'word-pie', name: 'Pie Chart', filters: [filterTerm, filterQuery]},
+          {id: 'word-bar', name: 'Bar Chart', filters: [filterTerm, filterQuery]}
+        ],
+        'Sentiment': [
+          {id: 'sentiment-pie', name: 'Pie Chart', filters: [filterTerm, filterQuery]},
+          {id: 'sentiment-bar', name: 'Bar Chart', filters: [filterTerm, filterQuery]},
+          {id: 'sentiment-timeline', name: 'Timeline', filters: [filterTerm, filterQuery]}
+        ],
+        'Others': [
+          {id: 'message-timeline', name: 'Message Timeline'},
+          {id: 'profile-graph', name: 'Profile Graph'}
+        ]
+      };
     }
   }
 

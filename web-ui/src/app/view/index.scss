@@ -14,18 +14,28 @@
  * limitations under the License.
  */
 
-(function() {
-  'use strict';
+md-sidenav[md-component-id="filter-sidenav"] form {
+  md-datepicker {
+    display: flex;
+    align-items: baseline;
 
-  angular.module('webUi')
-    .factory('logsSocket', logsSocketFactory);
+    // Imitate md-input-container paddings
+    padding: 2px 2px 26px;
 
-  /** @ngInject */
-  function logsSocketFactory(io, socketFactory, config) {
-    var logsIoSocket = io.connect(config.socket + 'logs');
-    return socketFactory({
-      ioSocket: logsIoSocket
-    });
+    // Hide the button in forms
+    button.md-datepicker-button {
+      display: none;
+    }
+
+    div.md-datepicker-input-container {
+      margin: 0;
+      flex: 1;
+    }
+
   }
 
-})();
+  md-chips md-chips-wrap div.md-chip-input-container {
+    width: 100%;
+    padding: 0;
+  }
+}
