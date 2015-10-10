@@ -25,15 +25,11 @@
       .state('app.admin', {
         url: '/admin',
         abstract: true,
-        templateUrl: 'app/admin/index.html',
-        controller: 'AdminIndexController',
-        controllerAs: 'admin'
+        templateUrl: 'app/admin/index.html'
       })
       .state('app.admin.main', {
         url: '',
-        templateUrl: 'app/admin/main/main.html',
-        controller: 'AdminMainController',
-        controllerAs: 'admin'
+        templateUrl: 'app/admin/main/main.html'
       })
       .state('app.admin.project', {
         url: '/project',
