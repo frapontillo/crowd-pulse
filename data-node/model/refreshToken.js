@@ -16,8 +16,8 @@
 
 'use strict';
 
-var mongoose = require('mongoose');
 var OAuthAccessRefreshSchema = require('./../schema/refreshToken');
 
-module.exports =
-  mongoose.model(OAuthAccessRefreshSchema.statics.getSchemaName(), OAuthAccessRefreshSchema);
+module.exports = function(mongoose) {
+  return mongoose.model(OAuthAccessRefreshSchema.statics.getSchemaName(), OAuthAccessRefreshSchema);
+};

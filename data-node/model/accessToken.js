@@ -16,8 +16,8 @@
 
 'use strict';
 
-var mongoose = require('mongoose');
 var OAuthAccessTokenSchema = require('./../schema/accessToken');
 
-module.exports =
-  mongoose.model(OAuthAccessTokenSchema.statics.getSchemaName(), OAuthAccessTokenSchema);
+module.exports = function(mongoose) {
+  return mongoose.model(OAuthAccessTokenSchema.statics.getSchemaName(), OAuthAccessTokenSchema);
+};

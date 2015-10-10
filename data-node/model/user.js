@@ -16,7 +16,8 @@
 
 'use strict';
 
-var mongoose = require('mongoose');
 var UserSchema = require('./../schema/user');
 
-module.exports = mongoose.model(UserSchema.statics.getSchemaName(), UserSchema);
+module.exports = function(mongoose) {
+  return mongoose.model(UserSchema.statics.getSchemaName(), UserSchema);
+};

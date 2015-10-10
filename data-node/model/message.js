@@ -16,7 +16,8 @@
 
 'use strict';
 
-var mongoose = require('mongoose');
 var MessageSchema = require('./../schema/message');
 
-module.exports = mongoose.model(MessageSchema.statics.getSchemaName(), MessageSchema);
+module.exports = function(mongoose) {
+  return mongoose.model(MessageSchema.statics.getSchemaName(), MessageSchema);
+};

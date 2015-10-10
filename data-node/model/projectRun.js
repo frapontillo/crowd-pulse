@@ -16,7 +16,8 @@
 
 'use strict';
 
-var mongoose = require('mongoose');
 var ProjectRunSchema = require('./../schema/projectRun');
 
-module.exports = mongoose.model(ProjectRunSchema.statics.getSchemaName(), ProjectRunSchema);
+module.exports = function(mongoose) {
+  return mongoose.model(ProjectRunSchema.statics.getSchemaName(), ProjectRunSchema);
+};

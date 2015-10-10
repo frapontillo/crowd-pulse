@@ -46,7 +46,7 @@ var io = undefined;
 var crowdPulse = new CrowdPulse();
 
 var connect = function() {
-  return crowdPulse.connect(config.database.url);
+  return crowdPulse.connect(config.database.url, config.database.db);
 };
 
 var webServiceSetup = function(crowdPulse) {

@@ -22,31 +22,59 @@ var mongoose = require('mongoose');
 var DataLayer = function() {
   var self = this;
 
-  self.AccessToken = require('./model/accessToken');
-  self.App = require('./model/app');
-  self.Project = require('./model/project');
-  self.ProjectRun = require('./model/projectRun');
-  self.RefreshToken = require('./model/refreshToken');
-  self.User = require('./model/user');
-  self.Message = require('./model/message');
-  self.Profile = require('./model/profile');
-  self.ObjectId = mongoose.Types.ObjectId;
+  self.connect = function(host, database, port, options, callback) {
+    var deferred = Q.defer();
 
-  self.connect = Q.nbind(mongoose.connect, mongoose);
-  self.disconnect = Q.nbind(mongoose.disconnect, mongoose);
+    self.connection = mongoose.createConnection();
+    self.connection.open.apply(self.connection, arguments);
+
+    self.connection.on('error', function(err) {
+      deferred.reject(err);
+    });
+
+    self.connection.once('open', function() {
+      // create models bound to the current connection
+      self.AccessToken = require('./model/accessToken')(self.connection);
+      self.App = require('./model/app')(self.connection);
+      self.Project = require('./model/project')(self.connection);
+      self.ProjectRun = require('./model/projectRun')(self.connection);
+      self.RefreshToken = require('./model/refreshToken')(self.connection);
+      self.User = require('./model/user')(self.connection);
+      self.Message = require('./model/message')(self.connection);
+      self.Profile = require('./model/profile')(self.connection);
+      self.ObjectId = mongoose.Types.ObjectId;
+
+      // return the whole object
+      deferred.resolve(self);
+    });
+
+    return deferred.promise;
+  };
+
+  self.disconnect = function() {
+    return Q.nfcall(self.connection.disconnect);
+  };
+
+  self.getDatabases = function() {
+    var admin = self.connection.db.admin();
+    return Q.ninvoke(admin, 'listDatabases')
+      .then(function(result) {
+        return result.databases;
+      });
+  };
 
   self.initDatabase = function() {
-    var appInit = self.App.findOne({ name: 'testApp' })
-      .then(function (result) {
+    var appInit = self.App.findOne({name: 'testApp'})
+      .then(function(result) {
         return result || self.App.createQ({
-          name: 'testApp',
-          secret: 'yolo123',
-          allowedGrants: ['authorization_code', 'password', 'refresh_token', 'client_credentials']
-        });
+            name: 'testApp',
+            secret: 'yolo123',
+            allowedGrants: ['authorization_code', 'password', 'refresh_token', 'client_credentials']
+          });
       });
 
-    var userInit = self.User.findOne({ username: 'admin' })
-      .then(function (result) {
+    var userInit = self.User.findOne({username: 'admin'})
+      .then(function(result) {
         return result || self.User.createQ({
             username: 'admin',
             email: 'francescopontillo@gmail.com',
