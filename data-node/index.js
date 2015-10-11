@@ -52,7 +52,7 @@ var DataLayer = function() {
   };
 
   self.disconnect = function() {
-    return Q.nfcall(self.connection.disconnect);
+    return Q.ninvoke(self.connection, 'close');
   };
 
   self.getDatabases = function() {
