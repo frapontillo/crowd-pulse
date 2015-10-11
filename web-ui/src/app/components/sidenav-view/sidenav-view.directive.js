@@ -22,12 +22,11 @@
     .directive('sidenavView', sidenavView);
 
   /** @ngInject */
-  function sidenavView(filterTerm, filterQuery) {
+  function sidenavView() {
     var directive = {
       restrict: 'E',
       templateUrl: 'app/components/sidenav-view/sidenav-view.html',
       scope: {
-        dataViz: '=',
         params: '='
       },
       controller: SidenavViewController,
@@ -38,13 +37,11 @@
     return directive;
 
     /** @ngInject */
-    function SidenavViewController($state) {
+    function SidenavViewController($state, $scope, $mdMedia, $stateParams, Database, Term,
+      filterTerm, filterQuery) {
       var sidenavViewVm = this;
 
-      sidenavViewVm.openChart = function(chartType) {
-        return $state.go('app.view.chart', {chartType: chartType});
-      };
-
+      // data visualization grouped by concept of interest
       sidenavViewVm.vizGroups = {
         'Words': [
           {id: 'word-cloud', name: 'Word Cloud', filters: [filterTerm]},
@@ -60,6 +57,70 @@
           {id: 'message-timeline', name: 'Message Timeline'},
           {id: 'profile-graph', name: 'Profile Graph'}
         ]
+      };
+
+      // available filters on the data
+      sidenavViewVm.availableFilters = [
+        {name: 'tags', type: 'tag'},
+        {name: 'categories', type: 'category'},
+        {name: 'tokens', type: 'token'}];
+
+      // init the sidenav parameters with the state parameters
+      sidenavViewVm.params.dataViz = $stateParams.chartType;
+      sidenavViewVm.params.database = $stateParams.db;
+      if ($stateParams.from) {
+        sidenavViewVm.params.fromDate = new Date($stateParams.from);
+      }
+      if ($stateParams.to) {
+        sidenavViewVm.params.toDate = new Date($stateParams.to);
+      }
+      sidenavViewVm.params.filterOn = $stateParams.filter;
+      if (angular.isArray($stateParams.search)) {
+        sidenavViewVm.params.query = $stateParams.search;
+      } else if (angular.isDefined($stateParams.search)) {
+        sidenavViewVm.params.query = [$stateParams.search];
+      } else {
+        sidenavViewVm.params.query = [];
+      }
+
+      // when the type of filter or the database changes, remove the query parameters
+      $scope.$watchGroup(['sidenavViewVm.params.filterOn', 'sidenavViewVm.params.database'],
+        function(newValues, oldValues) {
+          // only reset when the previous values weren't undefined
+          if ((angular.isDefined(oldValues[0]) && oldValues[0] !== newValues[0]) ||
+              (angular.isDefined(oldValues[1]) && oldValues[1] !== newValues[1])) {
+            sidenavViewVm.params.query = [];
+          }
+        });
+
+      // when any of the parameters changes, set the new query string
+      $scope.$watch('sidenavViewVm.params', function(newParams) {
+        var newStateParams = {
+          chartType: newParams.dataViz,
+          db: newParams.database,
+          filter: newParams.filterOn,
+          search: newParams.query
+        };
+        newStateParams.from = newParams.fromDate ? newParams.fromDate.toISOString() : null;
+        newStateParams.to = newParams.toDate ? newParams.toDate.toISOString() : null;
+        return $state.go('app.view', newStateParams);
+      }, true);
+
+      // fetch databases, when done set the db in the querystring, if any
+      Database.getList().then(function(dbs) {
+        sidenavViewVm.databases = dbs;
+        if (angular.isDefined($stateParams.db)) {
+          sidenavViewVm.params.database = $stateParams.db;
+        }
+      });
+
+      // search for filter-specific elements
+      sidenavViewVm.queryForElement = function(query, type) {
+        return Term.getList({
+          db: sidenavViewVm.params.database,
+          type: type,
+          term: query
+        });
       };
     }
   }

@@ -1,67 +1,11 @@
-<!--
-  ~ Copyright 2015 Francesco Pontillo
-  ~
-  ~ Licensed under the Apache License, Version 2.0 (the "License");
-  ~ you may not use this file except in compliance with the License.
-  ~ You may obtain a copy of the License at
-  ~
-  ~  http://www.apache.org/licenses/LICENSE-2.0
-  ~
-  ~ Unless required by applicable law or agreed to in writing, software
-  ~ distributed under the License is distributed on an "AS IS" BASIS,
-  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  ~ See the License for the specific language governing permissions and
-  ~ limitations under the License.
-  -->
+<sidenav-view id="sidenav-view" layout="column" params="vm.params"></sidenav-view>
 
-<sidenav-view id="sidenav-view" layout="column"></sidenav-view>
-<div ui-view flex layout="column"></div>
+<md-content layout-padding ng-if="!vm.params.dataViz">
+  <p>This is the main view page.</p>
+  <p>Please select a data visualization type from the left sidebar.</p>
+</md-content>
 
-<md-sidenav md-component-id="filter-sidenav" md-is-locked-open="$mdMedia('gt-md')"
-            layout="column" class="md-sidenav-right" flex
-            ng-class="{
-            'md-whiteframe-z2': vm.evalMdMedia('gt-md'),
-            'md-whiteframe-z5': vm.evalMdMedia('md') }">
-
-  <md-content>
-    <md-toolbar class="md-theme-light">
-      <h1 class="md-toolbar-tools">Filters</h1>
-    </md-toolbar>
-    <md-content layout-padding>
-      <form layout="column">
-        <md-input-container>
-          <label>Database</label>
-          <md-select ng-model="vm.params.database">
-            <md-option ng-repeat="db in vm.databases" value="{{db.name}}">
-              {{db.name}}
-            </md-option>
-          </md-select>
-        </md-input-container>
-        <md-datepicker ng-model="vm.params.fromDate" md-placeholder="From date"></md-datepicker>
-        <md-datepicker ng-model="vm.params.toDate" md-placeholder="To date"></md-datepicker>
-        <md-input-container>
-          <label>Filter on</label>
-          <md-select ng-model="vm.params.filterOn">
-            <md-option ng-repeat="filter in vm.availableFilters" value="{{filter.type}}">
-              {{filter.name}}
-            </md-option>
-          </md-select>
-        </md-input-container>
-        <md-chips ng-model="vm.params.query" md-autocomplete-snap md-require-match="true">
-          <md-autocomplete
-            md-selected-item="vm.selectedItem"
-            md-search-text="vm.searchQueryElement"
-            md-items="item in vm.queryForElement(vm.searchQueryElement, vm.params.filterOn)"
-            md-item-text="item.name"
-            placeholder="{{vm.getQueryPlaceholder()}}">
-            <span md-highlight-text="vm.searchQueryElement">{{item}}</span>
-          </md-autocomplete>
-          <md-chip-template>
-              <span>{{$chip}}</span>
-          </md-chip-template>
-        </md-chips>
-      </form>
-    </md-content>
-  </md-content>
-
-</md-sidenav>
+<md-content layout-padding ng-if="vm.params.dataViz">
+  <div>{{vm.params.dataViz}}</div>
+  <div>{{vm.params.toJSON()}}</div>
+</md-content>

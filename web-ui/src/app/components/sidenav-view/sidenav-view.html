@@ -1,13 +1,50 @@
 <sidenav>
-  <md-list>
-    <div ng-repeat="(groupName,group) in sidenavViewVm.vizGroups">
-      <md-subheader>
-        <p>{{groupName}}</p>
-      </md-subheader>
-      <md-list-item ng-repeat="viz in group" ng-click="sidenavViewVm.openChart(viz.id)">
-        <p>{{viz.name}}</p>
-        <md-divider ng-if="!$last"></md-divider>
-      </md-list-item>
-    </div>
-  </md-list>
+  <md-content>
+    <md-toolbar class="md-theme-light">
+      <h1 class="md-toolbar-tools">Filters</h1>
+    </md-toolbar>
+    <md-content layout-padding>
+      <form name="sidenav-filter-form" layout="column">
+        <md-input-container>
+          <label>Data visualization</label>
+          <md-select ng-model="sidenavViewVm.params.dataViz" placeholder="Data visualization">
+            <md-optgroup ng-repeat="(groupName,group) in sidenavViewVm.vizGroups" label="{{groupName}}">
+              <md-option ng-repeat="viz in group" ng-value="viz.id">{{viz.name}}</md-option>
+            </md-optgroup>
+          </md-select>
+        </md-input-container>
+        <md-input-container>
+          <label>Database</label>
+          <md-select ng-model="sidenavViewVm.params.database">
+            <md-option ng-repeat="db in sidenavViewVm.databases" value="{{db.name}}">
+              {{db.name}}
+            </md-option>
+          </md-select>
+        </md-input-container>
+        <md-datepicker ng-model="sidenavViewVm.params.fromDate" md-placeholder="From date"></md-datepicker>
+        <md-datepicker ng-model="sidenavViewVm.params.toDate" md-placeholder="To date"></md-datepicker>
+        <md-input-container>
+          <label>Filter on</label>
+          <md-select ng-model="sidenavViewVm.params.filterOn">
+            <md-option ng-repeat="filter in sidenavViewVm.availableFilters" value="{{filter.type}}">
+              {{filter.name}}
+            </md-option>
+          </md-select>
+        </md-input-container>
+        <md-chips ng-model="sidenavViewVm.params.query" md-autocomplete-snap md-require-match="true">
+          <md-autocomplete
+            md-selected-item="sidenavViewVm.selectedItem"
+            md-search-text="sidenavViewVm.searchQueryElement"
+            md-items="item in sidenavViewVm.queryForElement(sidenavViewVm.searchQueryElement, sidenavViewVm.params.filterOn)"
+            md-item-text="item.name"
+            placeholder="{{'Search for ' + sidenavViewVm.params.filterOn}}">
+            <span md-highlight-text="sidenavViewVm.searchQueryElement">{{item}}</span>
+          </md-autocomplete>
+          <md-chip-template>
+            <span>{{$chip}}</span>
+          </md-chip-template>
+        </md-chips>
+      </form>
+    </md-content>
+  </md-content>
 </sidenav>

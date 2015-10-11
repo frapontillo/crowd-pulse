@@ -22,43 +22,11 @@
     .controller('ViewIndexController', ViewIndexController);
 
   /** @ngInject */
-  function ViewIndexController($scope, $mdMedia, Database, Term) {
+  function ViewIndexController() {
     var vm = this;
 
     // select all types of filter
     vm.params = {
-      filterOn: 'tag'
-    };
-
-    // fetch databases
-    Database.getList().then(function(dbs) {
-      vm.databases = dbs;
-    });
-
-    vm.availableFilters = [
-      {name: 'tags', type: 'tag'},
-      {name: 'categories', type: 'category'},
-      {name: 'tokens', type: 'token'}];
-
-    vm.evalMdMedia = function(sizing) {
-      return $mdMedia(sizing);
-    };
-
-    vm.getQueryPlaceholder = function() {
-      return 'Search for ' + vm.params.filterOn;
-    };
-
-    $scope.$watch('vm.params.filterOn', function() {
-      vm.params.query = [];
-    });
-
-    vm.queryForElement = function(query, type) {
-      return Term.getList({
-        db: vm.params.database,
-        type: type,
-        term: query
-      });
-      // TODO: search for tags, categories, tokens from Web Service
     };
   }
 

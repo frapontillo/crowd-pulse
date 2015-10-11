@@ -18,21 +18,10 @@
       })
 
       .state('app.view', {
-        url: '/view',
-        abstract: true,
+        url: '/view/:chartType?db&from&to&filter&search',
         templateUrl: 'app/view/index.html',
         controller: 'ViewIndexController',
         controllerAs: 'vm'
-      })
-      .state('app.view.main', {
-        url: '',
-        templateUrl: 'app/view/main/main.html'
-      })
-      .state('app.view.chart', {
-        url: '/:chartType',
-        templateUrl: 'app/view/chart/chart.html',
-        controller: 'ViewChartController',
-        controllerAs: 'chartVm'
       })
 
       .state('app.admin', {

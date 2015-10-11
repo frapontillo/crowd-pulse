@@ -27,10 +27,6 @@
       vm.toggleMainSidenav = function() {
         return $mdSidenav('main-sidenav').toggle();
       };
-
-      vm.toggleFilterSidenav = function() {
-        return $mdSidenav('filter-sidenav').toggle();
-      };
     }
   }
 

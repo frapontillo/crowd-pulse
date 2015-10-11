@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-md-sidenav[md-component-id="filter-sidenav"] form {
+md-sidenav form[name="sidenav-filter-form"] {
   md-datepicker {
     display: flex;
     align-items: baseline;
@@ -31,7 +31,6 @@ md-sidenav[md-component-id="filter-sidenav"] form {
       margin: 0;
       flex: 1;
     }
-
   }
 
   md-chips md-chips-wrap div.md-chip-input-container {
