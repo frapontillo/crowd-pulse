@@ -17,6 +17,7 @@
 'use strict';
 
 var Q = require('q');
+var _ = require('lodash');
 var mongoose = require('mongoose');
 var builder = require('./schemaBuilder');
 var schemas = require('./schemaName');
@@ -87,6 +88,126 @@ var buildSearchQuery = function(type, search) {
 MessageSchema.statics.searchTerm = function(type, term) {
   var model = this;
   return Q(model.aggregate(buildSearchQuery(type, term)).exec());
+};
+
+var buildStatQuery = function(query, from, to) {
+  var tagsSel = { $literal: [] };
+  var tokensSel = { $literal: [] };
+  var categoriesSel = { $literal: [[]] };
+
+  var hasTags = (query.hasOwnProperty('tag'));
+  var hasTokens = (query.hasOwnProperty('token'));
+  var hasCategories = (query.hasOwnProperty('category'));
+  var hasFrom = _.isDate(from);
+  var hasTo = _.isDate(to);
+
+  var filter = undefined;
+
+  var filterTags = (hasTags && query.tag.length > 0);
+  var filterTokens = (hasTokens && query.token.length > 0);
+  var filterCategories = (hasCategories && query.category.length > 0);
+  if (filterTags || filterTokens || filterCategories || hasFrom || hasTo) {
+    filter = { $match: {} };
+    if (filterTags) {
+      filter.$match['tags._id'] = { $all: query.tag };
+    } else if (filterTokens) {
+      filter.$match['tokens.text'] = { $all: query.token };
+    } else if (filterCategories) {
+      filter.$match['tags.categories.text'] = { $all: query.category };
+    }
+    if (hasFrom || hasTo) {
+      filter.$match['date'] = {};
+      if (hasFrom) {
+        filter.$match['date']['$gte'] = from;
+      }
+      if (hasTo) {
+        filter.$match['date']['lte'] = to;
+      }
+    }
+  }
+
+  var unionSet = [];
+  if (hasTags || hasCategories) {
+    tagsSel = { $ifNull: ['$tags', []] };
+    if (hasTags) {
+      unionSet.push('$tags');
+    }
+    if (hasCategories) {
+      unionSet.push('$categories');
+      categoriesSel = {
+        $cond: {
+          if: { $or: [ {$eq: [ '$tags.categories', undefined ]}, {$eq: [ '$tags.categories', [] ]}] },
+          then: [[]],
+          else: '$tags.categories'
+        }
+      };
+    }
+  }
+
+  if (hasTokens) {
+    unionSet.push('$tokens');
+    tokensSel = { $ifNull: ['$tokens', []] };
+  }
+
+  var aggregations = [{
+    $match: {
+      $or: [
+        {'tags._id': { $ne: null }},
+        {'tokens.text': { $ne: null }},
+        {'tags.categories.text': { $ne: null }}
+      ]
+    }
+  }];
+
+  if (filter) {
+    aggregations.push(filter);
+  }
+
+  aggregations.push({
+    $project: {
+      _id: false,
+      'tags': tagsSel,
+      'tokens': tokensSel
+    }
+  }, {
+    $project: {
+      _id: false,
+      'tags._id': true,
+      'tags.stopWord': true,
+      'tokens.text': true,
+      'tokens.stopWord': true,
+      'categories': categoriesSel
+    }
+  }, {
+    $unwind: '$categories'
+  }, {
+    $project: {
+      'words': { $setUnion: unionSet }
+    }
+  }, {
+    $unwind: '$words'
+  }, {
+    $match: {
+      'words.stopWord': false
+    }
+  }, {
+    $project: {
+      'text': { $ifNull: ['$words.text', '$words._id'] }
+    }
+  }, {
+    $group: {_id: '$text', value: { $sum: 1 } }
+  }, {
+    $project: { _id: false, name: '$_id', value: true } }, {
+    $sort: { value: -1 }
+  }, {
+    $limit: 200
+  });
+
+  return aggregations;
+};
+
+MessageSchema.statics.statTerms = function(query, from, to) {
+  return Q(this.aggregate(buildStatQuery(query, from, to)).exec());
 };
 
 module.exports = MessageSchema;
