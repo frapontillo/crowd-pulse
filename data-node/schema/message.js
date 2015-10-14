@@ -17,7 +17,6 @@
 'use strict';
 
 var Q = require('q');
-var _ = require('lodash');
 var mongoose = require('mongoose');
 var builder = require('./schemaBuilder');
 var schemas = require('./schemaName');
@@ -90,29 +89,29 @@ MessageSchema.statics.searchTerm = function(type, term) {
   return Q(model.aggregate(buildSearchQuery(type, term)).exec());
 };
 
-var buildStatQuery = function(type, terms, from, to) {
-  var tagsSel = { $literal: [] };
-  var tokensSel = { $literal: [] };
-  var categoriesSel = { $literal: [[]] };
+var buildFilter = function(type, terms, from, to) {
+  var filter = undefined;
 
   var hasTags = (type === 'tag');
   var hasTokens = (type === 'token');
   var hasCategories = (type === 'category');
-  var hasFrom = _.isDate(from);
-  var hasTo = _.isDate(to);
+
+  from = new Date(from);
+  to = new Date(to);
+  var hasFrom = !isNaN(from.getDate());
+  var hasTo = !isNaN(to.getDate());
+
   var hasTerms = (terms && terms.length > 0);
 
-  var filter = undefined;
-
-  // if there is at least one filter, create the object and apply it
+  // if there is at least one filter, create the filter object
   if (hasTerms || hasFrom || hasTo) {
-    filter = { $match: {} };
-    if (hasTags) {
-      filter.$match['tags._id'] = { $all: terms };
-    } else if (hasTokens) {
-      filter.$match['tokens.text'] = { $all: terms };
-    } else if (hasCategories) {
-      filter.$match['tags.categories.text'] = { $all: terms };
+    filter = {$match: {}};
+    if (hasTags && hasTerms) {
+      filter.$match['tags._id'] = {$all: terms};
+    } else if (hasTokens && hasTerms) {
+      filter.$match['tokens.text'] = {$all: terms};
+    } else if (hasCategories && hasTerms) {
+      filter.$match['tags.categories.text'] = {$all: terms};
     }
     if (hasFrom || hasTo) {
       filter.$match['date'] = {};
@@ -120,14 +119,28 @@ var buildStatQuery = function(type, terms, from, to) {
         filter.$match['date']['$gte'] = from;
       }
       if (hasTo) {
-        filter.$match['date']['lte'] = to;
+        filter.$match['date']['$lte'] = to;
       }
     }
   }
 
+  return filter;
+};
+
+var buildStatTermsQuery = function(type, terms, from, to) {
+  var tagsSel = {$literal: []};
+  var tokensSel = {$literal: []};
+  var categoriesSel = {$literal: [[]]};
+  var hasTags = (type === 'tag');
+  var hasTokens = (type === 'token');
+  var hasCategories = (type === 'category');
+
+  // create the filter
+  var filter = buildFilter(type, terms, from, to);
+
   var unionSet = [];
   if (hasTags || hasCategories) {
-    tagsSel = { $ifNull: ['$tags', []] };
+    tagsSel = {$ifNull: ['$tags', []]};
     if (hasTags) {
       unionSet.push('$tags');
     }
@@ -135,7 +148,7 @@ var buildStatQuery = function(type, terms, from, to) {
       unionSet.push('$categories');
       categoriesSel = {
         $cond: {
-          if: { $or: [ {$eq: [ '$tags.categories', undefined ]}, {$eq: [ '$tags.categories', [] ]}] },
+          if: {$or: [{$eq: ['$tags.categories', undefined]}, {$eq: ['$tags.categories', []]}]},
           then: [[]],
           else: '$tags.categories'
         }
@@ -145,15 +158,15 @@ var buildStatQuery = function(type, terms, from, to) {
 
   if (hasTokens) {
     unionSet.push('$tokens');
-    tokensSel = { $ifNull: ['$tokens', []] };
+    tokensSel = {$ifNull: ['$tokens', []]};
   }
 
   var aggregations = [{
     $match: {
       $or: [
-        {'tags._id': { $ne: null }},
-        {'tokens.text': { $ne: null }},
-        {'tags.categories.text': { $ne: null }}
+        {'tags._id': {$ne: null}},
+        {'tokens.text': {$ne: null}},
+        {'tags.categories.text': {$ne: null}}
       ]
     }
   }];
@@ -180,7 +193,7 @@ var buildStatQuery = function(type, terms, from, to) {
     $unwind: '$categories'
   }, {
     $project: {
-      'words': { $setUnion: unionSet }
+      'words': {$setUnion: unionSet}
     }
   }, {
     $unwind: '$words'
@@ -190,13 +203,14 @@ var buildStatQuery = function(type, terms, from, to) {
     }
   }, {
     $project: {
-      'text': { $ifNull: ['$words.text', '$words._id'] }
+      'text': {$ifNull: ['$words.text', '$words._id']}
     }
   }, {
-    $group: {_id: '$text', value: { $sum: 1 } }
+    $group: {_id: '$text', value: {$sum: 1}}
   }, {
-    $project: { _id: false, name: '$_id', value: true } }, {
-    $sort: { value: -1 }
+    $project: {_id: false, name: '$_id', value: true}
+  }, {
+    $sort: {value: -1}
   }, {
     $limit: 200
   });
@@ -205,7 +219,7 @@ var buildStatQuery = function(type, terms, from, to) {
 };
 
 MessageSchema.statics.statTerms = function(type, terms, from, to) {
-  return Q(this.aggregate(buildStatQuery(type, terms, from, to)).exec());
+  return Q(this.aggregate(buildStatTermsQuery(type, terms, from, to)).exec());
 };
 
 module.exports = MessageSchema;
