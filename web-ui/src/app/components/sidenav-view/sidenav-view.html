@@ -31,7 +31,7 @@
             </md-option>
           </md-select>
         </md-input-container>
-        <md-chips ng-model="sidenavViewVm.params.query" md-autocomplete-snap md-require-match="true">
+        <md-chips ng-if="sidenavViewVm.params.filterOn !== ''" ng-model="sidenavViewVm.params.query" md-autocomplete-snap md-require-match="true">
           <md-autocomplete
             md-selected-item="sidenavViewVm.selectedItem"
             md-search-text="sidenavViewVm.searchQueryElement"

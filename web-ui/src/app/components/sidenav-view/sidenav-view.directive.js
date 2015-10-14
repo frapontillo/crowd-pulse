@@ -61,6 +61,7 @@
 
       // available filters on the data
       sidenavViewVm.availableFilters = [
+        {name: 'all', type: ''},
         {name: 'tags', type: 'tag'},
         {name: 'categories', type: 'category'},
         {name: 'tokens', type: 'token'}];
@@ -74,7 +75,7 @@
       if ($stateParams.to) {
         sidenavViewVm.params.toDate = new Date($stateParams.to);
       }
-      sidenavViewVm.params.filterOn = $stateParams.filter;
+      sidenavViewVm.params.filterOn = $stateParams.filter || '';
       if (angular.isArray($stateParams.search)) {
         sidenavViewVm.params.query = $stateParams.search;
       } else if (angular.isDefined($stateParams.search)) {
