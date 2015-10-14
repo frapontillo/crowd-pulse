@@ -122,6 +122,10 @@
       return Stat.Terms.getList(buildStatParams());
     };
 
+    var getStatSentiment = function() {
+      return Stat.Sentiment.getList(buildStatParams());
+    };
+
     var statToPieMap = function(stats) {
       return stats.map(function(stat) {
         return {
@@ -171,10 +175,29 @@
           vm.stat = buildBarChart(vm.params.filterOn, categoriesSeries[0], 'Occurrences', categoriesSeries[1]);
         });
     };
+
+    var statSentimentPie = function() {
+      return getStatSentiment()
+        .then(statToPieMap)
+        .then(function(stats) {
+          vm.stat = buildPieChart('Sentiments', stats);
+        });
+    };
+
+    var statSentimentBar = function() {
+      return getStatSentiment()
+        .then(statToBarMap)
+        .then(function(categoriesSeries) {
+          vm.stat = buildBarChart(vm.params.filterOn, categoriesSeries[0], 'Sentiments', categoriesSeries[1]);
+        });
+    };
+
     var handlers = {
       'word-cloud': statWordCloud,
       'word-pie': statWordPie,
       'word-bar': statWordBar,
+      'sentiment-pie': statSentimentPie,
+      'sentiment-bar': statSentimentBar,
     };
 
     $scope.$watch('vm.params', function(newValue, oldValue) {
