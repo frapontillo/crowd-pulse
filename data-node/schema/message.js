@@ -218,8 +218,54 @@ var buildStatTermsQuery = function(type, terms, from, to) {
   return aggregations;
 };
 
+var sentimentProjection = {
+  $cond: {
+    if: {$eq: ['$_id', 0]},
+    then: 'neuter',
+    else: {
+      $cond: {
+        if: {$eq: ['$_id', 1]},
+        then: 'positive',
+        else: 'negative'
+      }
+    }
+  }
+};
+
+var buildStatSentimentQuery = function(type, terms, from, to) {
+  // create the filter
+  var filter = buildFilter(type, terms, from, to);
+
+  var aggregations = [];
+
+  if (filter) {
+    aggregations.push(filter);
+  }
+
+  aggregations.push({
+    $group: {
+      _id: '$sentiment',
+      value: {
+        $sum: 1
+      }
+    }
+  }, {
+    $project: {
+      _id: false,
+      name: sentimentProjection,
+      value: true
+    }
+  });
+
+  return aggregations;
+};
+
 MessageSchema.statics.statTerms = function(type, terms, from, to) {
   return Q(this.aggregate(buildStatTermsQuery(type, terms, from, to)).exec());
+};
+
+MessageSchema.statics.statSentiment = function(type, terms, from, to) {
+  return Q(this.aggregate(buildStatSentimentQuery(type, terms, from, to)).exec());
 };
 
 module.exports = MessageSchema;
