@@ -26,6 +26,14 @@ var config = require('./../config.json');
 
 module.exports = function() {
 
+  var asArray = function(value) {
+    var terms = [];
+    if (!_.isUndefined(value)) {
+      terms = _.isArray(value) ? value : [value];
+    }
+    return terms;
+  };
+
   router.route('/stats/terms')
     // /api/stats/terms?db=sexism&from=2015-10-11&to=2015-10-13&type=tag&terms=aword&terms=anotherword
     .get(function(req, res) {
@@ -40,10 +48,7 @@ module.exports = function() {
               stats.push(conn.Message.statTerms(queryType, [], req.query.from, req.query.to));
             });
           } else {
-            var terms = [];
-            if (!_.isUndefined(req.query.terms)) {
-              terms = _.isArray(req.query.terms) ? req.query.terms : [req.query.terms];
-            }
+            var terms = asArray(req.query.terms);
             stats.push(conn.Message.statTerms(req.query.type, terms, req.query.from, req.query.to));
           }
           return Q.all(stats);
