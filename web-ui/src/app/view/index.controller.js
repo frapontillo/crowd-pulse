@@ -108,6 +108,38 @@
       return chart;
     };
 
+    var buildTimelineChart = function(title, series) {
+      var chart = buildBaseHighcharts('spline');
+      chart.xAxis = {
+        type: 'datetime',
+        dateTimeLabelFormats: {
+          month: '%e. %b',
+          year: '%b'
+        },
+        title: {
+          text: 'Date'
+        }
+      };
+      chart.yAxis = {
+        title: {
+          text: title
+        }
+      };
+      chart.tooltip = {
+        headerFormat: '<b>{series.name}</b><br>',
+        pointFormat: '{point.x:%e. %b}: {point.y:.2f}'
+      };
+      chart.plotOptions = {
+        spline: {
+          marker: {
+            enabled: true
+          }
+        }
+      };
+      chart.series = series;
+      return chart;
+    };
+
     var buildStatParams = function() {
       return {
         db: vm.params.database,
@@ -124,6 +156,10 @@
 
     var getStatSentiment = function() {
       return Stat.Sentiment.getList(buildStatParams());
+    };
+
+    var getTimelineSentiment = function() {
+      return Stat.SentimentTimeline.getList(buildStatParams());
     };
 
     var statToPieMap = function(stats) {
@@ -143,6 +179,24 @@
         return stat.value;
       });
       return [cats, series];
+    };
+
+    var statToTimelineMap = function(stats) {
+      return stats.map(function(stat) {
+        var color = '#000000';
+        if (stat.name === 'positive') {
+          color = '#73E639';
+        } else if (stat.name === 'negative') {
+          color = '#E63939';
+        }
+        return {
+          name: stat.name,
+          data: stat.values.map(function(elem) {
+            return [(new Date(elem.date)).getTime(), elem.value];
+          }),
+          color: color
+        };
+      });
     };
 
     var statWordCloud = function() {
@@ -172,7 +226,8 @@
       return getStatWords()
         .then(statToBarMap)
         .then(function(categoriesSeries) {
-          vm.stat = buildBarChart(vm.params.filterOn, categoriesSeries[0], 'Occurrences', categoriesSeries[1]);
+          vm.stat = buildBarChart(vm.params.filterOn, categoriesSeries[0], 'Occurrences',
+            categoriesSeries[1]);
         });
     };
 
@@ -188,7 +243,16 @@
       return getStatSentiment()
         .then(statToBarMap)
         .then(function(categoriesSeries) {
-          vm.stat = buildBarChart(vm.params.filterOn, categoriesSeries[0], 'Sentiments', categoriesSeries[1]);
+          vm.stat = buildBarChart(vm.params.filterOn, categoriesSeries[0], 'Sentiments',
+            categoriesSeries[1]);
+        });
+    };
+
+    var statSentimentTimeline = function() {
+      return getTimelineSentiment()
+        .then(statToTimelineMap)
+        .then(function(timeline) {
+          vm.stat = buildTimelineChart('Sentiment Distribution', timeline);
         });
     };
 
@@ -198,6 +262,7 @@
       'word-bar': statWordBar,
       'sentiment-pie': statSentimentPie,
       'sentiment-bar': statSentimentBar,
+      'sentiment-timeline': statSentimentTimeline,
     };
 
     $scope.$watch('vm.params', function(newValue, oldValue) {
