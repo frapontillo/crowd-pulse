@@ -260,12 +260,69 @@ var buildStatSentimentQuery = function(type, terms, from, to) {
   return aggregations;
 };
 
+var buildStatSentimentTimelineQuery = function(type, terms, from, to) {
+  // create the filter
+  var filter = buildFilter(type, terms, from, to);
+
+  var aggregations = [];
+
+  if (filter) {
+    aggregations.push(filter);
+  }
+
+  aggregations.push({
+    $project: {
+      _id: false,
+      date: {$dateToString: {format: "%Y-%m-%dT00:00:00Z", date: "$date"}},
+      sentiment: true
+    }
+  }, {
+    $group: {
+      _id: {sentiment: '$sentiment', date: '$date'},
+      value: {
+        $sum: 1
+      }
+    }
+  }, {
+    $project: {
+      _id: false,
+      sentiment: '$_id.sentiment',
+      date: '$_id.date',
+      value: '$value'
+    }
+  }, {
+    $sort: { 'date': 1 }
+  }, {
+    $group: {
+      _id: '$sentiment',
+      values: {
+        $push: {
+          date: '$date',
+          value: '$value'
+        }
+      }
+    }
+  }, {
+    $project: {
+      _id: false,
+      name: sentimentProjection,
+      values: true
+    }
+  });
+
+  return aggregations;
+};
+
 MessageSchema.statics.statTerms = function(type, terms, from, to) {
   return Q(this.aggregate(buildStatTermsQuery(type, terms, from, to)).exec());
 };
 
 MessageSchema.statics.statSentiment = function(type, terms, from, to) {
   return Q(this.aggregate(buildStatSentimentQuery(type, terms, from, to)).exec());
+};
+
+MessageSchema.statics.statSentimentTimeline = function(type, terms, from, to) {
+  return Q(this.aggregate(buildStatSentimentTimelineQuery(type, terms, from, to)).exec());
 };
 
 module.exports = MessageSchema;
