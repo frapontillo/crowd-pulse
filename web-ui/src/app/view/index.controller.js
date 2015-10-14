@@ -141,6 +141,21 @@
       return [cats, series];
     };
 
+    var statWordCloud = function() {
+      return getStatWords()
+        .then(function(stats) {
+          return stats.map(function(stat) {
+            return {
+              text: stat.name,
+              weight: stat.value
+            };
+          });
+        })
+        .then(function(stats) {
+          vm.stat = stats;
+        });
+    };
+
     var statWordPie = function() {
       return getStatWords()
         .then(statToPieMap)
@@ -157,6 +172,7 @@
         });
     };
     var handlers = {
+      'word-cloud': statWordCloud,
       'word-pie': statWordPie,
       'word-bar': statWordBar,
     };

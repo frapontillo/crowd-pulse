@@ -6,6 +6,7 @@
 </md-content>
 
 <md-content flex layout="column" layout-padding>
+  <jqcloud ng-if="vm.params.dataViz === 'word-cloud'" words="vm.stat" flex auto-resize="true"></jqcloud>
   <chart ng-if="vm.params.dataViz === 'word-pie'" flex options="vm.stat"></chart>
   <chart ng-if="vm.params.dataViz === 'word-bar'" flex options="vm.stat"></chart>
 </md-content>
