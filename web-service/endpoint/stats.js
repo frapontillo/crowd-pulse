@@ -32,16 +32,29 @@ module.exports = function() {
       var dbConn = new CrowdPulse();
       return dbConn.connect(config.database.url, req.query.db)
         .then(function(conn) {
-          var terms = [];
-          if (!_.isUndefined(req.query.terms)) {
-            terms = _.isArray(req.query.terms) ? req.query.terms : [req.query.terms];
+          var stats = [];
+          var queryTypes = ['tag', 'category', 'token'];
+          // if the query type is not known, assume all
+          if (_.isUndefined(req.query.type) || queryTypes.indexOf(req.query.type) < 0) {
+            queryTypes.forEach(function(queryType) {
+              stats.push(conn.Message.statTerms(queryType, [], req.query.from, req.query.to));
+            });
+          } else {
+            var terms = [];
+            if (!_.isUndefined(req.query.terms)) {
+              terms = _.isArray(req.query.terms) ? req.query.terms : [req.query.terms];
+            }
+            stats.push(conn.Message.statTerms(req.query.type, terms, req.query.from, req.query.to));
           }
-          var query = {};
-          query[req.query.type] = terms;
-          return conn.Message.statTerms(query, req.query.from, req.query.to);
+          return Q.all(stats);
         })
-        .then(function(result) {
-          return result;
+        .then(function(results) {
+          var result = [];
+          results.forEach(function(r) {
+            result = result.concat(r);
+          });
+          var all = _.sortByOrder(result, ['value'], ['desc']);
+          return all.slice(0, 200);
         })
         .then(qSend(res))
         .catch(qErr(res))

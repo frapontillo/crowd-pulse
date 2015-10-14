@@ -90,30 +90,29 @@ MessageSchema.statics.searchTerm = function(type, term) {
   return Q(model.aggregate(buildSearchQuery(type, term)).exec());
 };
 
-var buildStatQuery = function(query, from, to) {
+var buildStatQuery = function(type, terms, from, to) {
   var tagsSel = { $literal: [] };
   var tokensSel = { $literal: [] };
   var categoriesSel = { $literal: [[]] };
 
-  var hasTags = (query.hasOwnProperty('tag'));
-  var hasTokens = (query.hasOwnProperty('token'));
-  var hasCategories = (query.hasOwnProperty('category'));
+  var hasTags = (type === 'tag');
+  var hasTokens = (type === 'token');
+  var hasCategories = (type === 'category');
   var hasFrom = _.isDate(from);
   var hasTo = _.isDate(to);
+  var hasTerms = (terms && terms.length > 0);
 
   var filter = undefined;
 
-  var filterTags = (hasTags && query.tag.length > 0);
-  var filterTokens = (hasTokens && query.token.length > 0);
-  var filterCategories = (hasCategories && query.category.length > 0);
-  if (filterTags || filterTokens || filterCategories || hasFrom || hasTo) {
+  // if there is at least one filter, create the object and apply it
+  if (hasTerms || hasFrom || hasTo) {
     filter = { $match: {} };
-    if (filterTags) {
-      filter.$match['tags._id'] = { $all: query.tag };
-    } else if (filterTokens) {
-      filter.$match['tokens.text'] = { $all: query.token };
-    } else if (filterCategories) {
-      filter.$match['tags.categories.text'] = { $all: query.category };
+    if (hasTags) {
+      filter.$match['tags._id'] = { $all: terms };
+    } else if (hasTokens) {
+      filter.$match['tokens.text'] = { $all: terms };
+    } else if (hasCategories) {
+      filter.$match['tags.categories.text'] = { $all: terms };
     }
     if (hasFrom || hasTo) {
       filter.$match['date'] = {};
@@ -171,7 +170,6 @@ var buildStatQuery = function(query, from, to) {
     }
   }, {
     $project: {
-      _id: false,
       'tags._id': true,
       'tags.stopWord': true,
       'tokens.text': true,
@@ -206,8 +204,8 @@ var buildStatQuery = function(query, from, to) {
   return aggregations;
 };
 
-MessageSchema.statics.statTerms = function(query, from, to) {
-  return Q(this.aggregate(buildStatQuery(query, from, to)).exec());
+MessageSchema.statics.statTerms = function(type, terms, from, to) {
+  return Q(this.aggregate(buildStatQuery(type, terms, from, to)).exec());
 };
 
 module.exports = MessageSchema;
