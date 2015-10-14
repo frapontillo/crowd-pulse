@@ -68,5 +68,21 @@ module.exports = function() {
         });
     });
 
+  router.route('/stats/sentiment')
+    // /api/stats/sentiment?db=sexism&from=2015-10-11&to=2015-10-13&type=tag&terms=aword&terms=anotherword
+    .get(function(req, res) {
+      var dbConn = new CrowdPulse();
+      return dbConn.connect(config.database.url, req.query.db)
+        .then(function(conn) {
+          var terms = asArray(req.query.terms);
+          return conn.Message.statSentiment(req.query.type, terms, req.query.from, req.query.to);
+        })
+        .then(qSend(res))
+        .catch(qErr(res))
+        .finally(function() {
+          dbConn.disconnect();
+        });
+    });
+
   return router;
 };
