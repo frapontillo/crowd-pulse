@@ -15,21 +15,39 @@
  */
 
 md-sidenav form[name="sidenav-filter-form"] {
-  md-datepicker {
-    display: flex;
-    align-items: baseline;
 
-    // Imitate md-input-container paddings
-    padding: 2px 2px 26px;
+  div.md-custom-container {
 
-    // Hide the button in forms
-    button.md-datepicker-button {
-      display: none;
+    &.with-padding {
+      // Imitate md-input-container paddings
+      padding: 2px 2px 26px;
     }
 
-    div.md-datepicker-input-container {
+    md-datepicker {
+      display: flex;
+      align-items: baseline;
+
+      padding-top: 12px;
+
+      // Hide the button in forms
+      button.md-datepicker-button {
+        display: none;
+      }
+
+      div.md-datepicker-input-container {
+        margin: 0;
+        flex: 1;
+      }
+    }
+
+    md-select {
       margin: 0;
-      flex: 1;
+    }
+
+    button.clear {
+      margin-top: 0;
+      margin-bottom: 0;
+      margin-right: 0;
     }
   }
 

@@ -21,11 +21,21 @@
             </md-option>
           </md-select>
         </md-input-container>
-        <md-datepicker ng-model="sidenavViewVm.params.fromDate" md-placeholder="From date"></md-datepicker>
-        <md-datepicker ng-model="sidenavViewVm.params.toDate" md-placeholder="To date"></md-datepicker>
+        <div class="md-custom-container with-padding" layout="row">
+          <md-datepicker ng-model="sidenavViewVm.params.fromDate" md-placeholder="From date" flex></md-datepicker>
+          <md-button class="md-icon-button clear" ng-click="sidenavViewVm.params.fromDate = undefined">
+            <md-icon>clear</md-icon>
+          </md-button>
+        </div>
+        <div class="md-custom-container with-padding" layout="row">
+          <md-datepicker ng-model="sidenavViewVm.params.toDate" md-placeholder="To date" flex></md-datepicker>
+          <md-button class="md-icon-button clear" ng-click="sidenavViewVm.params.toDate = undefined">
+            <md-icon>clear</md-icon>
+          </md-button>
+        </div>
         <md-input-container>
           <label>Filter on</label>
-          <md-select ng-model="sidenavViewVm.params.filterOn">
+          <md-select flex ng-model="sidenavViewVm.params.filterOn">
             <md-option ng-repeat="filter in sidenavViewVm.availableFilters" value="{{filter.type}}">
               {{filter.name}}
             </md-option>
