@@ -17,6 +17,7 @@
 'use strict';
 
 var Q = require('q');
+var _ = require('lodash');
 var mongoose = require('mongoose');
 var builder = require('./schemaBuilder');
 var schemas = require('./schemaName');
@@ -85,6 +86,9 @@ ProfileSchema.statics.listGraphNodes = function() {
   return Q.all([this.aggregate(inNodesQuery).exec(), this.aggregate(outNodesQuery).exec()])
     .spread(function(inNodes, outNodes) {
       return [].concat(inNodes).concat(outNodes);
+    })
+    .then(function(array) {
+      return _.uniq(array, 'id');
     });
 };
 
