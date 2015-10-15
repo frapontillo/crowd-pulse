@@ -28,6 +28,8 @@
 
     vm.params = {};
 
+    // CHART BUILDERS
+
     var buildBaseHighcharts = function(type) {
       return {
         chart: {
@@ -140,6 +142,8 @@
       return chart;
     };
 
+    // REST FETCHERS
+
     var buildStatParams = function() {
       return {
         db: vm.params.database,
@@ -162,7 +166,9 @@
       return Stat.SentimentTimeline.getList(buildStatParams());
     };
 
-    var statToPieMap = function(stats) {
+    // REST TO CHART MAPPERS
+
+    var matStatToPie = function(stats) {
       return stats.map(function(stat) {
         return {
           name: stat.name,
@@ -171,7 +177,7 @@
       });
     };
 
-    var statToBarMap = function(stats) {
+    var mapStatToBar = function(stats) {
       var cats = stats.map(function(stat) {
         return stat.name;
       });
@@ -181,7 +187,7 @@
       return [cats, series];
     };
 
-    var statToTimelineMap = function(stats) {
+    var mapStatToTimeline = function(stats) {
       return stats.map(function(stat) {
         var color = '#000000';
         if (stat.name === 'positive') {
@@ -198,6 +204,8 @@
         };
       });
     };
+
+    // CHART GENERATION HANDLERS
 
     var statWordCloud = function() {
       return getStatWords()
@@ -216,7 +224,7 @@
 
     var statWordPie = function() {
       return getStatWords()
-        .then(statToPieMap)
+        .then(matStatToPie)
         .then(function(stats) {
           vm.stat = buildPieChart('Occurrences', stats);
         });
@@ -224,7 +232,7 @@
 
     var statWordBar = function() {
       return getStatWords()
-        .then(statToBarMap)
+        .then(mapStatToBar)
         .then(function(categoriesSeries) {
           vm.stat = buildBarChart(vm.params.filterOn, categoriesSeries[0], 'Occurrences',
             categoriesSeries[1]);
@@ -233,7 +241,7 @@
 
     var statSentimentPie = function() {
       return getStatSentiment()
-        .then(statToPieMap)
+        .then(matStatToPie)
         .then(function(stats) {
           vm.stat = buildPieChart('Sentiments', stats);
         });
@@ -241,7 +249,7 @@
 
     var statSentimentBar = function() {
       return getStatSentiment()
-        .then(statToBarMap)
+        .then(mapStatToBar)
         .then(function(categoriesSeries) {
           vm.stat = buildBarChart(vm.params.filterOn, categoriesSeries[0], 'Sentiments',
             categoriesSeries[1]);
@@ -250,7 +258,7 @@
 
     var statSentimentTimeline = function() {
       return getTimelineSentiment()
-        .then(statToTimelineMap)
+        .then(mapStatToTimeline)
         .then(function(timeline) {
           vm.stat = buildTimelineChart('Sentiment Distribution', timeline);
         });
