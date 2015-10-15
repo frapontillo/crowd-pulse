@@ -166,6 +166,10 @@
       return Stat.SentimentTimeline.getList(buildStatParams());
     };
 
+    var getTimelineMessage = function() {
+      return Stat.MessageTimeline.getList(buildStatParams());
+    };
+
     // REST TO CHART MAPPERS
 
     var matStatToPie = function(stats) {
@@ -264,6 +268,14 @@
         });
     };
 
+    var statMessageTimeline = function() {
+      return getTimelineMessage()
+        .then(mapStatToTimeline)
+        .then(function(timeline) {
+          vm.stat = buildTimelineChart('Message Distribution', timeline);
+        });
+    };
+
     var handlers = {
       'word-cloud': statWordCloud,
       'word-pie': statWordPie,
@@ -271,6 +283,7 @@
       'sentiment-pie': statSentimentPie,
       'sentiment-bar': statSentimentBar,
       'sentiment-timeline': statSentimentTimeline,
+      'message-timeline': statMessageTimeline,
     };
 
     $scope.$watch('vm.params', function(newValue, oldValue) {

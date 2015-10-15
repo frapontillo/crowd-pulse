@@ -27,7 +27,8 @@
     return {
       Terms: Restangular.service('terms', statsEndpoint),
       Sentiment: Restangular.service('sentiment', statsEndpoint),
-      SentimentTimeline: Restangular.service('sentiment/timeline', statsEndpoint)
+      SentimentTimeline: Restangular.service('sentiment/timeline', statsEndpoint),
+      MessageTimeline: Restangular.service('message/timeline', statsEndpoint),
     };
   }
 
