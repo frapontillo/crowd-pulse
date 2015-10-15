@@ -16,6 +16,7 @@
 
 'use strict';
 
+var Q = require('q');
 var mongoose = require('mongoose');
 var builder = require('./schemaBuilder');
 var schemas = require('./schemaName');
@@ -34,5 +35,74 @@ var ProfileSchema = builder(schemas.profile, {
   longitude: Number,
   connections: [String]
 });
+
+ProfileSchema.statics.listGraphNodes = function() {
+  var inNodesQuery = [
+    {
+      $match: {
+        connections: {$ne: null}
+      }
+    }, {
+      $unwind: '$connections'
+    }, {
+      $group: {
+        _id: '$connections'
+      }
+    }, {
+      $project: {
+        _id: false,
+        id: '$_id'
+      }
+    }
+  ];
+  var outNodesQuery = [
+    {
+      $match: {
+        connections: {$ne: null}
+      }
+    }, {
+      $project: {
+        _id: false,
+        username: true,
+        connections: {$size: '$connections'}
+      }
+    },
+    {
+      $match: {
+        connections: {$gt: 0}
+      }
+    }, {
+      $group: {
+        _id: '$username'
+      }
+    }, {
+      $project: {
+        _id: false,
+        id: '$_id'
+      }
+    }
+  ];
+  return Q.all([this.aggregate(inNodesQuery).exec(), this.aggregate(outNodesQuery).exec()])
+    .spread(function(inNodes, outNodes) {
+      return [].concat(inNodes).concat(outNodes);
+    });
+};
+
+ProfileSchema.statics.listGraphEdges = function() {
+  var query = [{
+    $match: {
+      connections: {$ne: null}
+    }
+  }, {
+    $project: {
+      _id: false,
+      source: '$username',
+      target: '$connections'
+    }
+  }, {
+    $unwind: '$target'
+  }];
+  return Q(this.aggregate(query).exec());
+};
 
 module.exports = ProfileSchema;
