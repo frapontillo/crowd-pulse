@@ -106,5 +106,19 @@ module.exports = function() {
       });
     });
 
+  router.route('/stats/profile/graph')
+    // /api/stats/profile/graph?db=sexism
+    .get(function(req, res) {
+      return handleGenericStat(req, res, function(conn) {
+        return Q.all([conn.Profile.listGraphNodes(), conn.Profile.listGraphEdges()])
+          .spread(function(nodes, edges) {
+            return {
+              nodes: nodes,
+              edges: edges
+            };
+          });
+      })
+    });
+
   return router;
 };
