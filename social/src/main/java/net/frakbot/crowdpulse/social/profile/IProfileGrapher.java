@@ -46,6 +46,13 @@ public abstract class IProfileGrapher extends IPlugin<Profile, Profile, VoidConf
      */
     public abstract List<Profile> getConnections(Profile profile, ProfileParameters parameters);
 
+    @Override
+    public Observable.Transformer<Profile, Profile> transform(VoidConfig params) {
+        return profileObservable -> profileObservable
+                .distinct(Profile::getUsername)
+                .lift(getOperator(params));
+    }
+
     @Override protected Observable.Operator<Profile, Profile> getOperator(VoidConfig parameters) {
         return subscriber -> new CrowdSubscriber<Profile>(subscriber) {
             @Override public void onNext(Profile profile) {
