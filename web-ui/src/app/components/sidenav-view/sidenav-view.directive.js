@@ -38,25 +38,38 @@
 
     /** @ngInject */
     function SidenavViewController($state, $scope, $stateParams, Database, Term, Profile,
-      filterTerm, filterQuery) {
+      filterTerm, filterQuery, filterDateRange, filterProfile) {
       var sidenavViewVm = this;
 
-      // data visualization grouped by concept of interest
-      sidenavViewVm.vizGroups = {
-        'Words': [
-          {id: 'word-cloud', name: 'Word Cloud', filters: [filterTerm]},
-          {id: 'word-pie', name: 'Pie Chart', filters: [filterTerm, filterQuery]},
-          {id: 'word-bar', name: 'Bar Chart', filters: [filterTerm, filterQuery]}
-        ],
-        'Sentiment': [
-          {id: 'sentiment-pie', name: 'Pie Chart', filters: [filterTerm, filterQuery]},
-          {id: 'sentiment-bar', name: 'Bar Chart', filters: [filterTerm, filterQuery]},
-          {id: 'sentiment-timeline', name: 'Timeline', filters: [filterTerm, filterQuery]}
-        ],
-        'Others': [
-          {id: 'message-timeline', name: 'Message Timeline'},
-          {id: 'profile-graph', name: 'Profile Graph'}
-        ]
+      // expose constant on controller in order to use them in the view
+      sidenavViewVm.filterTerm = filterTerm;
+      sidenavViewVm.filterQuery = filterQuery;
+      sidenavViewVm.filterDateRange = filterDateRange;
+      sidenavViewVm.filterProfile = filterProfile;
+
+      // available data visualizations
+      sidenavViewVm.viz = [
+        {group: 'Words', id: 'word-cloud', name: 'Word Cloud', filters: [filterTerm, filterQuery, filterDateRange]},
+        {group: 'Words', id: 'word-pie', name: 'Pie Chart', filters: [filterTerm, filterQuery, filterDateRange]},
+        {group: 'Words', id: 'word-bar', name: 'Bar Chart', filters: [filterTerm, filterQuery, filterDateRange]},
+        {group: 'Sentiment', id: 'sentiment-pie', name: 'Pie Chart', filters: [filterTerm, filterQuery, filterDateRange]},
+        {group: 'Sentiment', id: 'sentiment-bar', name: 'Bar Chart', filters: [filterTerm, filterQuery, filterDateRange]},
+        {group: 'Sentiment', id: 'sentiment-timeline', name: 'Timeline', filters: [filterTerm, filterQuery, filterDateRange]},
+        {group: 'Others', id: 'message-timeline', name: 'Message Timeline', filters: [filterTerm, filterQuery, filterDateRange]},
+        {group: 'Others', id: 'profile-graph', name: 'Profile Graph', filters: [filterProfile]}
+      ];
+
+      /**
+       * Check if the currently selected data visualization can be filtered on the given parameter.
+       */
+      sidenavViewVm.hasParam = function(filter) {
+        var curViz = sidenavViewVm.viz.filter(function(viz) {
+          return viz.id === sidenavViewVm.params.dataViz;
+        });
+        if (curViz && curViz.length === 1) {
+          return curViz[0].filters.indexOf(filter) >= 0;
+        }
+        return false;
       };
 
       // available filters on the data

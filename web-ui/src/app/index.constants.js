@@ -11,6 +11,8 @@
 
   angular.module('webUi')
     .constant('filterTerm', 'T')
-    .constant('filterQuery', 'Q');
+    .constant('filterQuery', 'Q')
+    .constant('filterDateRange', 'D')
+    .constant('filterProfile', 'P');
 
 })();
