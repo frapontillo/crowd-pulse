@@ -24,6 +24,7 @@ import net.frakbot.crowdpulse.common.util.spi.PluginConfigHelper;
 import net.frakbot.crowdpulse.data.entity.Profile;
 import net.frakbot.crowdpulse.data.repository.ProfileRepository;
 import org.apache.logging.log4j.Logger;
+import org.bson.types.ObjectId;
 import rx.Observable;
 
 /**
@@ -48,9 +49,24 @@ public class ProfilePersister extends IPlugin<Profile, Profile, ProfilePersister
         profileRepository = new ProfileRepository(parameters.getDb());
         return subscriber -> new CrowdSubscriber<Profile>(subscriber) {
             @Override public void onNext(Profile profile) {
-                reportElementAsStarted(profile.getId());
+                ObjectId id = profile.getId();
+                reportElementAsStarted(id);
+
+                Profile originalProfile = profileRepository.getByUsername(profile.getUsername());
+                // if the profile was already persisted change what might have been changed in time
+                if (originalProfile != null) {
+                    // followers and followings
+                    originalProfile.setFollowers(profile.getFollowers());
+                    originalProfile.setFollowings(profile.getFollowings());
+                    // language and location
+                    originalProfile.setLanguage(profile.getLanguage());
+                    originalProfile.setLocation(profile.getLocation());
+                    profile = originalProfile;
+                }
+
                 profileRepository.save(profile);
-                reportElementAsEnded(profile.getId());
+
+                reportElementAsEnded(id);
                 subscriber.onNext(profile);
             }
 
