@@ -73,7 +73,8 @@ module.exports = function() {
     return dbConn.connect(config.database.url, req.query.db)
       .then(function(conn) {
         var terms = asArray(req.query.terms);
-        return handler(conn, req.query.type, terms, req.query.from, req.query.to);
+        var users = asArray(req.query.users);
+        return handler(conn, req.query.type, terms, req.query.from, req.query.to, users);
       })
       .then(qSend(res))
       .catch(qErr(res))
@@ -107,10 +108,10 @@ module.exports = function() {
     });
 
   router.route('/stats/profile/graph')
-    // /api/stats/profile/graph?db=sexism
+    // /api/stats/profile/graph?db=sexism&users=frapontillo&users=kotlin
     .get(function(req, res) {
-      return handleGenericStat(req, res, function(conn) {
-        return Q.all([conn.Profile.listGraphNodes(), conn.Profile.listGraphEdges()])
+      return handleGenericStat(req, res, function(conn, type, terms, from, to, users) {
+        return Q.all([conn.Profile.listGraphNodes(users), conn.Profile.listGraphEdges(users)])
           .spread(function(nodes, edges) {
             return {
               nodes: nodes,
