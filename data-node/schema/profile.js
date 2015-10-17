@@ -37,40 +37,46 @@ var ProfileSchema = builder(schemas.profile, {
   connections: [String]
 });
 
-ProfileSchema.statics.listGraphNodes = function() {
+ProfileSchema.statics.listGraphNodes = function(users) {
   var inNodesQuery = [
     {
       $match: {
-        connections: {$ne: null}
+        username: {$in: users}
       }
     }, {
-      $unwind: '$connections'
+      $project: {
+        _id: false,
+        'id': '$connections'
+      }
+    }, {
+      $unwind: '$id'
     }, {
       $group: {
-        _id: '$connections'
+        _id: '$id'
+      }
+    }, {
+      $match: {
+        _id: {
+          $not: {
+            $in: users
+          }
+        }
       }
     }, {
       $project: {
         _id: false,
         id: '$_id'
       }
+    }, {
+      $sort: {
+        id: 1
+      }
     }
   ];
   var outNodesQuery = [
     {
       $match: {
-        connections: {$ne: null}
-      }
-    }, {
-      $project: {
-        _id: false,
-        username: true,
-        connections: {$size: '$connections'}
-      }
-    },
-    {
-      $match: {
-        connections: {$gt: 0}
+        username: {$in: users}
       }
     }, {
       $group: {
@@ -79,33 +85,37 @@ ProfileSchema.statics.listGraphNodes = function() {
     }, {
       $project: {
         _id: false,
-        id: '$_id'
+        'id': '$_id'
+      }
+    }, {
+      $sort: {
+        id: 1
       }
     }
   ];
   return Q.all([this.aggregate(inNodesQuery).exec(), this.aggregate(outNodesQuery).exec()])
     .spread(function(inNodes, outNodes) {
       return [].concat(inNodes).concat(outNodes);
-    })
-    .then(function(array) {
-      return _.uniq(array, 'id');
     });
 };
 
-ProfileSchema.statics.listGraphEdges = function() {
-  var query = [{
-    $match: {
-      connections: {$ne: null}
+ProfileSchema.statics.listGraphEdges = function(users) {
+  var query = [
+    {
+      $match: {
+        username: {$in: users},
+        $or: [{connections: {$ne: null}}, {connections: {$gt: 0}}]
+      }
+    }, {
+      $project: {
+        _id: false,
+        source: '$username',
+        target: '$connections'
+      }
+    }, {
+      $unwind: '$target'
     }
-  }, {
-    $project: {
-      _id: false,
-      source: '$username',
-      target: '$connections'
-    }
-  }, {
-    $unwind: '$target'
-  }];
+  ];
   return Q(this.aggregate(query).exec());
 };
 
