@@ -35,6 +35,7 @@ var endpointProjects = require('./endpoint/projects');
 var endpointDatabases = require('./endpoint/databases');
 var endpointTerms = require('./endpoint/terms');
 var endpointStats = require('./endpoint/stats');
+var endpointProfiles = require('./endpoint/profiles');
 var socketLogs = require('./sockets/logs');
 
 var config = require('./config.json');
@@ -71,6 +72,7 @@ var webServiceSetup = function(crowdPulse) {
   app.use(API, endpointDatabases(crowdPulse));
   app.use(API, endpointTerms(crowdPulse));
   app.use(API, endpointStats(crowdPulse));
+  app.use(API, endpointProfiles(crowdPulse));
 
   return crowdPulse;
 };
