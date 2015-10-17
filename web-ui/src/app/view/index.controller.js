@@ -150,7 +150,8 @@
         type: vm.params.filterOn,
         terms: vm.params.query,
         from: vm.params.fromDate,
-        to: vm.params.toDate
+        to: vm.params.toDate,
+        users: vm.params.users
       };
     };
 
@@ -168,6 +169,10 @@
 
     var getTimelineMessage = function() {
       return Stat.MessageTimeline.getList(buildStatParams());
+    };
+
+    var getProfileGraph = function() {
+      return Stat.Graph.one().get(buildStatParams());
     };
 
     // REST TO CHART MAPPERS
@@ -276,6 +281,33 @@
         });
     };
 
+    var statProfileGraph = function() {
+      return getProfileGraph()
+        .then(function(graph) {
+          var N = graph.nodes.length;
+          // add label, size; infer position on circumference
+          for (var i = 0; i < graph.nodes.length; i++) {
+            graph.nodes[i].label = graph.nodes[i].id;
+            graph.nodes[i].size = 0.3;
+            graph.nodes[i].x = 100 * Math.cos(2 * i * Math.PI / N);
+            graph.nodes[i].y = 100 * Math.sin(2 * i * Math.PI / N);
+            // if the node is one of the currently searched users, highlight it
+            if (vm.params.users.indexOf(graph.nodes[i].id) >= 0) {
+              graph.nodes[i].size = 1;
+              graph.nodes[i].color = '#E91E63';
+            }
+          }
+          // set an edge id based on the "source-->target" template
+          for (var j = 0; j < graph.edges.length; j++) {
+            graph.edges[j].id = graph.edges[j].source + '-->' + graph.edges[j].target;
+          }
+          return graph;
+        })
+        .then(function(graph) {
+          vm.stat = graph;
+        });
+    };
+
     var handlers = {
       'word-cloud': statWordCloud,
       'word-pie': statWordPie,
@@ -284,6 +316,7 @@
       'sentiment-bar': statSentimentBar,
       'sentiment-timeline': statSentimentTimeline,
       'message-timeline': statMessageTimeline,
+      'profile-graph': statProfileGraph
     };
 
     $scope.$watch('vm.params', function(newValue, oldValue) {
@@ -291,6 +324,9 @@
         return;
       }
       vm.stat = null;
+      if (!handlers.hasOwnProperty(newValue.dataViz)) {
+        return;
+      }
       handlers[newValue.dataViz]()
         .then(function() {
           // forcefully dispatch a resize event to make the word cloud recalculate its dimensions

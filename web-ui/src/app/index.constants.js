@@ -1,4 +1,4 @@
-/* global io:false, moment:false, FileReader:false */
+/* global io:false, moment:false, FileReader:false, sigma:false */
 (function() {
   'use strict';
 
@@ -6,7 +6,8 @@
     .module('webUi')
     .constant('io', io)
     .constant('moment', moment)
-    .constant('FileReader', FileReader);
+    .constant('FileReader', FileReader)
+    .constant('Sigma', sigma);
 
   angular.module('webUi')
     .constant('filterTerm', 'T')

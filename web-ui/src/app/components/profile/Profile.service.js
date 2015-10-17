@@ -19,18 +19,11 @@
 
   angular
     .module('webUi')
-    .factory('Stat', Stat);
+    .factory('Profile', Profile);
 
   /** @ngInject */
-  function Stat(Restangular) {
-    var statsEndpoint = Restangular.all('stats');
-    return {
-      Terms: Restangular.service('terms', statsEndpoint),
-      Sentiment: Restangular.service('sentiment', statsEndpoint),
-      SentimentTimeline: Restangular.service('sentiment/timeline', statsEndpoint),
-      MessageTimeline: Restangular.service('message/timeline', statsEndpoint),
-      Graph: Restangular.service('profile/graph', statsEndpoint)
-    };
+  function Profile(Restangular) {
+    return Restangular.service('profiles');
   }
 
 })();

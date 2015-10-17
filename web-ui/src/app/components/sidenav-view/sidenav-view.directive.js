@@ -37,7 +37,7 @@
     return directive;
 
     /** @ngInject */
-    function SidenavViewController($state, $scope, $mdMedia, $stateParams, Database, Term,
+    function SidenavViewController($state, $scope, $stateParams, Database, Term, Profile,
       filterTerm, filterQuery) {
       var sidenavViewVm = this;
 
@@ -83,6 +83,13 @@
       } else {
         sidenavViewVm.params.query = [];
       }
+      if (angular.isArray($stateParams.users)) {
+        sidenavViewVm.params.users = $stateParams.users;
+      } else if (angular.isDefined($stateParams.users)) {
+        sidenavViewVm.params.users = [$stateParams.users];
+      } else {
+        sidenavViewVm.params.users = [];
+      }
 
       // when the type of filter or the database changes, remove the query parameters
       $scope.$watchGroup(['sidenavViewVm.params.filterOn', 'sidenavViewVm.params.database'],
@@ -100,7 +107,8 @@
           chartType: newParams.dataViz,
           db: newParams.database,
           filter: newParams.filterOn,
-          search: newParams.query
+          search: newParams.query,
+          users: newParams.users
         };
         newStateParams.from = newParams.fromDate ? newParams.fromDate.toISOString() : null;
         newStateParams.to = newParams.toDate ? newParams.toDate.toISOString() : null;
@@ -121,6 +129,13 @@
           db: sidenavViewVm.params.database,
           type: type,
           term: query
+        });
+      };
+
+      sidenavViewVm.queryForUser = function(username) {
+        return Profile.getList({
+          db: sidenavViewVm.params.database,
+          username: username
         });
       };
     }

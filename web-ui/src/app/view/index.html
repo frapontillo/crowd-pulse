@@ -13,4 +13,5 @@
   <chart ng-if="vm.params.dataViz === 'sentiment-bar'" flex options="vm.stat"></chart>
   <chart ng-if="vm.params.dataViz === 'sentiment-timeline'" flex options="vm.stat"></chart>
   <chart ng-if="vm.params.dataViz === 'message-timeline'" flex options="vm.stat"></chart>
+  <sigma ng-if="vm.params.dataViz === 'profile-graph'" flex graph="vm.stat"></sigma>
 </md-content>

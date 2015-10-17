@@ -54,6 +54,19 @@
             <span>{{$chip}}</span>
           </md-chip-template>
         </md-chips>
+        <md-chips ng-model="sidenavViewVm.params.users" md-autocomplete-snap md-require-match="true">
+          <md-autocomplete
+            md-selected-item="sidenavViewVm.selectedUser"
+            md-search-text="sidenavViewVm.searchQueryUser"
+            md-items="item in sidenavViewVm.queryForUser(sidenavViewVm.searchQueryUser)"
+            md-item-text="item.name"
+            placeholder="Search for users">
+            <span md-highlight-text="sidenavViewVm.searchQueryUser">{{item}}</span>
+          </md-autocomplete>
+          <md-chip-template>
+            <span>{{$chip}}</span>
+          </md-chip-template>
+        </md-chips>
       </form>
     </md-content>
   </md-content>
