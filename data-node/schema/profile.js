@@ -119,4 +119,26 @@ ProfileSchema.statics.listGraphEdges = function(users) {
   return Q(this.aggregate(query).exec());
 };
 
+ProfileSchema.statics.search = function(username) {
+  var model = this;
+  var regex = new RegExp('^' + (username || ''), 'i');
+  var aggregations = [
+    {
+      $match: {
+        username: {$regex: regex, $options: 'i'}
+      }
+    }, {
+      $project: {
+        _id: false,
+        username: true
+      }
+    }, {
+      $sort: {
+        username: 1
+      }
+    }
+  ];
+  return Q(model.aggregate(aggregations).exec());
+};
+
 module.exports = ProfileSchema;
