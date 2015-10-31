@@ -12,6 +12,16 @@
 
     <span flex></span>
 
+    <md-button ui-sref="app.view" ng-class="vm.getActiveClass('app.view')">
+      <md-tooltip>Data visualizations</md-tooltip>
+      <md-icon>insert_chart</md-icon> View
+    </md-button>
+
+    <md-button ui-sref="app.admin.main" ng-class="vm.getActiveClass('app.admin')">
+      <md-tooltip>Add and edit projects</md-tooltip>
+      <md-icon>settings_applications</md-icon> Admin
+    </md-button>
+
   </div>
   <md-progress-linear toolbar-loader class="md-accent" md-mode=""></md-progress-linear>
 </md-toolbar>

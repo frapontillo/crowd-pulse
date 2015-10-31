@@ -21,11 +21,17 @@
     return directive;
 
     /** @ngInject */
-    function ToolbarController($mdSidenav) {
+    function ToolbarController($mdSidenav, $state) {
       var vm = this;
 
       vm.toggleMainSidenav = function() {
         return $mdSidenav('main-sidenav').toggle();
+      };
+
+      vm.getActiveClass = function(state) {
+        if ($state.current.name.indexOf(state) >= 0) {
+          return 'md-accent md-hue-1';
+        }
       };
     }
   }
