@@ -5,7 +5,7 @@
   <p>Please select a data visualization type from the left sidebar.</p>
 </md-content>
 
-<md-content flex layout="column" layout-padding>
+<md-content flex layout="column">
   <jqcloud ng-if="vm.params.dataViz === 'word-cloud'" words="vm.stat" flex auto-resize="true"></jqcloud>
   <chart ng-if="vm.params.dataViz === 'word-pie'" flex options="vm.stat"></chart>
   <chart ng-if="vm.params.dataViz === 'word-bar'" flex options="vm.stat"></chart>
@@ -14,4 +14,5 @@
   <chart ng-if="vm.params.dataViz === 'sentiment-timeline'" flex options="vm.stat"></chart>
   <chart ng-if="vm.params.dataViz === 'message-timeline'" flex options="vm.stat"></chart>
   <sigma ng-if="vm.params.dataViz === 'profile-graph'" flex graph="vm.stat"></sigma>
+  <synonyms ng-if="vm.params.dataViz === 'index-search'" synonym-groups="vm.stat"></synonyms>
 </md-content>

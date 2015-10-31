@@ -23,7 +23,7 @@
 
   /* global Highcharts:false */
   /** @ngInject */
-  function ViewIndexController($scope, $timeout, $window, Stat) {
+  function ViewIndexController($scope, $timeout, $window, $q, $http, Stat, config) {
     var vm = this;
 
     vm.params = {};
@@ -308,6 +308,27 @@
         });
     };
 
+    var indexSearch = function() {
+      // if any of the needed parameters isn't available build nothing
+      if (!(angular.isDefined(vm.params.engine) && angular.isDefined(vm.params.corpus) &&
+            angular.isDefined(vm.params.index) && angular.isDefined(vm.params.indexType))) {
+        return;
+      }
+      var promises = vm.params.index.map(function(index) {
+        return $http.get(config.index + 'ml/word2vec/' +
+                     vm.params.engine + '/' + vm.params.corpus + '/' +
+                     index + '/' + vm.params.indexType)
+          .then(function(res) {
+            res.data.term = index;
+            return res.data;
+          });
+      });
+      return $q.all(promises)
+        .then(function(data) {
+          vm.stat = data;
+        });
+    };
+
     var handlers = {
       'word-cloud': statWordCloud,
       'word-pie': statWordPie,
@@ -316,7 +337,8 @@
       'sentiment-bar': statSentimentBar,
       'sentiment-timeline': statSentimentTimeline,
       'message-timeline': statMessageTimeline,
-      'profile-graph': statProfileGraph
+      'profile-graph': statProfileGraph,
+      'index-search': indexSearch
     };
 
     $scope.$watch('vm.params', function(newValue, oldValue) {
@@ -327,14 +349,17 @@
       if (!handlers.hasOwnProperty(newValue.dataViz)) {
         return;
       }
-      handlers[newValue.dataViz]()
-        .then(function() {
-          // forcefully dispatch a resize event to make the word cloud recalculate its dimensions
-          $timeout(function() {
-            /* global Event:false */
-            $window.dispatchEvent(new Event('resize'));
-          });
+      var handled = handlers[newValue.dataViz]();
+      if (!handled) {
+        return;
+      }
+      handled.then(function() {
+        // forcefully dispatch a resize event to make the word cloud recalculate its dimensions
+        $timeout(function() {
+          /* global Event:false */
+          $window.dispatchEvent(new Event('resize'));
         });
+      });
     }, true);
   }
 

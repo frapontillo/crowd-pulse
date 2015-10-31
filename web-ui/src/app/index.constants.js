@@ -10,9 +10,11 @@
     .constant('Sigma', sigma);
 
   angular.module('webUi')
+    .constant('filterDb', 'DB')
     .constant('filterTerm', 'T')
     .constant('filterQuery', 'Q')
     .constant('filterDateRange', 'D')
-    .constant('filterProfile', 'P');
+    .constant('filterProfile', 'P')
+    .constant('filterIndex', 'I');
 
 })();

@@ -37,26 +37,29 @@
     return directive;
 
     /** @ngInject */
-    function SidenavViewController($state, $scope, $stateParams, Database, Term, Profile,
-      filterTerm, filterQuery, filterDateRange, filterProfile) {
+    function SidenavViewController($state, $scope, $stateParams, Database, Term, Profile, Corpus,
+      filterDb, filterTerm, filterQuery, filterDateRange, filterProfile, filterIndex) {
       var sidenavViewVm = this;
 
       // expose constant on controller in order to use them in the view
+      sidenavViewVm.filterDb = filterDb;
       sidenavViewVm.filterTerm = filterTerm;
       sidenavViewVm.filterQuery = filterQuery;
       sidenavViewVm.filterDateRange = filterDateRange;
       sidenavViewVm.filterProfile = filterProfile;
+      sidenavViewVm.filterIndex = filterIndex;
 
       // available data visualizations
       sidenavViewVm.viz = [
-        {group: 'Words', id: 'word-cloud', name: 'Word Cloud', filters: [filterTerm, filterQuery, filterDateRange]},
-        {group: 'Words', id: 'word-pie', name: 'Pie Chart', filters: [filterTerm, filterQuery, filterDateRange]},
-        {group: 'Words', id: 'word-bar', name: 'Bar Chart', filters: [filterTerm, filterQuery, filterDateRange]},
-        {group: 'Sentiment', id: 'sentiment-pie', name: 'Pie Chart', filters: [filterTerm, filterQuery, filterDateRange]},
-        {group: 'Sentiment', id: 'sentiment-bar', name: 'Bar Chart', filters: [filterTerm, filterQuery, filterDateRange]},
-        {group: 'Sentiment', id: 'sentiment-timeline', name: 'Timeline', filters: [filterTerm, filterQuery, filterDateRange]},
-        {group: 'Others', id: 'message-timeline', name: 'Message Timeline', filters: [filterTerm, filterQuery, filterDateRange]},
-        {group: 'Others', id: 'profile-graph', name: 'Profile Graph', filters: [filterProfile]}
+        {group: 'Words', id: 'word-cloud', name: 'Word Cloud', filters: [filterDb, filterTerm, filterQuery, filterDateRange]},
+        {group: 'Words', id: 'word-pie', name: 'Pie Chart', filters: [filterDb, filterTerm, filterQuery, filterDateRange]},
+        {group: 'Words', id: 'word-bar', name: 'Bar Chart', filters: [filterDb, filterTerm, filterQuery, filterDateRange]},
+        {group: 'Sentiment', id: 'sentiment-pie', name: 'Pie Chart', filters: [filterDb, filterTerm, filterQuery, filterDateRange]},
+        {group: 'Sentiment', id: 'sentiment-bar', name: 'Bar Chart', filters: [filterDb, filterTerm, filterQuery, filterDateRange]},
+        {group: 'Sentiment', id: 'sentiment-timeline', name: 'Timeline', filters: [filterDb, filterTerm, filterQuery, filterDateRange]},
+        {group: 'Others', id: 'message-timeline', name: 'Message Timeline', filters: [filterDb, filterTerm, filterQuery, filterDateRange]},
+        {group: 'Others', id: 'profile-graph', name: 'Profile Graph', filters: [filterDb, filterProfile]},
+        {group: 'Others', id: 'index-search', name: 'Index Search', filters: [filterIndex]}
       ];
 
       /**
@@ -79,6 +82,28 @@
         {name: 'categories', type: 'category'},
         {name: 'tokens', type: 'token'}];
 
+      // available index types
+      sidenavViewVm.availableIndexTypes = [
+        {name: 'lemmas', type: 'lemmas'},
+        {name: 'stems', type: 'stems'},
+        {name: 'tokens', type: 'tokens'},
+        {name: 'POS tag tokens', type: 'postagtoken'}];
+
+      // available index types
+      sidenavViewVm.availableEngines = [
+        {name: 'Spark', type: 'spark'},
+        {name: 'Semantic Vectors', type: 'semanticvectors'}];
+
+      var paramsToArray = function(param) {
+        var array = [];
+        if (angular.isArray(param)) {
+          array = param;
+        } else if (angular.isDefined(param)) {
+          array = [param];
+        }
+        return array;
+      };
+
       // init the sidenav parameters with the state parameters
       sidenavViewVm.params.dataViz = $stateParams.chartType;
       sidenavViewVm.params.database = $stateParams.db;
@@ -89,20 +114,12 @@
         sidenavViewVm.params.toDate = new Date($stateParams.to);
       }
       sidenavViewVm.params.filterOn = $stateParams.filter || '';
-      if (angular.isArray($stateParams.search)) {
-        sidenavViewVm.params.query = $stateParams.search;
-      } else if (angular.isDefined($stateParams.search)) {
-        sidenavViewVm.params.query = [$stateParams.search];
-      } else {
-        sidenavViewVm.params.query = [];
-      }
-      if (angular.isArray($stateParams.users)) {
-        sidenavViewVm.params.users = $stateParams.users;
-      } else if (angular.isDefined($stateParams.users)) {
-        sidenavViewVm.params.users = [$stateParams.users];
-      } else {
-        sidenavViewVm.params.users = [];
-      }
+      sidenavViewVm.params.query = paramsToArray($stateParams.search);
+      sidenavViewVm.params.users = paramsToArray($stateParams.users);
+      sidenavViewVm.params.corpus = $stateParams.corpus;
+      sidenavViewVm.params.indexType = $stateParams.indexType;
+      sidenavViewVm.params.index = paramsToArray($stateParams.index);
+      sidenavViewVm.params.engine = $stateParams.engine;
 
       // when the type of filter or the database changes, remove the query parameters
       $scope.$watchGroup(['sidenavViewVm.params.filterOn', 'sidenavViewVm.params.database'],
@@ -121,7 +138,11 @@
           db: newParams.database,
           filter: newParams.filterOn,
           search: newParams.query,
-          users: newParams.users
+          users: newParams.users,
+          corpus: newParams.corpus,
+          index: newParams.index,
+          indexType: newParams.indexType,
+          engine: newParams.engine
         };
         newStateParams.from = newParams.fromDate ? newParams.fromDate.toISOString() : null;
         newStateParams.to = newParams.toDate ? newParams.toDate.toISOString() : null;
@@ -133,6 +154,14 @@
         sidenavViewVm.databases = dbs;
         if (angular.isDefined($stateParams.db)) {
           sidenavViewVm.params.database = $stateParams.db;
+        }
+      });
+
+      // fetch indexed corpora, when done set the corpus in the querystring, if any
+      Corpus.getList().then(function(corpora) {
+        sidenavViewVm.corpora = corpora;
+        if (angular.isDefined($stateParams.corpus)) {
+          sidenavViewVm.params.corpus = $stateParams.corpus;
         }
       });
 

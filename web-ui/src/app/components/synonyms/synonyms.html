@@ -1,0 +1,24 @@
+<md-content>
+  <div ng-repeat="synonymGroup in synonymsVm.synonymGroups" layout="column" layout-padding
+       layout-wrap layout-fill>
+    <h2 class="md-title">{{synonymGroup.term}}</h2>
+
+    <p class="synonym-error" ng-if="synonymGroup.error">{{synonymGroup.error}}</p>
+    <p class="synonym-error" ng-if="synonymGroup.details.length === 0">No synonyms found.</p>
+    <p class="synonym-error" ng-if="synonymGroup.status === 'error'">{{synonymGroup.details}}</p>
+
+    <div ng-if="synonymsVm.hasElements(synonymGroup)" layout="row" layout-padding layout-wrap
+         layout-fill layout-align="center center">
+      <div ng-repeat="synonym in synonymGroup.details" class="synonym-item"
+           flex-sm="50" flex-gt-sm="25" flex-gt-md="20" >
+        <md-whiteframe class="md-2-line md-whiteframe-1dp"
+                       layout="column" layout-padding>
+          <h4>{{synonym.term}}</h4>
+          <p>Score: {{synonym.score}}</p>
+        </md-whiteframe>
+      </div>
+    </div>
+
+    <md-divider ng-if="!$last"></md-divider>
+  </div>
+</md-content>

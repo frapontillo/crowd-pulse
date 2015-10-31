@@ -6,20 +6,20 @@
     <md-content layout-padding>
       <form name="sidenav-filter-form" layout="column">
         <md-input-container>
-          <label>Database</label>
-          <md-select ng-model="sidenavViewVm.params.database">
-            <md-option ng-repeat="db in sidenavViewVm.databases" value="{{db.name}}">
-              {{db.name}}
-            </md-option>
-          </md-select>
-        </md-input-container>
-        <md-input-container>
           <label>Data visualization</label>
           <md-select ng-model="sidenavViewVm.params.dataViz" placeholder="Data visualization">
             <md-optgroup ng-repeat="(key, elem) in sidenavViewVm.viz | groupBy:'group'"
                          label="{{key}}">
               <md-option ng-repeat="viz in elem" ng-value="viz.id">{{viz.name}}</md-option>
             </md-optgroup>
+          </md-select>
+        </md-input-container>
+        <md-input-container ng-if="sidenavViewVm.hasParam(sidenavViewVm.filterDb)">
+          <label>Database</label>
+          <md-select ng-model="sidenavViewVm.params.database">
+            <md-option ng-repeat="db in sidenavViewVm.databases" value="{{db.name}}">
+              {{db.name}}
+            </md-option>
           </md-select>
         </md-input-container>
         <div ng-if="sidenavViewVm.hasParam(sidenavViewVm.filterDateRange)"
@@ -79,6 +79,36 @@
           <md-chip-template>
             <span>{{$chip}}</span>
           </md-chip-template>
+        </md-chips>
+        <md-input-container ng-if="sidenavViewVm.hasParam(sidenavViewVm.filterIndex)">
+          <label>Available corpora</label>
+          <md-select flex ng-model="sidenavViewVm.params.corpus">
+            <md-option ng-repeat="corpus in sidenavViewVm.corpora" value="{{corpus}}">
+              {{corpus}}
+            </md-option>
+          </md-select>
+        </md-input-container>
+        <md-input-container ng-if="sidenavViewVm.hasParam(sidenavViewVm.filterIndex)">
+          <label>Index type</label>
+          <md-select flex ng-model="sidenavViewVm.params.indexType">
+            <md-option ng-repeat="filter in sidenavViewVm.availableIndexTypes"
+                       value="{{filter.type}}">
+              {{filter.name}}
+            </md-option>
+          </md-select>
+        </md-input-container>
+        <md-input-container ng-if="sidenavViewVm.hasParam(sidenavViewVm.filterIndex)">
+          <label>Engine</label>
+          <md-select flex ng-model="sidenavViewVm.params.engine">
+            <md-option ng-repeat="filter in sidenavViewVm.availableEngines" value="{{filter.type}}">
+              {{filter.name}}
+            </md-option>
+          </md-select>
+        </md-input-container>
+        <md-chips ng-if="sidenavViewVm.hasParam(sidenavViewVm.filterIndex)"
+                  ng-model="sidenavViewVm.params.index"
+                  placeholder="Enter an index term"
+                  secondary-placeholder="Enter an index term">
         </md-chips>
       </form>
     </md-content>

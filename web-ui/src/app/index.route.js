@@ -18,7 +18,7 @@
       })
 
       .state('app.view', {
-        url: '/view?chartType&db&from&to&filter&search&users',
+        url: '/view?chartType&db&from&to&filter&search&users&corpus&index&indexType&engine',
         reloadOnSearch: false,
         templateUrl: 'app/view/index.html',
         controller: 'ViewIndexController',
@@ -56,7 +56,7 @@
         controllerAs: 'vm'
       });
 
-    $urlRouterProvider.otherwise('/');
+    $urlRouterProvider.otherwise('/view');
   }
 
 })();
