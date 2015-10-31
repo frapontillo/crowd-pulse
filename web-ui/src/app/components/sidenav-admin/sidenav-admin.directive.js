@@ -49,14 +49,16 @@
 
       Project.cache.getOrLoad();
 
+      updateProjects();
+
       sidenavAdminVm.openProject = function(projectId) {
         $state.go('app.admin.project.edit', {projectId: projectId});
-        $mdSidenav('right-sidenav').close();
+        $mdSidenav('main-sidenav').close();
       };
 
       sidenavAdminVm.goToNew = function() {
         $state.go('app.admin.project.new');
-        $mdSidenav('right-sidenav').close();
+        $mdSidenav('main-sidenav').close();
       };
 
       $scope.$on('$destroy', function() {
