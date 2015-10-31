@@ -34,16 +34,19 @@
       listeners.push(fn);
     };
 
-    this.$get = function configFactory($http, $log) {
-      // retrieve the object
-      var config = $http.get(configPath);
+    this.$get = function configFactory($http, $log, $q) {
+      var config = $q.defer();
 
-      config.then(function(data) {
-        // the promise is extended with the new data
-        angular.extend(config, data.data);
+      // retrieve the object
+      var configObj = $http.get(configPath);
+
+      configObj.then(function(data) {
+        var resolved = data.data;
+        config.resolve(resolved);
+        angular.extend(config, resolved);
         // run every attached listener
         listeners.forEach(function(listener) {
-          listener(config);
+          listener(resolved);
         });
         $log.debug('Configuration downloaded and stored.');
       });
