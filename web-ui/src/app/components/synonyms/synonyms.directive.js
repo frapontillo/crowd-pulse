@@ -39,7 +39,7 @@
   function SynonymsController() {
     this.hasElements = function(group) {
       return angular.isArray(group.details);
-    }
+    };
   }
 
 })();
