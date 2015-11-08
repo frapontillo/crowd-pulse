@@ -30,6 +30,14 @@
         abstract: true,
         templateUrl: 'app/admin/index.html'
       })
+
+      .state('app.export', {
+        url: '/export',
+        templateUrl: 'app/export/export.html',
+        controller: 'ExportController',
+        controllerAs: 'vm'
+      })
+
       .state('app.admin.main', {
         url: '',
         templateUrl: 'app/admin/main/main.html'

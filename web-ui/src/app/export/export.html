@@ -1,0 +1,41 @@
+<md-content layout-padding flex>
+  <form name="exportForm" layout="column">
+
+    <md-input-container>
+      <label>Database</label>
+      <md-select ng-model="vm.params.database">
+        <md-option ng-repeat="db in vm.databases" value="{{db.name}}">
+          {{db.name}}
+        </md-option>
+      </md-select>
+    </md-input-container>
+
+    <md-autocomplete
+      md-selected-item="vm.params.author"
+      md-search-text="vm.searchAuthor"
+      md-items="author in vm.searchAuthors(vm.searchAuthor, vm.params.database)"
+      md-item-text="author"
+      md-min-length="3"
+      md-no-cache="true"
+      placeholder="Author (min 3 chars)">
+      <span md-highlight-text="vm.searchAuthor">{{author}}</span>
+    </md-autocomplete>
+
+    <md-input-container>
+      <label>Language</label>
+      <md-select ng-model="vm.params.language">
+        <md-option ng-repeat="language in vm.languages" value="{{language}}">
+          {{language}}
+        </md-option>
+      </md-select>
+    </md-input-container>
+
+    <div layout="row">
+      <md-button flex class="md-primary md-raised" ng-click="vm.download()">
+        <md-icon>file_download</md-icon>
+        Export
+      </md-button>
+    </div>
+
+  </form>
+</md-content>
