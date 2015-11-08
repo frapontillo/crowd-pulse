@@ -128,9 +128,13 @@ ProfileSchema.statics.search = function(username) {
         username: {$regex: regex, $options: 'i'}
       }
     }, {
+      $group: {
+        _id: '$username'
+      }
+    }, {
       $project: {
         _id: false,
-        username: true
+        username: '$_id'
       }
     }, {
       $sort: {
