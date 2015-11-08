@@ -374,4 +374,41 @@ MessageSchema.statics.statMessageTimeline = function(type, terms, from, to) {
   return Q(this.aggregate(buildStatMessageTimelineQuery(type, terms, from, to)).exec());
 };
 
+MessageSchema.statics.getLanguages = function() {
+  return Q(this.aggregate([
+    {
+      $match: {
+        language: {
+          $ne: null
+        }
+      }
+    },
+    {
+      $group: {
+        _id: '$language'
+      }
+    }, {
+      $project: {
+        _id: false,
+        language: '$_id'
+      }
+    }, {
+      $sort: {
+        language: 1
+      }
+    }
+  ]).exec());
+};
+
+MessageSchema.statics.search = function(author, language) {
+  var params = {};
+  if (author) {
+    params.fromUser = author;
+  }
+  if (language) {
+    params.language = language;
+  }
+  return Q(this.find(params).exec());
+};
+
 module.exports = MessageSchema;
