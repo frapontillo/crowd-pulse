@@ -30,6 +30,15 @@
       </md-select>
     </md-input-container>
 
+    <md-input-container>
+      <label>Sentiment</label>
+      <md-select ng-model="vm.params.sentiment">
+        <md-option ng-repeat="sentiment in vm.sentiments" value="{{sentiment.type}}">
+          {{sentiment.value}}
+        </md-option>
+      </md-select>
+    </md-input-container>
+
     <div layout="row">
       <md-button flex class="md-primary md-raised" ng-click="vm.download()">
         <md-icon>file_download</md-icon>

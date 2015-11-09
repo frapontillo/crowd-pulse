@@ -24,7 +24,23 @@
   function ExportController($scope, $window, $mdToast, Database, Profile, Language, config) {
     var vm = this;
 
-    vm.params = {};
+    vm.sentiments = [{
+      type: '',
+      value: 'Any'
+    }, {
+      type: 'positive',
+      value: 'Positive'
+    }, {
+      type: 'neuter',
+      value: 'Neuter'
+    }, {
+      type: 'negative',
+      value: 'Negative'
+    }];
+
+    vm.params = {
+      sentiment: ''
+    };
 
     Database.getList().then(function(dbs) {
       vm.databases = dbs;
@@ -60,6 +76,9 @@
       }
       if (vm.params.author) {
         url += 'author=' + vm.params.author + '&';
+      }
+      if (vm.params.sentiment) {
+        url += 'sentiment=' + vm.params.sentiment + '&';
       }
       url = url.substr(0, url.length-1);
       $window.open(url);
