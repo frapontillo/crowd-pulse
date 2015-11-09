@@ -400,13 +400,24 @@ MessageSchema.statics.getLanguages = function() {
   ]).exec());
 };
 
-MessageSchema.statics.search = function(author, language) {
+MessageSchema.statics.search = function(author, language, sentiment) {
   var params = {};
   if (author) {
     params.fromUser = author;
   }
   if (language) {
     params.language = language;
+  }
+  if (sentiment === 'positive') {
+    params.sentiment = {
+      $gt: 0
+    };
+  } else if (sentiment === 'negative') {
+    params.sentiment = {
+      $lt: 0
+    };
+  } else if (sentiment === 'neuter') {
+    params.sentiment = 0;
   }
   return Q(this.find(params).exec());
 };
