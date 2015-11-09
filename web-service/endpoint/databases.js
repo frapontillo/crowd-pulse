@@ -30,12 +30,12 @@ module.exports = function(crowdPulse) {
     });
 
   router.route('/databases/:id')
-    // /api/databases/123122?author=frapontillo&language=it
+    // /api/databases/123122?author=frapontillo&language=it&sentiment=positive
     .get(function(req, res) {
       var dbConn = new CrowdPulse();
       return dbConn.connect(config.database.url, req.params.id)
         .then(function(conn) {
-          return conn.Message.search(req.query.author, req.query.language);
+          return conn.Message.search(req.query.author, req.query.language, req.query.sentiment);
         })
         .then(function(messages) {
           var filename = req.params.id;
@@ -44,6 +44,9 @@ module.exports = function(crowdPulse) {
           }
           if (req.query.language) {
             filename += '-' + req.query.language;
+          }
+          if (req.query.sentiment) {
+            filename += '-' + req.query.sentiment;
           }
           filename += '.json';
           res.set({
