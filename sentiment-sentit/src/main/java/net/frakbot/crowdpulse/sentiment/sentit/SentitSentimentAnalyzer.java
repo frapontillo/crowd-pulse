@@ -18,11 +18,13 @@ package net.frakbot.crowdpulse.sentiment.sentit;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import net.frakbot.crowdpulse.common.util.CrowdLogger;
 import net.frakbot.crowdpulse.common.util.rx.RxUtil;
 import net.frakbot.crowdpulse.common.util.spi.IPlugin;
 import net.frakbot.crowdpulse.common.util.spi.VoidConfig;
 import net.frakbot.crowdpulse.data.entity.Message;
 import net.frakbot.crowdpulse.sentiment.sentit.rest.*;
+import org.apache.logging.log4j.Logger;
 import retrofit.RestAdapter;
 import retrofit.RetrofitError;
 import retrofit.converter.GsonConverter;
@@ -31,6 +33,7 @@ import rx.Subscriber;
 import rx.observers.SafeSubscriber;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author Francesco Pontillo
@@ -39,6 +42,7 @@ public class SentitSentimentAnalyzer extends IPlugin<Message, Message, VoidConfi
     public final static String PLUGIN_NAME = "sentiment-sentit";
     private final static String SENTIT_ENDPOINT = "http://sentit.cloudapp.net:9100/sentit/v2";
     private final static int MAX_MESSAGES_PER_REQ = 10;
+    private final static Logger logger = CrowdLogger.getLogger(SentitSentimentAnalyzer.class);
 
     private SentitService service;
 
@@ -63,6 +67,7 @@ public class SentitSentimentAnalyzer extends IPlugin<Message, Message, VoidConfi
     @Override public Observable.Transformer<Message, Message> transform(VoidConfig params) {
         return messages -> messages
                 .buffer(MAX_MESSAGES_PER_REQ)
+                .delay(500, TimeUnit.MILLISECONDS)
                 .lift(new SentitOperator())
                 // flatten the sequence of Observables back into one single Observable
                 .compose(RxUtil.flatten());
@@ -86,18 +91,23 @@ public class SentitSentimentAnalyzer extends IPlugin<Message, Message, VoidConfi
                     // make the request
                     SentitRequest request = new SentitRequest(messages);
                     SentitResponse response;
-                    try {
-                        response = getService().classify(request);
-                        // for each message, set the result
-                        for (Message message : messages) {
-                            message.setSentiment(response.getSentimentForMessage(message));
-                        }
-                    } catch (RetrofitError error) {
-                        if (error.getResponse().getStatus() == 401) {
-                            // TODO: implement some wait-until features (must be async!)
+                    long remainingAttempts = 3;
+                    do {
+                        try {
+                            response = getService().classify(request);
+                            // for each message, set the result
+                            for (Message message : messages) {
+                                message.setSentiment(response.getSentimentForMessage(message));
+                            }
+                            remainingAttempts = 0;
+                        } catch (RetrofitError error) {
+                            remainingAttempts -= 1;
+                            if (error.getResponse() != null && error.getResponse().getStatus() == 401) {
+                                logger.error("Got error 401", error);
+                            }
                             error.printStackTrace();
                         }
-                    }
+                    } while (remainingAttempts > 0);
                     messages.forEach(m -> reportElementAsEnded(m.getId()));
                     subscriber.onNext(messages);
                 }
