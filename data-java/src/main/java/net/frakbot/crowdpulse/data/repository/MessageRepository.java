@@ -19,6 +19,9 @@ package net.frakbot.crowdpulse.data.repository;
 import net.frakbot.crowdpulse.data.entity.Message;
 import org.bson.types.ObjectId;
 import org.mongodb.morphia.query.Query;
+import rx.Observable;
+
+import java.util.Date;
 
 /**
  * {@link Repository} for {@link Message}s.
@@ -50,5 +53,17 @@ public class MessageRepository extends Repository<Message, ObjectId> {
     @Override
     public Query<Message> findBetweenKeys(ObjectId from, ObjectId to) {
         return super.findBetweenKeys(from, to).order("date");
+    }
+
+    public Observable<Message> findBetweenDates(Date since, Date until) {
+        Query<Message> query = createQuery();
+        if (since != null) {
+            query.field("date").greaterThanOrEq(since);
+        }
+        if (until != null) {
+            query.field("date").lessThanOrEq(until);
+        }
+        query.order("date");
+        return Observable.from(query.fetch());
     }
 }
