@@ -388,8 +388,11 @@ public abstract class IPlugin<Input, Output, Parameter extends IPluginConfig<Par
         // build all rows
         statMap.keySet().forEach(k -> {
             ProcessingStat stat = statMap.get(k);
+            if (stat == null) {
+                return;
+            }
             String[] values = new String[]{k.toString(),
-                    Long.toString(stat.getStartTime().getTime()), Long.toString(stat.getEndTime().getTime()),
+                    Long.toString(stat.getStartTimeMs()), Long.toString(stat.getEndTimeMs()),
                     Long.toString(stat.getDuration())};
             rows.add(buildRow(values));
         });
@@ -402,6 +405,20 @@ public abstract class IPlugin<Input, Output, Parameter extends IPluginConfig<Par
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private long getStartTime(ProcessingStat stat) {
+        if (stat != null && stat.getStartTime() != null) {
+            return stat.getStartTime().getTime();
+        }
+        return -1;
+    }
+
+    private long getEndTime(ProcessingStat stat) {
+        if (stat != null && stat.getEndTime() != null) {
+            return stat.getEndTime().getTime();
+        }
+        return -1;
     }
 
     /**
@@ -459,6 +476,18 @@ public abstract class IPlugin<Input, Output, Parameter extends IPluginConfig<Par
         }
 
         /**
+         * Get the time a the element processing began in milliseconds since UNIX epoch time.
+         *
+         * @return The start processing time for an element in milliseconds.
+         */
+        public long getStartTimeMs() {
+            if (startTime != null) {
+                return startTime.getTime();
+            }
+            return -1;
+        }
+
+        /**
          * Set the time a specific element processing began.
          *
          * @param startTime The start processing time for an element.
@@ -474,6 +503,18 @@ public abstract class IPlugin<Input, Output, Parameter extends IPluginConfig<Par
          */
         public Date getEndTime() {
             return endTime;
+        }
+
+        /**
+         * Get the time a the element processing completed in milliseconds since UNIX epoch time.
+         *
+         * @return The end processing time for an element in milliseconds.
+         */
+        public long getEndTimeMs() {
+            if (endTime != null) {
+                return endTime.getTime();
+            }
+            return -1;
         }
 
         /**
