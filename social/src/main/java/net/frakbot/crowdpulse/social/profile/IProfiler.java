@@ -16,7 +16,6 @@
 
 package net.frakbot.crowdpulse.social.profile;
 
-import net.frakbot.crowdpulse.common.util.rx.CrowdSubscriber;
 import net.frakbot.crowdpulse.common.util.rx.RxUtil;
 import net.frakbot.crowdpulse.common.util.spi.IPlugin;
 import net.frakbot.crowdpulse.data.entity.Message;
