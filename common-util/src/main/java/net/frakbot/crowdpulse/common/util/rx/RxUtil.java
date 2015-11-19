@@ -27,16 +27,6 @@ import rx.functions.Func1;
 public class RxUtil {
 
     /**
-     * Lambda functions whose input parameters are returned "as is".
-     *
-     * @param <T> Type parameter of the input/output object.
-     * @return A lambda identity function.
-     */
-    public static <T> Func1<T, T> identity() {
-        return (x -> x);
-    }
-
-    /**
      * Custom {@link rx.Observable.Transformer} that flattens a sequence of {@link Observable} in a single {@link
      * Observable}.
      *
@@ -44,7 +34,7 @@ public class RxUtil {
      * @return A {@link rx.Observable.Transformer} to be applied on sequences of {@link Observable}s.
      */
     public static <T> Observable.Transformer<Iterable<T>, T> flatten() {
-        return observable -> observable.flatMapIterable(identity());
+        return observable -> observable.flatMapIterable(x -> x);
     }
 
 }
