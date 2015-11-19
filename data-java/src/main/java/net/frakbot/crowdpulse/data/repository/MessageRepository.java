@@ -22,6 +22,7 @@ import org.mongodb.morphia.query.Query;
 import rx.Observable;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * {@link Repository} for {@link Message}s.
@@ -55,13 +56,16 @@ public class MessageRepository extends Repository<Message, ObjectId> {
         return super.findBetweenKeys(from, to).order("date");
     }
 
-    public Observable<Message> findBetweenDates(Date since, Date until) {
+    public Observable<Message> find(Date since, Date until, List<String> languages) {
         Query<Message> query = createQuery();
         if (since != null) {
             query.field("date").greaterThanOrEq(since);
         }
         if (until != null) {
             query.field("date").lessThanOrEq(until);
+        }
+        if (languages != null && languages.size() > 0) {
+            query.field("language").in(languages);
         }
         query.order("date");
         return Observable.from(query.fetch());

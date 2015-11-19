@@ -28,6 +28,7 @@ import rx.Subscriber;
 import rx.observers.SafeSubscriber;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * An implementation of {@link IPlugin} that, no matter the input stream, waits for its completion and then emits
@@ -61,8 +62,8 @@ public class MessageFetcher extends IPlugin<Object, Message, MessageFetcher.Mess
             @Override
             public void onCompleted() {
                 // fetch all messages from the database and subscribe view the new subscriber
-                Observable<Message> dbMessages = messageRepository.findBetweenDates(
-                        parameters.getSince(), parameters.getUntil());
+                Observable<Message> dbMessages = messageRepository.find(
+                        parameters.getSince(), parameters.getUntil(), parameters.getLanguages());
                 dbMessages.subscribe(subscriber);
             }
 
@@ -85,6 +86,7 @@ public class MessageFetcher extends IPlugin<Object, Message, MessageFetcher.Mess
     public class MessageFetcherOptions extends GenericDbConfig<MessageFetcherOptions> {
         private Date since;
         private Date until;
+        private List<String> languages;
 
         public Date getSince() {
             return since;
@@ -100,6 +102,14 @@ public class MessageFetcher extends IPlugin<Object, Message, MessageFetcher.Mess
 
         public void setUntil(Date until) {
             this.until = until;
+        }
+
+        public List<String> getLanguages() {
+            return languages;
+        }
+
+        public void setLanguages(List<String> languages) {
+            this.languages = languages;
         }
 
         @Override
