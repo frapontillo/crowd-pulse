@@ -64,7 +64,7 @@ var webServiceSetup = function(crowdPulse) {
   app.use(bodyParser.json());
   app.use(bodyParser.urlencoded({extended: true}));
   app.use(logger('dev'));
-  app.use(session(config.session));
+  // app.use(session(config.session));
   app.use(cors());
 
   // TODO: add more endpoints here
@@ -106,7 +106,7 @@ connect()
       res.send('Secret area');
     });
 
-    app.set('port', process.env.PORT || 5000);
+    app.set('port', config.port || process.env.PORT || 5000);
 
     server.listen(app.get('port'), function() {
       console.log('Crowd Pulse Web Service listening at %s:%s...',
