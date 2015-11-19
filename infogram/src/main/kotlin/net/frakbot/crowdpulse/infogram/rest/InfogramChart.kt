@@ -61,4 +61,4 @@ public data class InfogramChartSheet(var header: Array<String?>? = null, var row
  *
  * @author Francesco Pontillo
  */
-public data class InfogramChartSheetRow(var data: Array<Any?>? = null, var header: String? = null, var color: String? = null)
+public data class InfogramChartSheetRow(var data: Array<Any>? = null, var header: String? = null, var color: String? = null)

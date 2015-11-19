@@ -49,7 +49,7 @@ public class InfogramPlugin : IPlugin<Message, Message, InfogramConfig>() {
 
     val PLUGIN_NAME = "infogram"
     var props: Properties? = null
-    val logger = CrowdLogger.getLogger(javaClass<InfogramPlugin>())
+    val logger = CrowdLogger.getLogger(InfogramPlugin::class.java)
     var gson = GsonBuilder().create()
 
     override fun getName(): String? {
@@ -77,7 +77,7 @@ public class InfogramPlugin : IPlugin<Message, Message, InfogramConfig>() {
         constructor(parameters: InfogramConfig?) {
             this.parameters = parameters
             if (props == null) {
-                props = ConfigUtil.getPropertyFile(javaClass<InfogramPlugin>(), "infogram.properties")
+                props = ConfigUtil.getPropertyFile(InfogramPlugin::class.java, "infogram.properties")
             }
             val API_KEY: String = props!!.getProperty("infogram.apikey")
             val API_SECRET: String = props!!.getProperty("infogram.secret")
@@ -95,25 +95,25 @@ public class InfogramPlugin : IPlugin<Message, Message, InfogramConfig>() {
 
                 override fun onNext(message: Message) {
                     // make calculations for tags and categories
-                    if (message.getTags() != null) {
-                        var categories: MutableList<String> = ArrayList<String>()
-                        for (tag in message.getTags()) {
+                    if (message.tags != null) {
+                        var categories: MutableList<String> = ArrayList()
+                        for (tag in message.tags) {
                             // exclude stop word tags
-                            if (tag.isStopWord()) {
+                            if (tag.isStopWord) {
                                 continue
                             }
                             tagCount += 1
-                            var key = tag.getText()
+                            var key = tag.text
                             val value: Double = tagMap[key] ?: 0.0
                             tagMap.put(key, value + 1)
-                            if (tag.getCategories() != null) {
+                            if (tag.categories != null) {
                                 // exclude stop word categories
-                                categories.addAll(tag.getCategories().asSequence()
-                                        .filter { !it.isStopWord() }
-                                        .map { it.getText() })
+                                categories.addAll(tag.categories
+                                        .filter { !it.isStopWord }
+                                        .map { it.text })
                             }
                         }
-                        categoryCount += categories.size()
+                        categoryCount += categories.size
                         for (cat in categories) {
                             val value: Double = categoryMap[cat] ?: 0.0
                             categoryMap.put(cat, value + 1)
@@ -121,15 +121,15 @@ public class InfogramPlugin : IPlugin<Message, Message, InfogramConfig>() {
                     }
 
                     // make calculations for lemmas
-                    if (message.getTokens() != null) {
-                        for (tok in message.getTokens()) {
+                    if (message.tokens != null) {
+                        for (tok in message.tokens) {
                             // exclude stop word tokens
-                            if (tok.isStopWord() || tok.getLemma() == null) {
+                            if (tok.isStopWord || tok.lemma == null) {
                                 continue
                             }
                             lemmaCount += 1
-                            val value: Double = lemmaMap[tok.getLemma()] ?: 0.0
-                            lemmaMap.put(tok.getLemma(), value + 1)
+                            val value: Double = lemmaMap[tok.lemma] ?: 0.0
+                            lemmaMap.put(tok.lemma, value + 1)
                         }
                     }
                     t?.onNext(message)
@@ -179,26 +179,25 @@ public class InfogramPlugin : IPlugin<Message, Message, InfogramConfig>() {
                     val QTY = "#"
                     val MAX_SHEET_SIZE = 100;
 
-                    var sheets: Array<InfogramChartSheet?> = arrayOfNulls(maps.size())
+                    var sheets: Array<InfogramChartSheet?> = arrayOfNulls(maps.size)
 
                     // for each word cloud to generate
-                    for (i in 0..(maps.size() - 1)) {
+                    for (i in 0..(maps.size - 1)) {
                         // init the sheet
                         sheets[i] = InfogramChartSheet()
-                        if (maps.size() > 1) {
+                        if (maps.size > 1) {
                             sheets[i]!!.header = arrayOf(sheetsNames[i], QTY)
                         }
                         var sheetList: MutableList<InfogramChartSheetRow> = arrayListOf()
                         val map = maps[i]
                         // for each word, add it as a row of the chart
                         for ((key, value) in map) {
-                            val row: Array<Any?>? = arrayOf(key, value)
+                            val row = arrayOf(key, value)
                             sheetList.add(InfogramChartSheetRow(row))
                         }
                         // order the list of words and select only the highest ones (so that the cloud isn't too big)
-                        var orderedSheetList = sheetList.sortDescendingBy {
-                            it.data!![1] as Double
-                        }.take(MAX_SHEET_SIZE)
+                        sheetList.sortByDescending { it.data!![1] as Double }
+                        var orderedSheetList = sheetList.take(MAX_SHEET_SIZE)
                         sheets[i]?.rows = orderedSheetList.toTypedArray()
                     }
 
@@ -254,15 +253,15 @@ public class InfogramPlugin : IPlugin<Message, Message, InfogramConfig>() {
         }
 
         val res = infogram.sendRequest("POST", "infographics", parameters)
-        val id = res.getHeaders()["X-Infogram-Id"]?.firstOrNull()
-        if (res.getHttpStatusCode() == 201) {
-            logger.info("Created infogram at ${id}.")
-            var reader = BufferedReader(InputStreamReader(res.getResponseBody()))
-            return gson.fromJson(reader, javaClass<InfogramResponse>());
+        val id = res.headers["X-Infogram-Id"]?.firstOrNull()
+        if (res.httpStatusCode == 201) {
+            logger.info("Created infogram at $id.")
+            var reader = BufferedReader(InputStreamReader(res.responseBody))
+            return gson.fromJson(reader, InfogramResponse::class.java);
         }
-        logger.error("Couldn't create infogram at ${id}.\n" +
-                "Error ${res.getHttpStatusCode()}:\n" +
-                "${res.getHttpStatusMessage()}")
+        logger.error("Couldn't create infogram at $id.\n" +
+                "Error ${res.httpStatusCode}:\n" +
+                "${res.httpStatusMessage}")
         return null
     }
 
@@ -275,14 +274,14 @@ public class InfogramPlugin : IPlugin<Message, Message, InfogramConfig>() {
      * @return An array of bytes representing the infograph as a PNG.
      */
     fun getPNG(infogram: InfogramAPI, id: String?): ByteArray? {
-        val res = infogram.sendRequest("GET", "infographics/${id}", mapOf(Pair("format", "png")))
-        if (res.getHttpStatusCode() == 200) {
-            logger.info("Fetched infogram PNG at ${id}.")
-            return res.getResponseBody().readBytes()
+        val res = infogram.sendRequest("GET", "infographics/$id", mapOf(Pair("format", "png")))
+        if (res.httpStatusCode == 200) {
+            logger.info("Fetched infogram PNG at $id.")
+            return res.responseBody.readBytes()
         }
-        logger.error("Couldn't get infogram PNG at: ${id}.\n" +
-                "Error: ${res.getHttpStatusCode()}:\n" +
-                "${res.getHttpStatusMessage()}")
+        logger.error("Couldn't get infogram PNG at: $id.\n" +
+                "Error: ${res.httpStatusCode}:\n" +
+                "${res.httpStatusMessage}")
         return null;
     }
 
@@ -307,19 +306,19 @@ public class InfogramPlugin : IPlugin<Message, Message, InfogramConfig>() {
                 .replace(Regex(":"), "-")
 
         // for every file, save it if it's not empty
-        val pngs: Array<String?> = arrayOfNulls(files.size())
+        val pngs: Array<String?> = arrayOfNulls(files.size)
         for (f in files.indices) {
             var file = files[f]
             if (file.first == null) {
                 continue
             }
-            var filePath = resolved.resolve("${date}-${file.second}.png")
+            var filePath = resolved.resolve("$date-${file.second}.png")
             try {
                 Files.write(filePath, file.first, StandardOpenOption.CREATE_NEW)
-                logger.info("Infogram written at path: ${filePath}.")
+                logger.info("Infogram written at path: $filePath.")
                 pngs[f] = filePath.toString()
             } catch (e: IOException) {
-                logger.error("Couldn't write infogram at path: ${filePath}.")
+                logger.error("Couldn't write infogram at path: $filePath.")
             }
         }
         return pngs
