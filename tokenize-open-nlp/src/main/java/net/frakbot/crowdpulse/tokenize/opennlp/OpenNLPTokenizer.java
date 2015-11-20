@@ -16,6 +16,7 @@
 
 package net.frakbot.crowdpulse.tokenize.opennlp;
 
+import net.frakbot.crowdpulse.common.util.CrowdLogger;
 import net.frakbot.crowdpulse.common.util.spi.IPlugin;
 import net.frakbot.crowdpulse.common.util.spi.VoidConfig;
 import net.frakbot.crowdpulse.data.entity.Message;
@@ -24,14 +25,12 @@ import net.frakbot.crowdpulse.tokenize.ITokenizerOperator;
 import opennlp.tools.tokenize.Tokenizer;
 import opennlp.tools.tokenize.TokenizerME;
 import opennlp.tools.tokenize.TokenizerModel;
+import org.apache.logging.log4j.Logger;
 import rx.Observable;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -39,10 +38,13 @@ import java.util.stream.Collectors;
  */
 public class OpenNLPTokenizer extends IPlugin<Message, Message, VoidConfig> {
     public final static String PLUGIN_NAME = "tokenizer-opennlp";
-    private Map<String, TokenizerModel> models;
+    private Logger logger = CrowdLogger.getLogger(OpenNLPTokenizer.class);
+    private Map<String, Tokenizer> tokenizers;
+    private Set<String> unhandledLangs;
 
     public OpenNLPTokenizer() {
-        models = new HashMap<>();
+        tokenizers = new HashMap<>();
+        unhandledLangs = new HashSet<>();
     }
 
     @Override public String getName() {
@@ -56,36 +58,47 @@ public class OpenNLPTokenizer extends IPlugin<Message, Message, VoidConfig> {
     @Override protected Observable.Operator<Message, Message> getOperator(VoidConfig parameters) {
         return new ITokenizerOperator(this) {
             @Override public List<Token> getTokens(Message message) {
-                TokenizerModel tokenizerModel = getModel(message.getLanguage());
-                if (tokenizerModel == null) {
+                Tokenizer tokenizer = getTokenizer(message.getLanguage());
+                if (tokenizer == null) {
                     return null;
                 }
-                Tokenizer tokenizer = new TokenizerME(tokenizerModel);
                 List<String> tokenList = Arrays.asList(tokenizer.tokenize(message.getText()));
                 return tokenList.stream().map(Token::new).collect(Collectors.toList());
             }
         };
     }
 
-    private TokenizerModel getModel(String language) {
+    private Tokenizer getTokenizer(String language) {
         TokenizerModel model;
-        if ((model = models.get(language)) == null) {
+        Tokenizer tokenizer;
+        // if the language could not be loaded before, don't try again
+        if (unhandledLangs.contains(language)) {
+            return null;
+        }
+        // attempt to load the tokenizer
+        tokenizer = tokenizers.get(language);
+        // if the tokenizer wasn't loaded before, load it
+        if (tokenizer == null) {
             InputStream modelIn = null;
             try {
+                // read the model and build the tokenizer
                 modelIn = getClass().getClassLoader().getResourceAsStream(language + "-token.bin");
                 model = new TokenizerModel(modelIn);
-                models.put(language, model);
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (IllegalArgumentException ignored) {
+                tokenizer = new TokenizerME(model);
+                tokenizers.put(language, tokenizer);
+            } catch (IOException | IllegalArgumentException e) {
+                unhandledLangs.add(language);
+                logger.warn(String.format("There is no model for the language %s.", language));
             } finally {
                 if (modelIn != null) {
                     try {
                         modelIn.close();
-                    } catch (IOException ignored) { }
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         }
-        return model;
+        return tokenizer;
     }
 }

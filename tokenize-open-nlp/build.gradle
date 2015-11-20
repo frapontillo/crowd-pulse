@@ -22,5 +22,5 @@ version = '1.0'
 
 dependencies {
     compile project(':tokenize')
-    compile group: 'org.apache.opennlp', name: 'opennlp-tools', version: '1.5.3'
+    compile group: 'org.apache.opennlp', name: 'opennlp-tools', version: '1.6.0'
 }
