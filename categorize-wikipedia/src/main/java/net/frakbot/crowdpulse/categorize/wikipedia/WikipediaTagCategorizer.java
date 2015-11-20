@@ -22,11 +22,13 @@ import net.frakbot.crowdpulse.categorize.ITagCategorizerOperator;
 import net.frakbot.crowdpulse.categorize.wikipedia.rest.WikipediaResponse;
 import net.frakbot.crowdpulse.categorize.wikipedia.rest.WikipediaResponseDeserializer;
 import net.frakbot.crowdpulse.categorize.wikipedia.rest.WikipediaService;
+import net.frakbot.crowdpulse.common.util.CrowdLogger;
 import net.frakbot.crowdpulse.common.util.spi.IPlugin;
 import net.frakbot.crowdpulse.common.util.spi.VoidConfig;
 import net.frakbot.crowdpulse.data.entity.Category;
 import net.frakbot.crowdpulse.data.entity.Message;
 import net.frakbot.crowdpulse.data.entity.Tag;
+import org.apache.logging.log4j.Logger;
 import retrofit.RestAdapter;
 import retrofit.RetrofitError;
 import retrofit.converter.GsonConverter;
@@ -43,6 +45,7 @@ public class WikipediaTagCategorizer extends IPlugin<Message, Message, VoidConfi
     public static final String PLUGIN_NAME = "wikipedia";
     private static final String WIKIPEDIA_ENDPOINT_1 = "http://";
     private static final String WIKIPEDIA_ENDPOINT_2 = ".wikipedia.org/w";
+    private final Logger logger = CrowdLogger.getLogger(WikipediaTagCategorizer.class);
 
     private Gson gson;
     private Map<String, WikipediaService> wikipediaServiceMap;
@@ -66,6 +69,7 @@ public class WikipediaTagCategorizer extends IPlugin<Message, Message, VoidConfi
                 try {
                     return wikipediaService.tag(tag.getText()).getCategories();
                 } catch (RetrofitError error) {
+                    logger.error(error);
                     return null;
                 }
             }
