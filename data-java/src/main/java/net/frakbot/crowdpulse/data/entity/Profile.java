@@ -16,6 +16,8 @@
 
 package net.frakbot.crowdpulse.data.entity;
 
+import org.mongodb.morphia.annotations.Indexed;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -28,7 +30,7 @@ import java.util.List;
  */
 public class Profile extends Entity implements Comparable<Profile> {
     private String source;
-    private String username;
+    @Indexed private String username;
     private List<String> customTags;
     private Date activationDate;
     private long followers;

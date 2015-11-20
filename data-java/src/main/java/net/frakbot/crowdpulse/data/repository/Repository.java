@@ -38,6 +38,7 @@ public class Repository<T, K> extends BasicDAO<T, K> {
      */
     protected Repository() {
         super(DataLayer.getDataLayer(null).getDatastore());
+        ensureIndexes();
     }
 
     /**
@@ -47,6 +48,7 @@ public class Repository<T, K> extends BasicDAO<T, K> {
      */
     public Repository(String db) {
         super(new DataLayer(db).getDatastore());
+        ensureIndexes();
     }
 
     /**

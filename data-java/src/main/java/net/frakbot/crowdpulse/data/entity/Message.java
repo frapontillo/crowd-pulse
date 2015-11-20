@@ -18,12 +18,8 @@ package net.frakbot.crowdpulse.data.entity;
 
 import net.frakbot.crowdpulse.common.util.DateUtil;
 import net.frakbot.crowdpulse.common.util.StringUtil;
-import org.joda.time.DateTime;
+import org.mongodb.morphia.annotations.Indexed;
 
-import java.text.DateFormat;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -36,16 +32,16 @@ import java.util.Set;
  * @author Francesco Pontillo
  */
 public class Message extends Entity {
-    private String oId;
+    @Indexed private String oId;
     private String text;
     private String source;
-    private String fromUser;
+    @Indexed private String fromUser;
     private List<String> toUsers;
     private List<String> refUsers;
-    private Date date;
+    @Indexed private Date date;
     private String parent;
     private List<String> customTags;
-    private String language;
+    @Indexed private String language;
     private Double latitude;
     private Double longitude;
     private Integer favs;
