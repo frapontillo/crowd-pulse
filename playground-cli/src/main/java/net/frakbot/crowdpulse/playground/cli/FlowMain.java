@@ -18,6 +18,7 @@ package net.frakbot.crowdpulse.playground.cli;
 
 import net.frakbot.crowdpulse.categorize.wikipedia.WikipediaTagCategorizer;
 import net.frakbot.crowdpulse.common.util.CrowdLogger;
+import net.frakbot.crowdpulse.common.util.rx.StreamSubscriber;
 import net.frakbot.crowdpulse.common.util.rx.SubscriptionGroupLatch;
 import net.frakbot.crowdpulse.common.util.spi.IPlugin;
 import net.frakbot.crowdpulse.common.util.spi.PluginProvider;
@@ -44,7 +45,6 @@ import net.frakbot.crowdpulse.tag.wikipediaminer.WikipediaMinerTagger;
 import net.frakbot.crowdpulse.tokenize.opennlp.OpenNLPTokenizer;
 import org.apache.logging.log4j.Logger;
 import rx.Observable;
-import rx.Subscriber;
 import rx.Subscription;
 import rx.observables.ConnectableObservable;
 
@@ -135,21 +135,7 @@ public class FlowMain {
         SubscriptionGroupLatch allSubscriptions = new SubscriptionGroupLatch(1);
 
         // subscribe to the connectable stream
-        Subscription subscription = stream.subscribe(new Subscriber<Object>() {
-            @Override public void onCompleted() {
-                logger.debug("EXECUTION: COMPLETED");
-                allSubscriptions.countDown();
-            }
-
-            @Override public void onError(Throwable e) {
-                logger.error("EXECUTION: ERRORED");
-                allSubscriptions.countDown();
-            }
-
-            @Override public void onNext(Object o) {
-                logger.debug(o.toString());
-            }
-        });
+        Subscription subscription = stream.subscribe(new StreamSubscriber(allSubscriptions, logger));
 
         allSubscriptions.setSubscriptions(subscription);
         stream.connect();

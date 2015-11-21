@@ -21,6 +21,7 @@ import com.google.gson.JsonObject;
 import net.frakbot.crowdpulse.common.util.CrowdLogger;
 import net.frakbot.crowdpulse.common.util.DateUtil;
 import net.frakbot.crowdpulse.common.util.FileUtil;
+import net.frakbot.crowdpulse.common.util.rx.StreamSubscriber;
 import net.frakbot.crowdpulse.common.util.rx.SubscriptionGroupLatch;
 import net.frakbot.crowdpulse.common.util.spi.IPlugin;
 import net.frakbot.crowdpulse.common.util.spi.PluginProvider;
@@ -32,7 +33,6 @@ import net.frakbot.crowdpulse.core.plugin.ProjectRunEndPlugin;
 import net.frakbot.crowdpulse.core.plugin.ProjectRunStartPlugin;
 import org.apache.logging.log4j.Logger;
 import rx.Observable;
-import rx.Subscriber;
 import rx.Subscription;
 import rx.observables.ConnectableObservable;
 
@@ -153,24 +153,7 @@ public class Blade {
         SubscriptionGroupLatch allSubscriptions = new SubscriptionGroupLatch(1);
 
         // subscribe to the connectable stream
-        Subscription subscription = stream.subscribe(new Subscriber<Object>() {
-            @Override
-            public void onCompleted() {
-                logger.debug("EXECUTION: COMPLETED");
-                allSubscriptions.countDown();
-            }
-
-            @Override
-            public void onError(Throwable e) {
-                logger.error("EXECUTION: ERRORED", e);
-                allSubscriptions.countDown();
-            }
-
-            @Override
-            public void onNext(Object o) {
-                logger.debug(o.toString());
-            }
-        });
+        Subscription subscription = stream.subscribe(new StreamSubscriber(allSubscriptions, logger));
 
         allSubscriptions.setSubscriptions(subscription);
 
