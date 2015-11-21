@@ -20,36 +20,44 @@ plugins {
     id 'com.github.johnrengelman.shadow' version '1.2.2'
 }
 
-def name = 'crowd-pulse-core'
+ext.name = 'crowd-pulse-core'
+mainClassName = 'net.frakbot.crowdpulse.core.cli.Blade'
+version = mainVersion
+sourceCompatibility = 1.8
+
+// ------ Common definitions ------- //
+
+// Exclude files that match common regexps
+ext.exclusion = { file ->
+    def skip = [/.*\.properties/, /.*\.json/, /.*\.bin/, /.*\.sample/, /.*_index/, /sentiwordnet/,
+     /stop-words-.*/, /morphit/, /tanl-morphit/]
+    for (m in skip) {
+        if (file.name.matches(m)) {
+            return true
+        }
+    }
+    return false
+}
+ext.sharedManifest = manifest {
+    attributes("Class-Path": ".")
+}
 
 jar {
-    baseName = name
-    manifest {
-        attributes("Class-Path": ".")
+    manifest = project.manifest {
+        from sharedManifest
     }
+    exclude project.exclusion
 }
 
 shadowJar {
-    baseName = name
+    baseName = project.name
     classifier = 'bundle'
     mergeServiceFiles()
-    exclude('*.bin')
-    exclude('*.json')
-    exclude('*.properties')
-    exclude { file ->
-        file.name.matches('(en|it)_index')
+    manifest = project.manifest {
+        from sharedManifest
     }
-    exclude('morphit')
-    exclude('sentiwordnet')
-    exclude('stop-words-*')
-    exclude('tanl-morphit')
+    exclude project.exclusion
 }
-
-mainClassName = 'net.frakbot.crowdpulse.core.cli.Blade'
-
-version = mainVersion
-
-sourceCompatibility = 1.8
 
 task execute(type: JavaExec) {
     main = mainClassName
