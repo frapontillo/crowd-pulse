@@ -189,7 +189,7 @@ public class Blade {
         if (observableMap.get(node.getName()) != null) {
             return;
         }
-        logger.debug("Building Observable {}.", node.getName());
+        logger.debug("Building node {} with plugin {}...", node.getName(), node.getPlugin());
         // if the node has previous nodes bound to it
         List<Node> previousNodes = node.getPrev();
         List<Observable> previousObservables = null;
@@ -213,6 +213,7 @@ public class Blade {
         plugin.setJobName(node.getName());
         // use the previous observables in the plugin
         Observable observable = plugin.process(node.getConfig(), previousObservables);
+        logger.info("Node {} built with plugin {}.", node.getName(), plugin.getName());
 
         // if the node has n > 1 exit points, cache the emitted values so not to repeat its execution n - 1 more times
         if (node.getNext() != null && node.getNext().size() > 1) {
@@ -231,7 +232,7 @@ public class Blade {
     }
 
     private Observable mergeObservables(List<Observable> observableList) {
-        Observable[] observables = observableList.toArray(new Observable[]{});
+        Observable[] observables = observableList.toArray(new Observable[observableList.size()]);
         return Observable.merge(observables);
     }
 }
