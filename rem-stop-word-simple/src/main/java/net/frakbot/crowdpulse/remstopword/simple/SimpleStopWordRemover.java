@@ -23,7 +23,6 @@ import net.frakbot.crowdpulse.data.entity.Token;
 import net.frakbot.crowdpulse.remstopword.StopWordRemover;
 import org.apache.commons.io.IOUtils;
 
-import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
