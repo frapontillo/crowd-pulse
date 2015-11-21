@@ -61,10 +61,10 @@ public class FlowMain {
     private final static Logger logger = CrowdLogger.getLogger(FlowMain.class);
 
     public static void main(String args[]) throws ClassNotFoundException {
-        new FlowMain().run(args);
+        new FlowMain().run();
     }
 
-    public void run(String args[]) throws ClassNotFoundException {
+    public void run() throws ClassNotFoundException {
         // get all tasks according to some criteria
         IPlugin<Object, Message, ExtractionParameters> messageExtractor = PluginProvider.getPlugin(TwitterExtractor.PLUGIN_NAME);
         IPlugin<Object, Message, ExtractionParameters> repliesExtractor = PluginProvider.getPlugin(TwitterReplyExtractor.PLUGIN_NAME);
@@ -153,7 +153,7 @@ public class FlowMain {
     }
 
     private Observable mergeObservables(List<Observable> observableList) {
-        Observable[] observables = observableList.toArray(new Observable[] {});
+        Observable[] observables = observableList.toArray(new Observable[observableList.size()]);
         return Observable.merge(observables);
     }
 }
