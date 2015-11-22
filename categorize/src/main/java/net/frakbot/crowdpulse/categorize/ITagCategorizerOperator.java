@@ -73,14 +73,16 @@ public abstract class ITagCategorizerOperator implements Observable.Operator<Mes
     public abstract List<Category> getCategories(Tag tag);
 
     /**
-     * Retrieves the categories from the input {@link Tag} and sets them into
-     * the object itself in a {@link java.util.Set} structure.
+     * Retrieves the categories from the input {@link Tag} (if it is not a stop word)
+     * and sets them into the object itself in a {@link java.util.Set} structure.
      *
      * @param tag The input {@link Tag} to be enriched with categories.
      * @return The same input {@link Tag}, enriched with categories.
      */
     public Tag categorizeTag(Tag tag) {
-        tag.addCategories(getCategories(tag));
+        if (!tag.isStopWord()) {
+            tag.addCategories(getCategories(tag));
+        }
         return tag;
     }
 
