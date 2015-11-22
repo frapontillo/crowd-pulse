@@ -1,7 +1,7 @@
 {
-  "name": "crowd-pulse-web-oauth",
+  "name": "crowd-pulse-web-service",
   "version": "0.0.1",
-  "description": "Crowd Pulse OAuth 2.0 Website",
+  "description": "Crowd Pulse Web Service",
   "main": "app.js",
   "scripts": {
     "start": "node app.js",
