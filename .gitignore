@@ -8,19 +8,17 @@ build/
 gradle/
 temp/
 
-# Ignore all resource files
-*/src/main/resources/*
-# Keep SPIs, samples and jsons
-!*/src/main/resources/services
-!*/src/main/resources/*.sample
-!*/src/main/resources/*.json
-
-# core: ignore all json files
-core/src/main/resources/*.json
-# core: keep the logging configuration
+# Ignore all resource files in core and playground
+core/src/main/resources/*
 !core/src/main/resources/log4j2.json
+!core/src/main/resources/*.sample
+playground-cli/src/main/resources/*
 
-# web-ui: ignore dist and temporary dirs
+# web-service: ignore config
+web-service/config.json
+
+# web-ui: ignore dist, config and temporary dirs
 web-ui/.sass-cache/
 web-ui/.tmp/
 web-ui/dist/
+web-ui/src/config.json
