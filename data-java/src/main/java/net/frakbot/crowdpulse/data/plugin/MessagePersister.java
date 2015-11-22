@@ -54,26 +54,8 @@ public class MessagePersister extends IPlugin<Message, Message, MessagePersister
                 ObjectId id = message.getId();
                 reportElementAsStarted(id);
 
-                Message originalMessage = messageRepository.getByOriginalId(message.getoId());
-                // if the message was already persisted
-                // but with a different unique ID (if it has now been extracted again)
-                if (originalMessage != null && !originalMessage.getId().equals(message.getId())) {
-                    // favs and shares may change in time
-                    originalMessage.setFavs(message.getFavs());
-                    originalMessage.setShares(message.getShares());
-                    // change all other values that may be changed
-                    originalMessage.setSentiment(message.getSentiment());
-                    originalMessage.setLanguage(message.getLanguage());
-                    originalMessage.setLatitude(message.getLatitude());
-                    originalMessage.setLongitude(message.getLongitude());
-                    originalMessage.setTags(message.getTags());
-                    originalMessage.setTokens(message.getTokens());
-                    message = originalMessage;
-                }
-
                 message.setCustomTags(parameters.getTags());
-                // save the message
-                messageRepository.save(message);
+                messageRepository.updateOrInsert(message);
 
                 reportElementAsEnded(id);
                 subscriber.onNext(message);

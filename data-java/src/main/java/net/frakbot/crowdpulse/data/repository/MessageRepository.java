@@ -70,4 +70,10 @@ public class MessageRepository extends Repository<Message, ObjectId> {
         query.order("date");
         return Observable.from(query.fetch());
     }
+
+    public Message updateOrInsert(Message message) {
+        Query<Message> queryOriginalId = createQuery().field("oId").equal(message.getoId());
+        getDs().updateFirst(queryOriginalId, message, true);
+        return message;
+    }
 }
