@@ -98,6 +98,10 @@ public class TwitterFactory {
             int remaining = exception.getRateLimitStatus().getRemaining();
             if (remaining <= 0) {
                 int secondsToWait = exception.getRateLimitStatus().getSecondsUntilReset() + 5;
+                if (secondsToWait <= 0) {
+                    logger.warn("Got a negative (" + secondsToWait + ") seconds to wait.", exception);
+                    secondsToWait = 30;
+                }
                 waitWithMessage(secondsToWait, "Encountered Twitter rate limit, waiting for {} seconds...", logger);
                 // return true if the exception was rate limit related
                 return true;
