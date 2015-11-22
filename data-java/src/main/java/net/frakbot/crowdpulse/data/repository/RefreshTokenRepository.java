@@ -25,4 +25,8 @@ import org.bson.types.ObjectId;
  * @author Francesco Pontillo
  */
 public class RefreshTokenRepository extends Repository<RefreshToken, ObjectId> {
+    @Override
+    public String getCollectionName() {
+        return "RefreshToken";
+    }
 }

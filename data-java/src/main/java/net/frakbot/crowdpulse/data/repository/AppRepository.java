@@ -25,4 +25,8 @@ import org.bson.types.ObjectId;
  * @author Francesco Pontillo
  */
 public class AppRepository extends Repository<App, ObjectId> {
+    @Override
+    public String getCollectionName() {
+        return "App";
+    }
 }

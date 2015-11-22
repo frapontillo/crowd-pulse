@@ -25,4 +25,8 @@ import org.bson.types.ObjectId;
  * @author Francesco Pontillo
  */
 public class AccessTokenRepository extends Repository<AccessToken, ObjectId> {
+    @Override
+    public String getCollectionName() {
+        return "AccessToken";
+    }
 }

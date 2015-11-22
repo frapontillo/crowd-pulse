@@ -22,6 +22,11 @@ version = '1.0'
 
 dependencies {
     compile project(':common-util')
-    compile group: 'org.mongodb.morphia', name: 'morphia', version: '1.0.1'
-    compile group: 'io.reactivex', name: 'rxjava', version: '1.0.9'
+    compile('org.mongodb.morphia:morphia:1.0.1') {
+        exclude module: 'org.mongodb:mongo-java-driver:3.0.2'
+    }
+    compile 'org.mongodb:mongo-java-driver:3.2.0-rc0'
+    compile 'io.reactivex:rxjava:1.0.16'
+    compile 'org.mongodb:mongodb-driver-reactivestreams:1.2.0-rc0'
+    compile 'io.reactivex:rxjava-reactive-streams:1.0.1'
 }

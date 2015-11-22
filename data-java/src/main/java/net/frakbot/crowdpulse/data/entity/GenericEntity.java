@@ -37,16 +37,11 @@ public class GenericEntity<T> {
     }
 
     /**
-     * Set the ID of the GenericEntity. If the object already has an ID, an {@link UnsupportedOperationException} will
-     * be thrown.
+     * Set the ID of the GenericEntity.
      *
      * @param id The ID of the object.
-     * @throws UnsupportedOperationException if the ID was already set.
      */
     public void setId(T id) {
-        if (this.id != null) {
-            throw new UnsupportedOperationException("Can't change the ID of an Entity.");
-        }
         this.id = id;
     }
 }

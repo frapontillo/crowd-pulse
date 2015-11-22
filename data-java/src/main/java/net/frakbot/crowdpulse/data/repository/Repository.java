@@ -16,11 +16,22 @@
 
 package net.frakbot.crowdpulse.data.repository;
 
-import org.mongodb.morphia.dao.BasicDAO;
+import com.mongodb.BasicDBObject;
+import com.mongodb.DBObject;
+import com.mongodb.MongoClient;
+import com.mongodb.async.client.MongoClientSettings;
+import com.mongodb.connection.ClusterSettings;
+import com.mongodb.reactivestreams.client.MongoClients;
+import com.mongodb.reactivestreams.client.MongoCollection;
+import com.mongodb.reactivestreams.client.MongoDatabase;
+import net.frakbot.crowdpulse.data.entity.Message;
+import org.bson.Document;
+import org.mongodb.morphia.Datastore;
+import org.mongodb.morphia.Morphia;
 import org.mongodb.morphia.query.Query;
 import rx.Observable;
 
-import java.util.List;
+import java.util.*;
 
 /**
  * Generic repository for MongoDB collections, where:
@@ -31,14 +42,17 @@ import java.util.List;
  *
  * @author Francesco Pontillo
  */
-public class Repository<T, K> extends BasicDAO<T, K> {
+public abstract class Repository<T, K> extends HonestDAO<T,K> {
+    private MongoCollection<Document> collection;
+    Morphia morphia;
+    private Datastore datastore;
+    private MongoDatabase rxDatastore;
 
     /**
      * Create a new Repository using the default configuration in `database.properties`.
      */
     protected Repository() {
-        super(DataLayer.getDataLayer(null).getDatastore());
-        ensureIndexes();
+        this(null);
     }
 
     /**
@@ -46,9 +60,50 @@ public class Repository<T, K> extends BasicDAO<T, K> {
      * with the one in input.
      * @param db The database name to use for this Repository instance.
      */
+    @SuppressWarnings({"unchecked", "deprecation"})
     public Repository(String db) {
-        super(new DataLayer(db).getDatastore());
+        DBConfig config = new DBConfig(getClass(), db);
+
+        MongoClient client = new MongoClient(config.getServerAddress(), config.getCredentials());
+
+        // map all Morphia classes
+        morphia = new Morphia();
+        morphia.mapPackageFromClass(Message.class);
+
+        ClusterSettings clusterSettings = ClusterSettings.builder()
+                .hosts(Collections.singletonList(config.getServerAddress())).build();
+        MongoClientSettings settings = MongoClientSettings.builder()
+                .clusterSettings(clusterSettings)
+                .credentialList(config.getCredentials())
+                .build();
+        com.mongodb.reactivestreams.client.MongoClient rxClient = MongoClients.create(settings);
+
+        // create and/or get the datastore
+        datastore = morphia.createDatastore(client, config.getDBName());
+        // init the DAO
+        initDAO(datastore);
         ensureIndexes();
+
+        // create the reactive database
+        rxDatastore = rxClient.getDatabase(config.getDBName());
+
+    }
+
+    public abstract String getCollectionName();
+
+    public MongoCollection<Document> getRxCollection() {
+        if (collection == null) {
+            collection = rxDatastore.getCollection(getCollectionName());
+        }
+        return collection;
+    }
+
+    public DBObject documentToDBObject(Document document) {
+        Set<Map.Entry<String, Object>> entrySet = document.entrySet();
+        LinkedHashMap<String, Object> map = new LinkedHashMap<>(entrySet.size());
+        entrySet.forEach(e -> map.put(e.getKey(), e.getValue()));
+        DBObject dbObject = new BasicDBObject(map);
+        return dbObject;
     }
 
     /**

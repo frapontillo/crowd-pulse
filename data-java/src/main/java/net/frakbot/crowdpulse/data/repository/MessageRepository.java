@@ -16,13 +16,20 @@
 
 package net.frakbot.crowdpulse.data.repository;
 
+import com.mongodb.BasicDBObject;
+import com.mongodb.DBObject;
 import net.frakbot.crowdpulse.data.entity.Message;
+import org.bson.Document;
+import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
 import org.mongodb.morphia.query.Query;
 import rx.Observable;
+import rx.RxReactiveStreams;
+import rx.Subscriber;
 
-import java.util.Date;
-import java.util.List;
+import java.util.*;
+
+import static com.mongodb.client.model.Filters.*;
 
 /**
  * {@link Repository} for {@link Message}s.
@@ -31,24 +38,13 @@ import java.util.List;
  */
 public class MessageRepository extends Repository<Message, ObjectId> {
 
-    public MessageRepository() {
-        super();
-    }
-
     public MessageRepository(String db) {
         super(db);
     }
 
-    /**
-     * Get a Message by checking its original source ID.
-     *
-     * @param originalId The original ID of the message at the source.
-     * @return The found {@link Message} or {@code null}.
-     */
-    public Message getByOriginalId(String originalId) {
-        Query<Message> query = createQuery();
-        query.field("oId").equal(originalId);
-        return query.get();
+    @Override
+    public String getCollectionName() {
+        return "Message";
     }
 
     @Override
@@ -69,6 +65,45 @@ public class MessageRepository extends Repository<Message, ObjectId> {
         }
         query.order("date");
         return Observable.from(query.fetch());
+    }
+
+    public Observable<Message> findRx(Date since, Date until, List<String> languages) {
+        List<Bson> params = new ArrayList<>();
+        if (since != null) {
+            params.add(gte("date", since));
+        }
+        if (until != null) {
+            params.add(lte("date", until));
+        }
+        if (languages != null) {
+            params.add(in("language", languages));
+        }
+        return RxReactiveStreams.toObservable(getRxCollection()
+                .find(and(params)))
+                .lift((Observable.Operator<Message, Document>) subscriber -> new Subscriber<Document>() {
+                    @Override
+                    public void onCompleted() {
+                        subscriber.onCompleted();
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        e.printStackTrace();
+                        subscriber.onError(e);
+                    }
+
+                    @SuppressWarnings("unchecked")
+                    @Override
+                    public void onNext(Document document) {
+                        Message message = new Message();
+                        Set<Map.Entry<String, Object>> entrySet = document.entrySet();
+                        LinkedHashMap map = new LinkedHashMap<String, Object>(entrySet.size());
+                        entrySet.forEach(e -> map.put(e.getKey(), e.getValue()));
+                        DBObject dbObject = new BasicDBObject(map);
+                        morphia.fromDBObject(Message.class, dbObject);
+                        subscriber.onNext(message);
+                    }
+                });
     }
 
     public Message updateOrInsert(Message message) {

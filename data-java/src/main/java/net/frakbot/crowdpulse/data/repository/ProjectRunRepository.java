@@ -28,4 +28,9 @@ public class ProjectRunRepository extends Repository<ProjectRun, ObjectId> {
     public ProjectRunRepository(String db) {
         super(db);
     }
+
+    @Override
+    public String getCollectionName() {
+        return "ProjectRun";
+    }
 }

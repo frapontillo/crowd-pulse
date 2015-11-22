@@ -35,6 +35,11 @@ public class ProfileRepository extends Repository<Profile, ObjectId> {
         super(db);
     }
 
+    @Override
+    public String getCollectionName() {
+        return "Profile";
+    }
+
     /**
      * Get a {@link Profile} given the username.
      *

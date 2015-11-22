@@ -25,4 +25,8 @@ import org.bson.types.ObjectId;
  * @author Francesco Pontillo
  */
 public class UserRepository extends Repository<User, ObjectId> {
+    @Override
+    public String getCollectionName() {
+        return "User";
+    }
 }
