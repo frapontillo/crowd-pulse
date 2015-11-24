@@ -32,27 +32,29 @@ import java.util.regex.Pattern;
 public class SentiWordNet {
     private final static Pattern mainDivider = Pattern.compile("\t");
     private final static Pattern subDivider = Pattern.compile(" ");
+    private HashMap<String, SentiWord> dict;
 
-    private final HashMap<String, SentiWord> dict;
-
-    public SentiWordNet() {
-        dict = new HashMap<>();
-        InputStream model = getClass().getClassLoader().getResourceAsStream("sentiwordnet");
-        try {
-            List<String> lines = IOUtils.readLines(model, Charset.forName("UTF-8"));
-            lines.forEach(s -> {
-                SentiWord word = fromLine(s);
-                if (word != null) {
-                    dict.put(word.getId(),word);
-                }
-            });
-        } catch (IOException e) {
-            e.printStackTrace();
+    private HashMap<String, SentiWord> getDictionary() {
+        if (dict == null) {
+            dict = new HashMap<>();
+            InputStream model = getClass().getClassLoader().getResourceAsStream("sentiwordnet");
+            try {
+                List<String> lines = IOUtils.readLines(model, Charset.forName("UTF-8"));
+                lines.forEach(s -> {
+                    SentiWord word = fromLine(s);
+                    if (word != null) {
+                        dict.put(word.getId(),word);
+                    }
+                });
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
+        return dict;
     }
 
     public SentiWord getSentiWord(String synset) {
-        return dict.get(synset);
+        return getDictionary().get(synset);
     }
 
     public double getWeightedScore(String synset, double nounFactor, double verbFactor, double adjectiveFactor, double adverbFactor) {
