@@ -5,7 +5,6 @@
 */build/
 */node_modules/
 build/
-gradle/
 temp/
 
 # Ignore all resource files in core and playground
