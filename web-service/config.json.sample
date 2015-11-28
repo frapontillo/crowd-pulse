@@ -1,0 +1,13 @@
+{
+  "port": 5000,
+  "database": {
+    "url": "localhost",
+    "db": "admin"
+  },
+  "crowd-pulse": {
+    "main": "/path/to/crowd-pulse/core"
+  },
+  "logs": {
+    "path": "/path/to/crowd-pulse/logs/ws"
+  }
+}

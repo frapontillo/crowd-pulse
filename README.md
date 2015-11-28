@@ -1,7 +1,125 @@
-crowd-pulse
-===========
+# crowd-pulse
 
-Crowd Pulse: social extraction and analysis system
+*Crowd Pulse: social extraction and analysis system*
+
+-------------------
+
+## Setup
+
+The following instructions are for Ubuntu 14.04 LTS.
+
+### MongoDB
+
+To install MongoDB, run:
+
+```shell
+$ apt-get install mongodb-org
+$ service mongod start
+```
+
+### Set `LC_ALL` environment variable
+
+Make sure you have your locales properly set up by running:
+
+```shell
+$ locale-gen
+$ locale
+```
+
+If `LC_ALL` is empty, set it in `/etc/environment`, e.g.:
+
+```shell
+$ sh -c "echo "LC_ALL=it_IT.UTF-8" >> /etc/environment"
+$ . /etc/environment
+```
+
+Log out of shell/SSH, log back in and you should be able to connect to the default MongoDB instance by running `mongo`.
+
+### NodeJS
+
+Install NodeJS:
+
+```shell
+$ curl -sL https://deb.nodesource.com/setup_5.x | sudo -E bash -
+$ apt-get install -y nodejs
+```
+
+### Java
+
+Install Java 8.
+
+### Build tools
+
+```shell
+$ npm install -g bower gulp-cli
+```
+
+### Node Data Access Layer
+
+```shell
+$ cd data-node
+$ npm link
+```
+
+### Web Service
+
+```shell
+$ cd web-service
+$ npm install && npm link crowd-pulse-data-node
+```
+
+Create a config.json file in the `web-service` directory with the following structure (see `config.json.sample`):
+
+```json
+{
+  "port": 5000,
+  "database": {
+    "url": "localhost",
+    "db": "admin"
+  },
+  "crowd-pulse": {
+    "main": "/path/to/crowd-pulse/core"
+  },
+  "logs": {
+    "path": "/path/to/crowd-pulse/logs/ws"
+  }
+}
+```
+
+### Web UI
+
+```shell
+$ cd web-ui
+$ npm install && bower install
+```
+
+Create a `config.json` file in the `web-ui/src` directory with the following structure (see `config.json.sample`):
+
+```json
+{
+  "api": "http://your-server-machine:5000/api/",
+  "socket": "http://your-server-machine:5000/",
+  "index": "http://your-index-machine:9000/rest/"
+}
+```
+
+## Run
+
+### Web Service
+
+```shell
+$ cd web-service
+$ node app.js > path/to/crowd-pulse/logs/web-service.log
+```
+
+### Web UI
+
+```shell
+$ cd web-ui
+$ gulp serve > path/to/crowd-pulse/logs/web-ui.log
+```
+
+You can now access the Web interface at http://your-machine-ip:3000.
 
 ## Flow
 
