@@ -1,9 +1,0 @@
-plugins {
-    id "com.moowork.node" version "0.8"
-}
-
-version = '1.0'
-
-repositories {
-    mavenCentral()
-}
