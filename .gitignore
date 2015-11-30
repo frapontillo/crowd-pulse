@@ -1,23 +1,6 @@
-.idea/
 .gradle/
-*.iml
-*/bower_components/
-*/build/
-*/node_modules/
+.idea/
 build/
-temp/
-
-# Ignore all resource files in core and playground
-core/src/main/resources/*
-!core/src/main/resources/log4j2.json
-!core/src/main/resources/*.sample
-playground-cli/src/main/resources/*
-
-# web-service: ignore config
-web-service/config.json
-
-# web-ui: ignore dist, config and temporary dirs
-web-ui/.sass-cache/
-web-ui/.tmp/
-web-ui/dist/
-web-ui/src/config.json
+*.iml
+src/main/resources/*.properties
+src/main/resources/log4j2.json

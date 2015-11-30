@@ -1,5 +1,0 @@
-{
-  "api": "http://your-server-machine:5000/api/",
-  "socket": "http://your-server-machine:5000/",
-  "index": "http://your-index-machine:9000/rest/"
-}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Francesco Pontillo
+ * Copyright 2015 Francesco Pontillo
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,18 +14,87 @@
  * limitations under the License.
  */
 
-ext.mainVersion = '0.0.1'
+plugins {
+    id 'java'
+    id 'application'
+    id 'maven'
+}
 
-allprojects {
-    repositories {
-        mavenCentral()
-        jcenter()
-        maven {
-            url "https://jitpack.io"
-        }
+sourceCompatibility = 1.8
+
+group = 'com.github.frapontillo'
+version = '0.0.1'
+
+repositories {
+    mavenCentral()
+    maven {
+        url "https://jitpack.io"
     }
 }
 
-task wrapper(type: Wrapper) {
-    gradleVersion = '2.9'
+mainClassName = 'com.github.frapontillo.pulse.crowd.cli.CrowdBlade'
+
+task execute(type: JavaExec) {
+    main = mainClassName
+    classpath = sourceSets.main.runtimeClasspath
+
+    String argString = System.getProperty("args")
+    if (argString) {
+        args = Arrays.asList(argString.split(" "))
+    }
+}
+
+dependencies {
+    compile 'com.github.frapontillo:crowd-pulse-runner:0.0.1'
+
+    compile 'com.github.frapontillo:pulse-email-notify:0.0.1'
+
+    compile 'com.github.frapontillo:crowd-pulse-social:0.0.1'
+    compile 'com.github.frapontillo:crowd-pulse-social-facebook:0.0.1'
+    compile 'com.github.frapontillo:crowd-pulse-social-twitter:0.0.1'
+
+    compile 'com.github.frapontillo:crowd-pulse-fix-geo-profile:0.0.1'
+    compile 'com.github.frapontillo:crowd-pulse-fix-geo-profile-google-maps:0.0.1'
+
+    compile 'com.github.frapontillo:crowd-pulse-fix-geo-message:0.0.1'
+    compile 'com.github.frapontillo:crowd-pulse-fix-geo-message-from-profile:0.0.1'
+
+    compile 'com.github.frapontillo:crowd-pulse-detect-language:0.0.1'
+    compile 'com.github.frapontillo:crowd-pulse-detect-language-optimaize:0.0.1'
+
+    compile 'com.github.frapontillo:crowd-pulse-tag:0.0.1'
+    compile 'com.github.frapontillo:crowd-pulse-tag-babelfy:0.0.1'
+    compile 'com.github.frapontillo:crowd-pulse-tag-me:0.0.1'
+    compile 'com.github.frapontillo:crowd-pulse-tag-open-calais:0.0.1'
+    compile 'com.github.frapontillo:crowd-pulse-tag-wikipedia-miner:0.0.1'
+
+    compile 'com.github.frapontillo:crowd-pulse-categorize:0.0.1'
+    compile 'com.github.frapontillo:crowd-pulse-categorize-wikipedia:0.0.1'
+
+    compile 'com.github.frapontillo:crowd-pulse-tokenize:0.0.1'
+    compile 'com.github.frapontillo:crowd-pulse-tokenize-open-nlp:0.0.1'
+
+    compile 'com.github.frapontillo:crowd-pulse-rem-stop-word:0.0.1'
+    compile 'com.github.frapontillo:crowd-pulse-rem-stop-word-simple:0.0.1'
+
+    compile 'com.github.frapontillo:crowd-pulse-pos-tag:0.0.1'
+    compile 'com.github.frapontillo:crowd-pulse-pos-tag-open-nlp:0.0.1'
+
+    compile 'com.github.frapontillo:crowd-pulse-pos-tag-simple:0.0.1'
+    compile 'com.github.frapontillo:crowd-pulse-pos-tag-simple-multi:0.0.1'
+    compile 'com.github.frapontillo:crowd-pulse-pos-tag-simple-it:0.0.1'
+    compile 'com.github.frapontillo:crowd-pulse-pos-tag-simple-en:0.0.1'
+
+    compile 'com.github.frapontillo:crowd-pulse-lemmatize:0.0.1'
+    compile 'com.github.frapontillo:crowd-pulse-lemmatize-multi:0.0.1'
+    compile 'com.github.frapontillo:crowd-pulse-lemmatize-stanford-corenlp:0.0.1'
+    compile 'com.github.frapontillo:crowd-pulse-lemmatize-morphit:0.0.1'
+
+    compile 'com.github.frapontillo:crowd-pulse-sentiment:0.0.1'
+    compile 'com.github.frapontillo:crowd-pulse-sentiment-sentit:0.0.1'
+    compile 'com.github.frapontillo:crowd-pulse-sentiment-sentiwordnet:0.0.1'
+
+    compile 'com.github.frapontillo:crowd-pulse-infogram:0.0.1'
+
+    compile 'com.github.frapontillo:crowd-pulse-index-uniba:0.0.1'
 }

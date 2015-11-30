@@ -1,201 +1,68 @@
-# crowd-pulse
+crowd-pulse
+===========
 
-*Crowd Pulse: social extraction and analysis system*
+Reactive and Extensible Social Extraction and Analysis System.
 
--------------------
+-----------
 
-## Setup
+This package contains just a `build.gradle` file that, when built, fetches all the available 
+`pulse` and `crowd-pulse` modules and puts them in the classpath in order to make their plugins 
+available for use.
 
-The following instructions are for Ubuntu 14.04 LTS.
+## Install
 
-### MongoDB
-
-To install MongoDB, run:
-
-```shell
-$ apt-get install mongodb-org
-$ service mongod start
-```
-
-### Set `LC_ALL` environment variable
-
-Make sure you have your locales properly set up by running:
+Download and build the gradle script file that references all Crowd Pulse plugins.
 
 ```shell
-$ locale-gen
-$ locale
+$ wget https://github.com/frapontillo/crowd-pulse/archive/0.0.1.tar.gz -O crowd-pulse.tar.gz
+$ mkdir crowd-pulse
+$ tar -xfvz crowd-pulse.tar.gz -C crowd-pulse --strip-components 1
+$ ./crowd-pulse/gradlew installDist
 ```
 
-If `LC_ALL` is empty, set it in `/etc/environment`, e.g.:
+## Configure
 
-```shell
-$ sh -c "echo "LC_ALL=it_IT.UTF-8" >> /etc/environment"
-$ . /etc/environment
-```
-
-Log out of shell/SSH, log back in and you should be able to connect to the default MongoDB instance by running `mongo`.
-
-### NodeJS
-
-Install NodeJS:
-
-```shell
-$ curl -sL https://deb.nodesource.com/setup_5.x | sudo -E bash -
-$ apt-get install -y nodejs
-```
-
-### Java
-
-Install Java 8.
-
-### Build tools
-
-```shell
-$ npm install -g bower gulp-cli
-```
-
-### Node Data Access Layer
-
-```shell
-$ cd data-node
-$ npm link
-```
-
-### Web Service
-
-```shell
-$ cd web-service
-$ npm install && npm link crowd-pulse-data-node
-```
-
-Create a config.json file in the `web-service` directory with the following structure (see `config.json.sample`):
-
-```json
-{
-  "port": 5000,
-  "database": {
-    "url": "localhost",
-    "db": "admin"
-  },
-  "crowd-pulse": {
-    "main": "/path/to/crowd-pulse/core"
-  },
-  "logs": {
-    "path": "/path/to/crowd-pulse/logs/ws"
-  }
-}
-```
-
-### Web UI
-
-```shell
-$ cd web-ui
-$ npm install && bower install
-```
-
-Create a `config.json` file in the `web-ui/src` directory with the following structure (see `config.json.sample`):
-
-```json
-{
-  "api": "http://your-server-machine:5000/api/",
-  "socket": "http://your-server-machine:5000/",
-  "index": "http://your-index-machine:9000/rest/"
-}
-```
+Copy all `.properties` files and external resources (dictionaries, lists, etc.) in the 
+`/crowd-pulse/build/install/crowd-pulse/lib` directory.
 
 ## Run
 
-### Web Service
+Call the main executable:
 
 ```shell
-$ cd web-service
-$ node app.js > path/to/crowd-pulse/logs/web-service.log
+$ ./crowd-pulse/build/install/crowd-pulse/bin/crowd-pulse
 ```
 
-### Web UI
+## Available plugins
 
-```shell
-$ cd web-ui
-$ gulp serve > path/to/crowd-pulse/logs/web-ui.log
-```
+All plugins in the following modules are included (links to repositories):
 
-You can now access the Web interface at http://your-machine-ip:3000.
+* [`frapontillo/pulse-email-notify`](https://github.com/frapontillo/pulse-email-notify)
+* [`frapontillo/crowd-pulse-social-twitter`](https://github.com/frapontillo/crowd-pulse-social-twitter)
+* [`frapontillo/crowd-pulse-social-facebook`](https://github.com/frapontillo/crowd-pulse-social-facebook)
+* [`frapontillo/crowd-pulse-data-java`](https://github.com/frapontillo/crowd-pulse-data-java)
+* [`frapontillo/crowd-pulse-detect-language-optimaize`](https://github.com/frapontillo/crowd-pulse-detect-language-optimaize)
+* [`frapontillo/crowd-pulse-fix-geo-profile-google-maps`](https://github.com/frapontillo/crowd-pulse-fix-geo-profile-google-maps)
+* [`frapontillo/crowd-pulse-fix-geo-message-from-profile`](https://github.com/frapontillo/crowd-pulse-fix-geo-message-from-profile)
+* [`frapontillo/crowd-pulse-index-uniba`](https://github.com/frapontillo/crowd-pulse-index-uniba)
+* [`frapontillo/crowd-pulse-tag-babelfy`](https://github.com/frapontillo/crowd-pulse-tag-babelfy)
+* [`frapontillo/crowd-pulse-tag-me`](https://github.com/frapontillo/crowd-pulse-tag-me)
+* [`frapontillo/crowd-pulse-tag-open-calais`](https://github.com/frapontillo/crowd-pulse-tag-open-calais)
+* [`frapontillo/crowd-pulse-tag-wikipedia-miner`](https://github.com/frapontillo/crowd-pulse-tag-wikipedia-miner)
+* [`frapontillo/crowd-pulse-categorize-wikipedia`](https://github.com/frapontillo/crowd-pulse-categorize-wikipedia)
+* [`frapontillo/crowd-pulse-tokenize-open-nlp`](https://github.com/frapontillo/crowd-pulse-tokenize-open-nlp)
+* [`frapontillo/crowd-pulse-lemmatize-morphit`](https://github.com/frapontillo/crowd-pulse-lemmatize-morphit)
+* [`frapontillo/crowd-pulse-lemmatize-stanford-corenlp`](https://github.com/frapontillo/crowd-pulse-lemmatize-stanford-corenlp)
+* [`frapontillo/crowd-pulse-lemmatize-multi`](https://github.com/frapontillo/crowd-pulse-lemmatize-multi)
+* [`frapontillo/crowd-pulse-pos-tag-open-nlp`](https://github.com/frapontillo/crowd-pulse-pos-tag-open-nlp)
+* [`frapontillo/crowd-pulse-pos-tag-simple-it`](https://github.com/frapontillo/crowd-pulse-pos-tag-simple-it)
+* [`frapontillo/crowd-pulse-pos-tag-simple-en`](https://github.com/frapontillo/crowd-pulse-pos-tag-simple-en)
+* [`frapontillo/crowd-pulse-pos-tag-simple-multi`](https://github.com/frapontillo/crowd-pulse-pos-tag-simple-multi)
+* [`frapontillo/crowd-pulse-rem-stop-word-simple`](https://github.com/frapontillo/crowd-pulse-rem-stop-word-simple)
+* [`frapontillo/crowd-pulse-infogram`](https://github.com/frapontillo/crowd-pulse-infogram)
+* [`frapontillo/crowd-pulse-sentiment-sentit`](https://github.com/frapontillo/crowd-pulse-sentiment-sentit)
+* [`frapontillo/crowd-pulse-sentiment-sentiwordnet`](https://github.com/frapontillo/crowd-pulse-sentiment-sentiwordnet)
 
-## Flow
-
-Crowd Pulse uses an event/flow architecture based on RxJava and several extraction and processing tasks.
-
-Every task **must** inherit from `IPlugin<Input, Output, IPluginConfig>` where:
-
-- `Input` is the class of the input `Observable` the task has to process
-- `Output` is the class of the output `Observable` that the task returns
-- `Config` is the (optional) class for the configuration object that will be passed to the plugin
-
-Here is a complete Crowd Pulse flow:
-
-1. `IPlugin<Void, Message, ExtractionParameters>` takes care of extracting messages according to some configuration
-1. `IPlugin<Message, Message, VoidConfig>` extracts all the replies for the input messages
-1. `IPlugin<Message, Profile, VoidConfig>` extracts all the profiles for the input messages
-1. `IPlugin<Profile, Profile, VoidConfig>` extracts all connections for the input profiles
-1. `IPlugin<Profile, Profile, VoidConfig>` fixes the geolocation for every extracted profile
-1. `IPlugin<Object, Message, VoidConfig>` waits for some given streams to complete and then emits another stream at once
-1. `IPlugin<Message, Message, VoidConfig>` fixes the geolocation for messages according to the info contained in authors' profiles
-1. `IPlugin<Message, Message, VoidConfig>` detects and sets the language for every message
-1. `IPlugin<Message, Message, VoidConfig>` tags every message in the stream
-1. `IPlugin<Message, Message, VoidConfig>` categorizes all tags for each message in the stream
-1. `IPlugin<Message, Message, VoidConfig>` tokenizes every message in the stream
-1. `IPlugin<Message, Message, VoidConfig>` sets some tokens as stop words for every message in the stream
-1. `IPlugin<Message, Message, VoidConfig>` lemmatizes every token for each message in the stream
-1. `IPlugin<Message, Message, VoidConfig>` tags every message token with a Part of Speech (POS) tag
-1. `IPlugin<Message, Message, VoidConfig>` simplifies every POS tag into simpler ones
-1. `IPlugin<Message, Message, VoidConfig>` performs sentiment analysis on every message in the stream
-
-## Module descriptions
-
-- `common-util`: shared Java/RxJava utility classes
-- `data-java`: data access layer for Java modules and plugins for fetching, filtering and persisting messages and profiles on the database
-- `data-node`: data access layer for NodeJS modules
-- `web-service`: OAuth 2.0 authenticated Web Service
-- `web-ui`: administration/viewing interface for Crowd Pulse
-- `playground-cli`: Command Line Interface containing a CLI to test features
-- `social`: generic social network module to handle message extraction and user profiling
-  - `social-facebook`: specific implementation of `social` for Facebook
-  - `social-twitter`: specific implementation of `social` for Twitter
-- `fix-geo-profile`: fixes profile coordinates (lat/long) by forward geocoding
-  - `fix-geo-profile-google-maps`, concrete implementation based on Google APIs
-- `fix-geo-message`: fixes message coordinates (lat/long)
-  - `fix-geo-message-from-profile`: fixes message coordinates by assuming they're the same as the user profile
-- `detect-language`: detects the language of the extracted languages
-  - `detect-language-optimaize`: uses [optimaize/language-detector](https://github.com/optimaize/language-detector)
-- `tag`: finds tags for a message
-  - `tag-babelfy`: uses the Babelfy API
-  - `tag-me`: uses the TagMe API
-  - `tag-open-calais`: uses the OpenCalais API
-  - `tag-wikipedia-miner`: uses WikipediaMiner
-- `categorize`: finds multiple categories for each tag
-  - `categorize-wikipedia`: uses the Wikipedia Web Service to find categories
-- `tokenize`: splits messages into tokens
-  - `tokenize-open-nlp`: uses Apache OpenNLP to achieve multi-language tokenization
-- `pos-tag`: assigns to every token in a message a Part-Of-Speech tag
-  - `pos-tag-open-nlp`: uses Apache OpenNLP to achieve multi-language POS-tagging
-- `pos-tag-simple`: simplifies pre-existing POS tags from language-specific tagsets to a generic one
-  - `pos-tag-simple-multi`: selects the most appropriate language-specific implementation of simple POS tagging
-  - `pos-tag-simple-en`: simple POS tagger for English, uses the Penn Treebank POS tags
-  - `pos-tag-simple-it`: simple POS tagger for Italian, uses TANL POS tags
-- `rem-stop-word`: marks some tokens as stop words 
-  - `rem-stop-word-simple`: uses stop-word files containing lists of stop words for each language
-- `lemmatize`: lemmatizes every token in a message
-  - `lemmatize-multi`: uses a default/language based strategy to select the most proper lemmatizer between 
-  those available
-  - `lemmatize-stanford-corenlp`: uses Stanford CoreNLP to lemmatize tokens (English only, for now)
-  - `lemmatize-morphit`: uses the MorphIT dictionary to match a word and its POS with a certain lemma (Italian only)
-- `sentiment`: runs a sentiment analysis algorithm for messages
-  - `sentiment-sentit`: uses the SentIt Web Service to perform sentiment analysis
-  - `sentiment-sentiwordnet`: uses a combination of MultiWordNet and SentiWordNet to perform sentiment analysis on 
-  Tokens and Messages
-- `infogram`: generates and fetches Infogram word clouds for tags, categories, lemmas
-- `index-uniba`: sends extracted messages to the Uniba indexing service by Natilla and Impedovo
-  
 ## License
 
 ```
