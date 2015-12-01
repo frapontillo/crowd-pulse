@@ -34,6 +34,12 @@ repositories {
 
 mainClassName = 'com.github.frapontillo.pulse.crowd.cli.CrowdBlade'
 
+jar {
+    manifest {
+        attributes("Class-Path": ".")
+    }
+}
+
 task execute(type: JavaExec) {
     main = mainClassName
     classpath = sourceSets.main.runtimeClasspath
