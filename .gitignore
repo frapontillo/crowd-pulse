@@ -2,5 +2,4 @@
 .idea/
 build/
 *.iml
-src/main/resources/*.properties
-src/main/resources/log4j2.json
+src/main/resources/*
