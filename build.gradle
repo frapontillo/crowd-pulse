@@ -18,12 +18,13 @@ plugins {
     id 'java'
     id 'application'
     id 'maven'
+    id "com.github.frapontillo.switchdependencies" version "0.0.1-alpha.0"
 }
 
 sourceCompatibility = 1.8
 
 group = 'com.github.frapontillo'
-version = '0.0.1'
+version = '0.0.2'
 
 repositories {
     mavenCentral()
@@ -33,6 +34,13 @@ repositories {
 }
 
 mainClassName = 'com.github.frapontillo.pulse.crowd.cli.CrowdBlade'
+
+jar {
+    manifest {
+        attributes("Class-Path": ".")
+    }
+    exclude '*'
+}
 
 task execute(type: JavaExec) {
     main = mainClassName
@@ -44,57 +52,119 @@ task execute(type: JavaExec) {
     }
 }
 
-dependencies {
-    compile 'com.github.frapontillo:crowd-pulse-runner:0.0.1'
+switchDependencies {
+    develop {
+        truthy = {
+            compile project(':pulse')
+            compile project(':pulse-email-notify')
 
-    compile 'com.github.frapontillo:pulse-email-notify:0.0.1'
+            compile project(':crowd-pulse-data-java')
+            compile project(':crowd-pulse-runner')
 
-    compile 'com.github.frapontillo:crowd-pulse-social:0.0.1'
-    compile 'com.github.frapontillo:crowd-pulse-social-facebook:0.0.1'
-    compile 'com.github.frapontillo:crowd-pulse-social-twitter:0.0.1'
+            compile project(':crowd-pulse-social')
+            compile project(':crowd-pulse-social-facebook')
+            compile project(':crowd-pulse-social-twitter')
 
-    compile 'com.github.frapontillo:crowd-pulse-fix-geo-profile:0.0.1'
-    compile 'com.github.frapontillo:crowd-pulse-fix-geo-profile-google-maps:0.0.1'
+            compile project(':crowd-pulse-fix-geo-profile')
+            compile project(':crowd-pulse-fix-geo-profile-google-maps')
 
-    compile 'com.github.frapontillo:crowd-pulse-fix-geo-message:0.0.1'
-    compile 'com.github.frapontillo:crowd-pulse-fix-geo-message-from-profile:0.0.1'
+            compile project(':crowd-pulse-fix-geo-message')
+            compile project(':crowd-pulse-fix-geo-message-from-profile')
 
-    compile 'com.github.frapontillo:crowd-pulse-detect-language:0.0.1'
-    compile 'com.github.frapontillo:crowd-pulse-detect-language-optimaize:0.0.1'
+            compile project(':crowd-pulse-detect-language')
+            compile project(':crowd-pulse-detect-language-optimaize')
 
-    compile 'com.github.frapontillo:crowd-pulse-tag:0.0.1'
-    compile 'com.github.frapontillo:crowd-pulse-tag-babelfy:0.0.1'
-    compile 'com.github.frapontillo:crowd-pulse-tag-me:0.0.1'
-    compile 'com.github.frapontillo:crowd-pulse-tag-open-calais:0.0.1'
-    compile 'com.github.frapontillo:crowd-pulse-tag-wikipedia-miner:0.0.1'
+            compile project(':crowd-pulse-tag')
+            compile project(':crowd-pulse-tag-babelfy')
+            compile project(':crowd-pulse-tag-me')
+            compile project(':crowd-pulse-tag-open-calais')
+            compile project(':crowd-pulse-tag-wikipedia-miner')
 
-    compile 'com.github.frapontillo:crowd-pulse-categorize:0.0.1'
-    compile 'com.github.frapontillo:crowd-pulse-categorize-wikipedia:0.0.1'
+            compile project(':crowd-pulse-categorize')
+            compile project(':crowd-pulse-categorize-wikipedia')
 
-    compile 'com.github.frapontillo:crowd-pulse-tokenize:0.0.1'
-    compile 'com.github.frapontillo:crowd-pulse-tokenize-open-nlp:0.0.1'
+            compile project(':crowd-pulse-tokenize')
+            compile project(':crowd-pulse-tokenize-open-nlp')
 
-    compile 'com.github.frapontillo:crowd-pulse-rem-stop-word:0.0.1'
-    compile 'com.github.frapontillo:crowd-pulse-rem-stop-word-simple:0.0.1'
+            compile project(':crowd-pulse-rem-stop-word')
+            compile project(':crowd-pulse-rem-stop-word-simple')
 
-    compile 'com.github.frapontillo:crowd-pulse-pos-tag:0.0.1'
-    compile 'com.github.frapontillo:crowd-pulse-pos-tag-open-nlp:0.0.1'
+            compile project(':crowd-pulse-pos-tag')
+            compile project(':crowd-pulse-pos-tag-open-nlp')
 
-    compile 'com.github.frapontillo:crowd-pulse-pos-tag-simple:0.0.1'
-    compile 'com.github.frapontillo:crowd-pulse-pos-tag-simple-multi:0.0.1'
-    compile 'com.github.frapontillo:crowd-pulse-pos-tag-simple-it:0.0.1'
-    compile 'com.github.frapontillo:crowd-pulse-pos-tag-simple-en:0.0.1'
+            compile project(':crowd-pulse-pos-tag-simple')
+            compile project(':crowd-pulse-pos-tag-simple-it')
+            compile project(':crowd-pulse-pos-tag-simple-en')
+            compile project(':crowd-pulse-pos-tag-simple-multi')
 
-    compile 'com.github.frapontillo:crowd-pulse-lemmatize:0.0.1'
-    compile 'com.github.frapontillo:crowd-pulse-lemmatize-multi:0.0.1'
-    compile 'com.github.frapontillo:crowd-pulse-lemmatize-stanford-corenlp:0.0.1'
-    compile 'com.github.frapontillo:crowd-pulse-lemmatize-morphit:0.0.1'
+            compile project(':crowd-pulse-lemmatize')
+            compile project(':crowd-pulse-lemmatize-stanford-corenlp')
+            compile project(':crowd-pulse-lemmatize-morphit')
+            compile project(':crowd-pulse-lemmatize-multi')
 
-    compile 'com.github.frapontillo:crowd-pulse-sentiment:0.0.1'
-    compile 'com.github.frapontillo:crowd-pulse-sentiment-sentit:0.0.1'
-    compile 'com.github.frapontillo:crowd-pulse-sentiment-sentiwordnet:0.0.1'
+            compile project(':crowd-pulse-sentiment')
+            compile project(':crowd-pulse-sentiment-sentit')
+            compile project(':crowd-pulse-sentiment-sentiwordnet')
 
-    compile 'com.github.frapontillo:crowd-pulse-infogram:0.0.1'
+            compile project(':crowd-pulse-infogram')
 
-    compile 'com.github.frapontillo:crowd-pulse-index-uniba:0.0.1'
+            compile project(':crowd-pulse-index-uniba')
+        }
+        falsy = {
+            compile 'com.github.frapontillo:pulse:0.0.1'
+            compile 'com.github.frapontillo:pulse-email-notify:0.0.1'
+
+            compile 'com.github.frapontillo:crowd-pulse-data-java:0.0.1'
+            compile 'com.github.frapontillo:crowd-pulse-runner:0.0.1'
+
+            compile 'com.github.frapontillo:crowd-pulse-social:0.0.1'
+            compile 'com.github.frapontillo:crowd-pulse-social-facebook:0.0.1'
+            compile 'com.github.frapontillo:crowd-pulse-social-twitter:0.0.1'
+
+            compile 'com.github.frapontillo:crowd-pulse-fix-geo-profile:0.0.1'
+            compile 'com.github.frapontillo:crowd-pulse-fix-geo-profile-google-maps:0.0.1'
+
+            compile 'com.github.frapontillo:crowd-pulse-fix-geo-message:0.0.1'
+            compile 'com.github.frapontillo:crowd-pulse-fix-geo-message-from-profile:0.0.1'
+
+            compile 'com.github.frapontillo:crowd-pulse-detect-language:0.0.1'
+            compile 'com.github.frapontillo:crowd-pulse-detect-language-optimaize:0.0.1'
+
+            compile 'com.github.frapontillo:crowd-pulse-tag:0.0.1'
+            compile 'com.github.frapontillo:crowd-pulse-tag-babelfy:0.0.1'
+            compile 'com.github.frapontillo:crowd-pulse-tag-me:0.0.1'
+            compile 'com.github.frapontillo:crowd-pulse-tag-open-calais:0.0.1'
+            compile 'com.github.frapontillo:crowd-pulse-tag-wikipedia-miner:0.0.1'
+
+            compile 'com.github.frapontillo:crowd-pulse-categorize:0.0.1'
+            compile 'com.github.frapontillo:crowd-pulse-categorize-wikipedia:0.0.1'
+
+            compile 'com.github.frapontillo:crowd-pulse-tokenize:0.0.1'
+            compile 'com.github.frapontillo:crowd-pulse-tokenize-open-nlp:0.0.1'
+
+            compile 'com.github.frapontillo:crowd-pulse-rem-stop-word:0.0.1'
+            compile 'com.github.frapontillo:crowd-pulse-rem-stop-word-simple:0.0.1'
+
+            compile 'com.github.frapontillo:crowd-pulse-pos-tag:0.0.1'
+            compile 'com.github.frapontillo:crowd-pulse-pos-tag-open-nlp:0.0.1'
+
+            compile 'com.github.frapontillo:crowd-pulse-pos-tag-simple:0.0.1'
+            compile 'com.github.frapontillo:crowd-pulse-pos-tag-simple-multi:0.0.1'
+            compile 'com.github.frapontillo:crowd-pulse-pos-tag-simple-it:0.0.1'
+            compile 'com.github.frapontillo:crowd-pulse-pos-tag-simple-en:0.0.1'
+
+            compile 'com.github.frapontillo:crowd-pulse-lemmatize:0.0.1'
+            compile 'com.github.frapontillo:crowd-pulse-lemmatize-multi:0.0.1'
+            compile 'com.github.frapontillo:crowd-pulse-lemmatize-stanford-corenlp:0.0.1'
+            compile 'com.github.frapontillo:crowd-pulse-lemmatize-morphit:0.0.1'
+
+            compile 'com.github.frapontillo:crowd-pulse-sentiment:0.0.1'
+            compile 'com.github.frapontillo:crowd-pulse-sentiment-sentit:0.0.1'
+            compile 'com.github.frapontillo:crowd-pulse-sentiment-sentiwordnet:0.0.1'
+
+            compile 'com.github.frapontillo:crowd-pulse-infogram:0.0.1'
+
+            compile 'com.github.frapontillo:crowd-pulse-index-uniba:0.0.1'
+        }
+    }
 }
