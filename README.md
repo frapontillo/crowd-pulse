@@ -5,8 +5,8 @@ Reactive and Extensible Social Extraction and Analysis System.
 
 -----------
 
-This package contains just a `build.gradle` file that, when built, fetches all the available 
-`pulse` and `crowd-pulse` modules and puts them in the classpath in order to make their plugins 
+This package contains just a `build.gradle` file that, when built, fetches all the available
+`pulse` and `crowd-pulse` modules and puts them in the classpath in order to make their plugins
 available for use.
 
 ## Install
@@ -14,7 +14,7 @@ available for use.
 Download and build the gradle script file that references all Crowd Pulse plugins.
 
 ```shell
-$ wget https://github.com/frapontillo/crowd-pulse/archive/0.0.1.tar.gz -O crowd-pulse.tar.gz
+$ wget https://github.com/frapontillo/crowd-pulse/archive/0.0.2.tar.gz -O crowd-pulse.tar.gz
 $ mkdir crowd-pulse
 $ tar -xfvz crowd-pulse.tar.gz -C crowd-pulse --strip-components 1
 $ ./crowd-pulse/gradlew installDist
@@ -22,7 +22,7 @@ $ ./crowd-pulse/gradlew installDist
 
 ## Configure
 
-Copy all `.properties` files and external resources (dictionaries, lists, etc.) in the 
+Copy all `.properties` files and external resources (dictionaries, lists, etc.) in the
 `/crowd-pulse/build/install/crowd-pulse/lib` directory.
 
 ## Run
@@ -66,7 +66,7 @@ All plugins in the following modules are included (links to repositories):
 ## License
 
 ```
-  Copyright 2015 Francesco Pontillo
+  Copyright 2015-2016 Francesco Pontillo
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
